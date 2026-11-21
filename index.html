@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wincere Gold · Pronostici e Statistiche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Tema chiaro e compatto: una barra con le sezioni, intestazione con le azioni, indicatori, grafico + calendario, poi registro a schede. */
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --panel2: #f6f7f9;
+  --line: #e5e7eb;
+  --line2: #eef0f3;
+  --ink: #1d2433;
+  --muted: #6b7280;
+  --acc: #2453d4;
+  --amber: #b45309;
+  --up: #15803d;
+  --down: #c62828;
+  --r: 8px;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 13px; line-height: 1.45; -webkit-font-smoothing: antialiased; font-feature-settings: "tnum" 1; }
+.num { font-variant-numeric: tabular-nums; }
+.up { color: var(--up); } .down { color: var(--down); } .amb { color: var(--acc); } .mut { color: var(--muted); }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+/* barra in alto: nome + selettore delle tre sezioni */
+.bar { position: sticky; top: 0; z-index: 40; background: rgba(255, 255, 255, .94); backdrop-filter: saturate(1.4) blur(8px); -webkit-backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line); }
+.bar .in { max-width: 1080px; margin: 0 auto; padding: 8px 16px; display: flex; align-items: center; gap: 16px; }
+.brand { font-weight: 700; font-size: 13px; letter-spacing: -.01em; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+.brand i { width: 8px; height: 8px; border-radius: 2px; background: var(--acc); display: inline-block; }
+.brand span { color: var(--muted); font-weight: 500; }
+.apps { display: flex; gap: 2px; padding: 3px; background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; margin-left: auto; }
+.apps button { border: 0; background: transparent; color: var(--muted); padding: 5px 14px; border-radius: 6px; font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+.apps button:hover { color: var(--ink); }
+.apps button[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(16, 24, 40, .08), 0 0 0 1px var(--line); }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 14px 16px 48px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.wrap > * { min-width: 0; }
+
+.head { display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap; }
+.head h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.015em; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.head h1 small { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.head .sub { color: var(--muted); font-size: 11.5px; margin-top: 1px; }
+.head .sub #tb-left:not(:empty)::after { content: " · "; }
+.actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn { border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 6px 11px; font-weight: 600; font-size: 12px; letter-spacing: .01em; border-radius: 7px; }
+.btn:hover { border-color: #c9ced6; background: var(--panel2); }
+.btn.primary { background: var(--acc); border-color: var(--acc); color: #fff; }
+.btn.primary:hover { background: #1d45b5; border-color: #1d45b5; }
+.btn.up { color: var(--up); border-color: rgba(21, 128, 61, .35); }
+.btn.up:hover { background: rgba(21, 128, 61, .06); }
+.btn.down { color: var(--down); border-color: rgba(198, 40, 40, .35); }
+.btn.down:hover { background: rgba(198, 40, 40, .06); }
+.btn.small { padding: 3px 8px; font-size: 11.5px; border-radius: 6px; }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--panel2); border-color: var(--line); }
+.btn.danger.armed { background: var(--down); border-color: var(--down); color: #fff; }
+.btn:disabled { opacity: .45; cursor: default; }
+
+.banner { border: 1px solid #f3d19c; background: #fff8eb; color: #8a4b08; padding: 8px 12px; border-radius: var(--r); }
+.banner[hidden] { display: none; }
+
+.kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.k { background: #fff; padding: 8px 12px 9px; display: grid; gap: 1px; align-content: start; min-width: 0; }
+.k .l { color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .07em; }
+.k .v { font-size: 16px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.k .n { color: var(--muted); font-size: 10.5px; }
+
+.panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r); min-width: 0; }
+.ph { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 12px; min-height: 36px; border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 700; font-size: 10.5px; letter-spacing: .08em; flex-wrap: wrap; }
+.ph .r { color: var(--muted); font-weight: 500; letter-spacing: 0; font-size: 11px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; }
+
+.chartpanel { display: flex; flex-direction: column; }
+.chart { position: relative; flex: 1 1 auto; height: 210px; min-height: 210px; padding: 6px 4px 0; }
+@media (min-width: 761px) { .chart { height: auto; } }
+.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.chart text { font-family: var(--font); font-size: 10px; fill: var(--muted); }
+.chart .endlabel { fill: var(--ink); font-size: 11px; font-weight: 700; }
+.tip { position: absolute; pointer-events: none; background: #fff; border: 1px solid var(--line); border-radius: 7px; box-shadow: 0 6px 20px rgba(16, 24, 40, .12); padding: 7px 9px; font-size: 11.5px; min-width: 190px; display: grid; gap: 2px; z-index: 5; }
+.tip[hidden] { display: none; }
+.tip .t { color: var(--ink); font-weight: 700; }
+.tip .r { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); }
+.tip .r b { color: var(--ink); font-weight: 700; }
+.empty { color: var(--muted); padding: 20px 12px; text-align: center; }
+
+/* calendario */
+.cal { padding: 8px 10px 10px; display: grid; gap: 8px; }
+.calgrid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.calgrid .dn { color: var(--muted); font-size: 9.5px; font-weight: 600; text-align: center; letter-spacing: .06em; padding-bottom: 1px; }
+.day { position: relative; min-height: 38px; background: var(--panel2); border: 1px solid transparent; border-radius: 5px; padding: 3px 4px; display: grid; align-content: space-between; text-align: left; color: var(--muted); font-size: 10px; }
+button.day { cursor: pointer; color: var(--ink); }
+button.day:hover { border-color: #b8bfca; }
+.day.blank { background: transparent; }
+.calgrid.tight .day .dv { font-size: 9px; }
+.day .dv { font-size: 10px; font-weight: 700; color: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.day.today { border-color: var(--acc); }
+.day.sel { outline: 2px solid var(--ink); outline-offset: -2px; }
+.day.open::after { content: ""; position: absolute; right: 3px; top: 3px; width: 6px; height: 6px; background: var(--amber); border-radius: 50%; }
+.callegend { display: flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 10.5px; }
+.callegend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+
+/* da chiudere */
+.openrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 12px; border-bottom: 1px solid var(--line2); }
+.openrow:last-child { border-bottom: 0; }
+.openrow .btns { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.openrow input { width: 92px; }
+
+/* schede */
+.tabs { display: flex; gap: 2px; padding: 3px; background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; overflow-x: auto; justify-self: start; max-width: 100%; }
+.tab { border: 0; background: transparent; color: var(--muted); padding: 5px 14px; border-radius: 6px; font-weight: 600; font-size: 11.5px; letter-spacing: .05em; white-space: nowrap; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(16, 24, 40, .08), 0 0 0 1px var(--line); }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th { color: var(--muted); font-weight: 600; font-size: 10px; letter-spacing: .06em; text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); background: var(--panel2); white-space: nowrap; }
+td { padding: 5px 10px; text-align: right; border-bottom: 1px solid var(--line2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+tbody tr:nth-child(even) td { background: #fbfbfc; }
+tbody tr:last-child td { border-bottom: 0; }
+th.l, td.l { text-align: left; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: #f1f5ff; }
+tr.dayrow td { background: var(--panel2) !important; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .03em; }
+tr.today td { background: #f3f6ff !important; }
+.tag { padding: 1px 7px; font-weight: 700; font-size: 10.5px; border-radius: 999px; }
+.tag.w { background: #e6f5eb; color: var(--up); }
+.tag.l { background: #fcebeb; color: var(--down); }
+.tag.o { background: #fdf2e1; color: var(--amber); }
+.tag.p { background: #eef0f3; color: var(--muted); }
+.filterchip { border: 1px solid var(--acc); color: var(--acc); background: #f3f6ff; padding: 1px 8px; font-size: 11px; font-weight: 600; border-radius: 999px; }
+
+.hb { display: grid; grid-template-columns: minmax(120px, 190px) minmax(0, 1fr) 90px; gap: 10px; align-items: center; padding: 7px 12px; border-bottom: 1px solid var(--line2); }
+.hb:last-child { border-bottom: 0; }
+.hb .nm { font-weight: 600; overflow-wrap: anywhere; }
+.hb .sm { color: var(--muted); font-size: 10.5px; }
+.track { position: relative; height: 8px; background: var(--panel2); border-radius: 4px; }
+.track .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--muted); opacity: .5; }
+.track .f { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+
+.adj { padding: 12px; display: grid; gap: 10px; border-top: 1px solid var(--line); }
+.adj p { margin: 0; color: var(--muted); }
+.adj .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.adj .field { min-width: 160px; flex: 1 1 160px; }
+
+/* fogli */
+.overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, .35); display: grid; place-items: center; padding: 16px; z-index: 50; }
+.overlay[hidden] { display: none; }
+.sheet { background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 20px 50px rgba(16, 24, 40, .2); width: 100%; max-width: 460px; max-height: calc(100% - 8px); overflow-y: auto; display: grid; gap: 11px; padding: 0 0 14px; }
+.sheet h3 { margin: 0; padding: 12px 14px 10px; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 13px; letter-spacing: .03em; }
+.sheet > :not(h3) { margin: 0 14px; }
+.field { display: grid; gap: 4px; }
+.field label, .field .lab { font-size: 10px; font-weight: 600; letter-spacing: .07em; color: var(--muted); }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+input, select { color: var(--ink); background: #fff; border: 1px solid #d6dae1; padding: 7px 9px; width: 100%; min-width: 0; border-radius: 6px; }
+input:focus, select:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(36, 83, 212, .15); outline: none; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 3px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 6px; font-weight: 600; letter-spacing: .04em; border-radius: 5px; }
+.seg button[aria-pressed="true"] { background: var(--acc); color: #fff; }
+.hint { color: var(--muted); font-size: 11px; }
+.err { color: var(--down); font-weight: 700; }
+.err:empty { display: none; }
+.foot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.foot .r { display: flex; gap: 8px; margin-left: auto; }
+
+/* selezioni (marcatori) nel modulo */
+.legs { display: grid; gap: 8px; }
+.leg { border: 1px solid var(--line); background: var(--panel2); border-radius: 7px; padding: 8px; display: grid; gap: 6px; }
+.leg .lh { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--ink); font-size: 10.5px; font-weight: 700; letter-spacing: .07em; }
+.leg .lh .r { display: flex; gap: 6px; align-items: center; }
+.leg .g2 { gap: 6px; }
+.hit { border: 1px solid var(--line); background: #fff; color: var(--muted); padding: 3px 8px; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; border-radius: 999px; }
+.hit[data-v="1"] { color: var(--up); border-color: rgba(21, 128, 61, .45); background: #e6f5eb; }
+.hit[data-v="0"] { color: var(--down); border-color: rgba(198, 40, 40, .45); background: #fcebeb; }
+td.sel { white-space: normal !important; min-width: 180px; max-width: 320px; }
+td.sel .m { display: block; color: var(--muted); font-size: 10.5px; }
+.li .e { grid-column: 1 / -1; color: var(--muted); font-size: 11px; }
+.welcome { padding: 14px 12px; display: grid; gap: 10px; }
+.welcome p { margin: 0; color: var(--muted); }
+.ptable td.l b { font-weight: 700; }
+
+.toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 9px 14px; border-radius: 8px; box-shadow: 0 8px 24px rgba(16, 24, 40, .2); font-weight: 600; z-index: 60; max-width: calc(100% - 32px); }
+.toast[hidden] { display: none; }
+
+/* elenco compatto al posto delle tabelle sugli schermi stretti */
+.list { display: none; }
+.li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 8px 12px; border-bottom: 1px solid var(--line2); width: 100%; text-align: left; background: transparent; color: var(--ink); border-left: 0; border-right: 0; border-top: 0; }
+.li:last-child { border-bottom: 0; }
+.li .a { font-weight: 600; overflow-wrap: anywhere; }
+.li .b { text-align: right; font-weight: 700; white-space: nowrap; }
+.li .c { color: var(--muted); font-size: 11.5px; }
+.li .d { text-align: right; }
+.li.dayhead { background: var(--panel2); color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .03em; padding: 5px 12px; }
+.li.dayhead .a { font-weight: 600; }
+.li.today { background: #f3f6ff; }
+
+/* freebet, cashout, giocate rimaste aperte dai giorni passati */
+.tag.c { background: #e8eefc; color: var(--acc); }
+.tag.f { background: #f1ecfb; color: #6d3fc0; }
+.openrow.late { box-shadow: inset 3px 0 0 var(--amber); background: #fffaf2; }
+.ph .late-n { color: var(--amber); }
+.legchips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.chk { display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 600; letter-spacing: .03em; cursor: pointer; padding: 4px 0; }
+.chk input { width: 16px; height: 16px; padding: 0; margin: 0; accent-color: var(--acc); flex: none; box-shadow: none; }
+.chk .mut { font-weight: 500; letter-spacing: 0; }
+.lg-hist { font-size: 11px; }
+.lg-hist:empty { display: none; }
+
+/* menu a tendina di competizione, partita e giocatore (partite e rose caricate da Claude) */
+.sheet { position: relative; }
+.cb2 { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+#cb-pop { position: absolute; z-index: 5; margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 10px 28px rgba(16, 24, 40, .18); max-height: 270px; overflow-y: auto; padding: 4px; overscroll-behavior: contain; }
+#cb-pop[hidden] { display: none; }
+.cb-h { font-size: 10px; font-weight: 600; letter-spacing: .07em; color: var(--muted); padding: 7px 8px 3px; position: sticky; top: -4px; background: #fff; }
+.cb-o { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; width: 100%; text-align: left; border: 0; background: transparent; padding: 7px 8px; border-radius: 5px; color: var(--ink); font-size: 12.5px; cursor: pointer; }
+.cb-o b { font-weight: 700; }
+.cb-o .s { color: var(--muted); font-size: 10.5px; white-space: nowrap; }
+.cb-o:hover, .cb-o.on { background: #eef2fc; }
+.cb-o.cur { box-shadow: inset 3px 0 0 var(--acc); }
+.cb-note { padding: 7px 8px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+.hint.warn { color: var(--amber); font-weight: 600; }
+.hint.bad { color: var(--down); font-weight: 600; }
+
+/* budget settimanale */
+.budget { border: 1px solid var(--line); border-radius: var(--r); padding: 8px 12px 9px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 5px 14px; align-items: center; background: #fff; }
+.budget .bt { font-size: 10.5px; letter-spacing: .07em; white-space: nowrap; }
+.budget .bt b { font-weight: 700; }
+.budget .bv { text-align: right; font-size: 12px; }
+.budget .track2 { grid-column: 1 / -1; height: 6px; background: var(--panel2); border-radius: 3px; overflow: hidden; }
+.budget .track2 i { display: block; height: 100%; background: var(--acc); border-radius: 3px; }
+.budget.near .track2 i { background: var(--amber); }
+.budget.over { border-color: rgba(198, 40, 40, .4); background: #fff7f7; }
+.budget.over .track2 i { background: var(--down); }
+.budget.none { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 12px; padding: 6px 12px; }
+.linkbtn { border: 0; background: none; color: var(--acc); font-weight: 600; padding: 0; }
+.weeks td.l { font-weight: 600; }
+
+/* idee */
+.irow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 12px; border-bottom: 1px solid var(--line2); }
+.irow.nopick { grid-template-columns: minmax(0, 1fr) auto; }
+.irow:last-child { border-bottom: 0; }
+.irow .pick { width: 16px; height: 16px; padding: 0; margin: 0; accent-color: var(--acc); }
+.irow .btns { display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+.ibody { border: 0; background: none; text-align: left; padding: 0; color: var(--ink); display: grid; gap: 1px; min-width: 0; }
+.ibody b { font-weight: 600; }
+.ibody .m { color: var(--muted); font-size: 11px; }
+.idayhead { padding: 5px 12px; background: var(--panel2); color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .03em; border-bottom: 1px solid var(--line2); }
+.ifoot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 12px; border-top: 1px solid var(--line); background: var(--panel2); border-radius: 0 0 var(--r) var(--r); color: var(--muted); font-size: 11.5px; flex-wrap: wrap; }
+.seg.seg3 { grid-template-columns: 1fr 1fr 1fr; }
+.conf { font-size: 9.5px; padding: 1px 6px; }
+
+/* pronostici: giorni, schede partita, probabilità, rose */
+textarea { font: inherit; color: var(--ink); background: #fff; border: 1px solid #d6dae1; padding: 7px 9px; width: 100%; min-width: 0; border-radius: 6px; resize: vertical; line-height: 1.45; }
+textarea:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(36, 83, 212, .15); outline: none; }
+.daybar { display: flex; gap: 6px; overflow-x: auto; padding: 1px 1px 3px; scrollbar-width: thin; }
+.dchip { border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 5px 11px; border-radius: 999px; font-weight: 600; font-size: 11.5px; letter-spacing: .03em; white-space: nowrap; flex: none; }
+.dchip:hover { border-color: #c9ced6; }
+.dchip .c { color: var(--muted); font-weight: 600; margin-left: 6px; font-size: 10.5px; }
+.dchip[aria-pressed="true"] { background: var(--acc); border-color: var(--acc); color: #fff; }
+.dchip[aria-pressed="true"] .c { color: rgba(255, 255, 255, .85); }
+.mcards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 470px), 1fr)); align-items: start; }
+.mcard { border: 1px solid var(--line); border-radius: var(--r); background: #fff; padding: 12px 14px; display: grid; gap: 10px; min-width: 0; }
+.mcard .mh { display: flex; justify-content: space-between; align-items: center; gap: 4px 12px; flex-wrap: wrap; color: var(--muted); font-size: 11px; }
+.mcard .mh b { color: var(--ink); font-weight: 700; letter-spacing: .04em; font-size: 10.5px; }
+.mcard .tm { background: var(--ink); color: #fff; border-radius: 5px; padding: 1px 6px; font-weight: 700; margin-right: 7px; font-size: 11.5px; }
+.mcard h4 { margin: -2px 0 0; font-size: 16px; font-weight: 700; letter-spacing: -.01em; }
+.mcard .tbl { color: var(--muted); font-size: 11.5px; margin-top: -7px; }
+.pbar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; gap: 2px; background: var(--panel2); }
+.pbar i { display: block; min-width: 2px; }
+.pbar .a, .dot.a { background: var(--acc); } .pbar .x, .dot.x { background: #a3abb8; } .pbar .b, .dot.b { background: var(--amber); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+.plg { display: flex; justify-content: space-between; gap: 4px 12px; font-size: 11px; color: var(--muted); flex-wrap: wrap; }
+.plg b { color: var(--ink); }
+.sect { display: grid; gap: 5px; min-width: 0; }
+.sect .st { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--muted); }
+.sect .st .mut { font-weight: 500; letter-spacing: 0; }
+.sect p { margin: 0; font-size: 12.5px; line-height: 1.55; white-space: pre-line; overflow-wrap: anywhere; }
+.prow { width: 100%; border: 1px solid var(--line); background: var(--panel2); border-radius: 7px; padding: 8px 10px; text-align: left; display: grid; gap: 4px; color: var(--ink); }
+.prow:hover { border-color: #c2c8d2; }
+.pt { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.prow .mk { font-weight: 700; font-size: 14px; }
+.pp { font-weight: 700; font-size: 10.5px; padding: 1px 7px; border-radius: 999px; background: #e8eefc; color: var(--acc); }
+.why { display: block; color: #374151; font-size: 12px; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; }
+.ibody .why { margin-top: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.pchip { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 3px 10px; font-size: 11.5px; font-weight: 600; color: var(--ink); }
+.pchip:hover { border-color: var(--acc); }
+.mcard details { border-top: 1px solid var(--line2); padding-top: 8px; }
+.mcard summary { cursor: pointer; font-size: 10.5px; font-weight: 700; letter-spacing: .07em; color: var(--acc); list-style: none; }
+.mcard summary::-webkit-details-marker { display: none; }
+.mcard summary::before { content: "▸ "; }
+.mcard details[open] > summary::before { content: "▾ "; }
+.mcard details > div { display: grid; gap: 10px; padding-top: 9px; }
+.roster { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.roster h5 { margin: 0 0 4px; font-size: 11.5px; font-weight: 700; }
+.roster .rr { font-size: 11.5px; color: #374151; line-height: 1.5; margin-bottom: 3px; }
+.roster .rr span { color: var(--muted); font-weight: 700; font-size: 9.5px; letter-spacing: .06em; margin-right: 5px; }
+.links { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11.5px; border-top: 1px solid var(--line2); padding-top: 8px; }
+.links a { color: var(--acc); font-weight: 600; text-decoration: none; }
+.links a:hover { text-decoration: underline; }
+.irow.flash { background: #fff6dd; transition: background .3s; }
+
+/* statistiche: primo tempo in casa */
+.sbox { display: grid; gap: 8px; padding: 10px 12px; }
+.mkseg { display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; }
+.mkseg button { border: 0; background: transparent; color: var(--muted); padding: 6px 10px; font-weight: 600; font-size: 11px; letter-spacing: .04em; border-radius: 5px; flex: 1 1 auto; white-space: nowrap; }
+.mkseg button[aria-pressed="true"] { background: var(--acc); color: #fff; }
+.sseg { display: inline-grid; padding: 2px; }
+.sseg button { padding: 3px 10px; font-size: 10.5px; }
+.pchip.on { background: var(--acc); border-color: var(--acc); color: #fff; }
+.pchip.on .mut { color: rgba(255, 255, 255, .8); }
+table.stab th.on { color: var(--acc); }
+table.stab td.on { background: #f3f6ff !important; }
+table.stab td.mt { white-space: normal; min-width: 190px; }
+table.stab td.mt .m { display: block; color: var(--muted); font-size: 10.5px; }
+table.stab td .pv { font-weight: 700; }
+table.stab td.mut .pv { font-weight: 500; }
+.sb { display: block; height: 3px; background: var(--line2); border-radius: 2px; margin-top: 3px; min-width: 44px; }
+.sb i { display: block; height: 100%; background: var(--acc); border-radius: 2px; }
+td.up .sb i { background: var(--up); }
+td.mut .sb i { background: #b8bec9; }
+tr.sel td { background: #f1f5ff !important; }
+tr.det td { background: #fff !important; white-space: normal; text-align: left; padding: 10px 12px 14px; }
+.sdet { display: grid; gap: 10px; position: sticky; left: 12px; width: min(900px, calc(100vw - 64px)); }
+.sdet table.cmp th { white-space: normal; }
+.sdet .rc { white-space: normal; }
+.sdet table.cmp th:first-child, .sdet table.cmp td:first-child { text-align: left; }
+.sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.sgrid h5 { margin: 0 0 4px; font-size: 12px; }
+.rcs { display: grid; gap: 3px; margin-top: 6px; }
+.rc { font-size: 11.5px; padding: 2px 8px; border-radius: 5px; border-left: 3px solid #c9ced6; background: var(--panel2); }
+.rc.w { border-left-color: var(--up); } .rc.l { border-left-color: var(--down); }
+.mini { display: inline-flex; gap: 3px; }
+.mini i { font-style: normal; font-size: 10.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: #eef0f3; color: var(--muted); font-variant-numeric: tabular-nums; }
+.mini i.w { background: #e6f5eb; color: var(--up); } .mini i.l { background: #fcebeb; color: var(--down); }
+details.how { padding: 0; }
+details.how summary { cursor: pointer; padding: 9px 12px; font-size: 10.5px; font-weight: 700; letter-spacing: .07em; color: var(--acc); list-style: none; }
+details.how summary::-webkit-details-marker { display: none; }
+details.how summary::before { content: "▸ "; }
+details.how[open] summary::before { content: "▾ "; }
+details.how .hint { padding: 0 12px 12px; line-height: 1.6; font-size: 12px; }
+.sbox .sseg { justify-self: start; }
+.nx { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 1px 6px; border-radius: 4px; margin-right: 2px; }
+.nx.in { background: #e6f5eb; color: var(--up); }
+.nx.out { background: #eef0f3; color: var(--muted); }
+.evp { display: inline-block; margin-left: 4px; font-size: 11px; color: var(--muted); }
+.evp.up b { color: var(--up); }
+td.nxc { white-space: nowrap; }
+tr.fuori td:not(.nxc) { opacity: .45; }
+table.stab th .mut { font-weight: 500; letter-spacing: 0; text-transform: none; }
+.more { padding: 8px 12px; border-top: 1px solid var(--line); text-align: center; }
+.ovsbar { display: flex; flex-wrap: wrap; gap: 8px; }
+.ph .r .sseg { display: inline-grid; }
+.pick { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .03em; padding: 2px 7px; border-radius: 4px; background: var(--acc); color: #fff; white-space: nowrap; }
+.pick.eq { background: #eef0f3; color: var(--ink); }
+table.stab td.warn { color: var(--down); font-weight: 600; }
+@media (max-width: 640px) {
+  .sgrid { grid-template-columns: 1fr; }
+  .mkseg button { padding: 6px 7px; font-size: 10.5px; }
+  .sdet { width: calc(100vw - 52px); }
+  .sdet table.cmp td, .sdet table.cmp th { padding: 5px 6px; }
+}
+@media (max-width: 640px) {
+  .roster { grid-template-columns: 1fr; }
+  .mcard { padding: 11px 12px; }
+  .plg { display: grid; gap: 2px; }
+}
+@media (max-width: 640px) {
+  .budget { grid-template-columns: minmax(0, 1fr); }
+  .budget .bv { text-align: left; }
+  .irow .btns .btn { padding: 7px 10px; }
+  .ifoot .btn { width: 100%; padding: 10px; }
+}
+
+/* riepilogo */
+#r-body .grid2 { align-items: start; }
+table.cmp td, table.cmp th { padding: 6px 10px; }
+table.cmp td.l { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; }
+.verdict { padding: 10px 12px 12px; display: grid; gap: 6px; border-top: 1px solid var(--line); }
+.verdict p { margin: 0; color: var(--muted); }
+.verdict b { font-weight: 700; color: var(--ink); }
+.dsum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+.dsum > div { background: #fff; padding: 8px 12px; display: grid; gap: 1px; min-width: 0; }
+.dsum .l { color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .07em; }
+.dsum b { font-size: 15px; font-weight: 700; white-space: nowrap; }
+.dsum .n { color: var(--muted); font-size: 10.5px; }
+
+@media (max-width: 1000px) { .k .v { font-size: 15px; } .grid2 { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+@media (max-width: 760px) {
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 699px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .bar .in { padding: 6px 10px; }
+  .brand { display: none; }
+  .apps { margin: 0; flex: 1 1 auto; }
+  .apps button { flex: 1 1 0; padding: 7px 4px; font-size: 12px; }
+  .wrap { padding: 12px 10px 44px; gap: 10px; }
+  .head h1 { font-size: 17px; }
+  .actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .actions .btn { padding: 9px 8px; }
+  .actions .btn.primary { grid-column: 1 / -1; }
+  .actions .btn:nth-child(2):last-child { grid-column: 1 / -1; }
+  .k { padding: 8px 10px; }
+  .tabs { justify-self: stretch; }
+  .tab { padding: 7px 10px; flex: 1 1 auto; }
+  .wide { display: none; }
+  .list { display: block; }
+  .calgrid { gap: 2px; }
+  .day { min-height: 38px; padding: 3px; }
+  .day .dv { font-size: 9px; }
+  .callegend span:last-child { flex-basis: 100%; }
+  .openrow { grid-template-columns: minmax(0, 1fr); }
+  .openrow .btns { justify-content: stretch; }
+  .openrow .btns .btn { flex: 1 1 auto; padding: 9px; }
+  .openrow input { flex: 1 1 100px; }
+  .hb { grid-template-columns: minmax(0, 1fr) auto; }
+  .hb .track { grid-column: 1 / -1; grid-row: 2; }
+  .adj .row .btn { width: 100%; padding: 10px; }
+  .overlay { padding: 8px; align-items: end; }
+  .sheet { max-height: calc(100% - 16px); }
+  .btn.small { padding: 6px 10px; }
+  table.cmp td, table.cmp th { padding: 6px 6px; }
+  table.cmp th { font-size: 9.5px; letter-spacing: .02em; }
+}
+@media (max-width: 420px) {
+  .g2 { grid-template-columns: 1fr; }
+  .k .v { font-size: 15px; }
+  .dsum > div { padding: 8px; }
+  .dsum b { font-size: 14px; }
+}
+/* evita lo zoom automatico di iPhone quando si tocca un campo */
+@media (pointer: coarse) {
+  input, select { font-size: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .tab, .day, .apps button { transition: background-color .12s, border-color .12s, color .12s; }
+}
+/* STORICO */
+.hfl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px; align-items: center; }
+.hfl .lab { font-size: 10px; font-weight: 600; letter-spacing: .07em; color: var(--muted); }
+.hfl .sseg { justify-self: start; max-width: 100%; overflow-x: auto; }
+.hfl .sseg button { white-space: nowrap; }
+.hph .r { min-width: 0; max-width: 100%; }
+.hph .r .sseg { max-width: 100%; overflow-x: auto; }
+table.hsum td.l { font-weight: 600; white-space: normal; min-width: 130px; }
+table.hsum tr.tot td { border-top: 1px solid var(--line); background: var(--panel2); font-weight: 700; }
+table.hsum th:nth-child(5), table.hsum td:nth-child(5) { border-left: 1px solid var(--line); }
+.hnote { padding: 8px 12px 10px; border-top: 1px solid var(--line2); }
+.hday { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.hday .num { font-weight: 500; letter-spacing: 0; }
+.hrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 9px 12px; border-bottom: 1px solid var(--line2); align-items: center; }
+.hrow:last-child { border-bottom: 0; }
+.hm { display: grid; gap: 1px; min-width: 0; }
+.hm .m { color: var(--muted); font-size: 11px; }
+.hm b { font-weight: 700; font-size: 13px; overflow-wrap: anywhere; }
+.hres { text-align: right; display: grid; justify-items: end; }
+.hres b { font-size: 15px; font-weight: 700; }
+.hres span { color: var(--muted); font-size: 10.5px; }
+.hbets { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; }
+.hchip { border-radius: 999px; padding: 2px 9px; font-size: 11.5px; font-weight: 600; border: 1px solid transparent; }
+.hchip.w { background: #e6f5eb; color: var(--up); border-color: rgba(21, 128, 61, .25); }
+.hchip.l { background: #fcebeb; color: var(--down); border-color: rgba(198, 40, 40, .25); }
+.hchip.p { background: #eef0f3; color: var(--muted); }
+.hchip .mut { color: inherit; opacity: .8; }
+.hrow details { grid-column: 1 / -1; }
+.hrow summary { cursor: pointer; font-size: 10.5px; font-weight: 700; letter-spacing: .07em; color: var(--acc); list-style: none; display: inline-block; }
+.hrow summary::-webkit-details-marker { display: none; }
+.hrow summary::before { content: "▸ "; }
+.hrow details[open] > summary::before { content: "▾ "; }
+.hrow details > div { display: grid; gap: 6px; padding-top: 7px; }
+.hwhy { border: 1px solid var(--line); background: var(--panel2); border-radius: 7px; padding: 7px 10px; display: grid; gap: 3px; }
+@media (max-width: 640px) {
+  .hfl { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .apps button { padding: 7px 2px; font-size: 11.5px; }
+}
+/* LAYOUT C (21/11/2026): barra scura con le sezioni, colonna dei filtri a sinistra, tabelle dense con scritte piccole */
+body { font-size: 12px; }
+.shell { display: flex; min-height: 100vh; align-items: stretch; }
+.rail { flex: 0 0 64px; background: #151b2b; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0; position: sticky; top: 0; height: 100vh; z-index: 40; }
+.rail .logo { width: 12px; height: 12px; border-radius: 3px; background: #4f7cff; margin-bottom: 14px; flex: none; }
+.rail button { width: 54px; display: grid; justify-items: center; gap: 3px; padding: 7px 0; border: 0; border-radius: 7px; background: transparent; color: #aab3c5; font-size: 9.5px; font-weight: 600; letter-spacing: .01em; }
+.rail button:hover { color: #fff; background: #1e2639; }
+.rail button[aria-selected="true"] { background: #26304a; color: #fff; }
+.rail svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#app { flex: 1 1 auto; min-width: 0; }
+.lay { display: flex; align-items: stretch; min-height: 100vh; }
+.side { flex: 0 0 232px; width: 232px; overflow-x: hidden; border-right: 1px solid var(--line); background: #fafbfc; padding: 14px 14px 28px; position: sticky; top: 0; height: 100vh; overflow-y: auto; scrollbar-width: thin; }
+.sidein { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+.sg { min-width: 0; }
+.sidetog { display: none; }
+.lay > .wrap { flex: 1 1 auto; max-width: 1320px; margin: 0; padding: 14px 20px 48px; gap: 12px; align-content: start; }
+.head { align-items: flex-start; }
+.head h1 { font-size: 15px; }
+.head h1 small { font-size: 11.5px; }
+.head .sub { font-size: 11px; margin-top: 2px; }
+.head .hr { display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap; justify-content: flex-end; }
+.kpis { display: flex; flex-wrap: wrap; gap: 4px 18px; background: none; border: 0; border-radius: 0; overflow: visible; }
+.k { background: none; padding: 0; display: flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+.k .l { font-size: 10px; letter-spacing: .05em; }
+.k .v { font-size: 13.5px; }
+.k .n { font-size: 10.5px; }
+.body { display: grid; gap: 12px; min-width: 0; }
+.tabs { padding: 2px; border-radius: 7px; }
+.tab { padding: 5px 11px; font-size: 10.5px; border-radius: 5px; }
+
+/* colonna dei filtri */
+.sg { display: grid; gap: 6px; }
+.sl { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+.sl .linkbtn { font-size: 10.5px; letter-spacing: 0; }
+.sg .hint { font-size: 10.5px; line-height: 1.45; }
+.flag { display: inline-flex; width: 18px; height: 12px; border-radius: 2px; overflow: hidden; box-shadow: 0 0 0 1px rgba(17, 24, 39, .14); flex: none; vertical-align: -2px; }
+.flag svg { width: 100%; height: 100%; display: block; }
+.cal2 { display: grid; gap: 4px; }
+.calh { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 11.5px; }
+.calh span { text-transform: capitalize; }
+.calnav { border: 0; background: none; color: var(--muted); font-size: 15px; line-height: 1; width: 26px; height: 26px; border-radius: 5px; }
+.calnav:hover { background: #eef0f3; color: var(--ink); }
+.calg { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; text-align: center; }
+.cw { font-size: 9.5px; color: var(--muted); padding: 2px 0; }
+.cd { font: inherit; font-size: 11px; border: 1px solid transparent; background: transparent; color: #b3b9c3; border-radius: 5px; padding: 4px 0 5px; position: relative; font-variant-numeric: tabular-nums; }
+.cd:not(:disabled) { background: #fff; border-color: var(--line); color: var(--ink); font-weight: 600; cursor: pointer; }
+.cd:not(:disabled):hover { border-color: #b8c0cc; }
+.cd.has::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 3px; height: 3px; margin-left: -1.5px; border-radius: 50%; background: var(--acc); }
+.cd.td { box-shadow: inset 0 0 0 1px var(--acc); }
+.cd.on { background: var(--acc) !important; border-color: var(--acc) !important; color: #fff !important; }
+.cd.on::after { background: #fff; }
+.cd:disabled { cursor: default; }
+.lgl { display: grid; gap: 1px; grid-template-columns: minmax(0, 1fr); }
+.lrow { display: flex; align-items: center; gap: 7px; width: 100%; border: 0; background: transparent; padding: 4px; border-radius: 5px; font: inherit; font-size: 11.5px; color: var(--ink); text-align: left; }
+.lrow:hover { background: #eef1f6; }
+.lrow .ck { width: 12px; height: 12px; border: 1px solid #b8bfca; border-radius: 3px; flex: none; background: #fff; }
+.lrow.rad .ck { border-radius: 50%; }
+.lrow.on .ck { background: var(--acc); border-color: var(--acc); box-shadow: inset 0 0 0 2px #fff; }
+.lrow .ln { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lrow .lc { color: var(--muted); font-size: 11px; }
+.lrow.zero .ln { color: #9aa1ad; }
+.lrow.on .ln { font-weight: 600; color: var(--acc); }
+.pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.pill { font: inherit; font-size: 10.5px; font-weight: 600; border: 1px solid #dde1e7; background: #fff; color: #374151; border-radius: 999px; padding: 3px 8px; }
+.pill:hover { border-color: #b8c0cc; }
+.pill .mut { font-weight: 500; }
+.pill.on { background: var(--acc); border-color: var(--acc); color: #fff; }
+.pill.on .mut { color: rgba(255, 255, 255, .8); }
+
+/* tabella delle giocate (Pronostici e Storico) */
+.gtw { border: 1px solid var(--line); border-radius: var(--r); overflow-x: auto; background: #fff; }
+table.gt { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.gt th { text-align: left; padding: 7px 8px; font-size: 10px; font-weight: 600; letter-spacing: .05em; color: var(--muted); background: #f7f8fa; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.gt td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line2); white-space: nowrap; vertical-align: middle; font-variant-numeric: tabular-nums; }
+table.gt th:first-child, table.gt td:first-child { padding-left: 12px; }
+table.gt th:last-child, table.gt td:last-child { padding-right: 12px; }
+table.gt .r { text-align: right; }
+table.gt .c { text-align: center; }
+table.gt td.tm { color: var(--muted); }
+table.gt td.tn { font-weight: 600; }
+.vs { display: none; }
+table.gt td.cp { color: #4b5563; }
+table.gt td.cp .cpi { display: inline-flex; align-items: center; gap: 6px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+table.gt td.ft { font-weight: 700; }
+table.gt td.ht { color: var(--muted); }
+table.gt td.mk { font-weight: 700; white-space: normal; min-width: 120px; }
+table.gt td.mk.sc { font-weight: 600; color: #374151; }
+table.gt td.mk.sc .mut { font-weight: 500; }
+table.gt td.cf { color: #4b5563; font-size: 11px; }
+table.gt tr.row { cursor: pointer; }
+table.gt tr.row:hover td { background: #fafbfd; }
+table.gt tr.row.sel td { background: #f5f8ff; }
+table.gt tr.row.sel td:first-child { box-shadow: inset 3px 0 0 var(--acc); }
+table.gt tr.gx td { background: #f5f8ff; white-space: normal; padding: 2px 12px 12px 12px; }
+table.gt tr.dh td { background: var(--panel2); color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .04em; padding: 5px 8px 5px 12px; }
+table.gt tr.dh td .r { float: right; font-weight: 500; letter-spacing: 0; }
+table.gt tr:last-child td { border-bottom: 0; }
+.thb { all: unset; cursor: pointer; }
+.thb:hover, .thb.on { color: var(--acc); }
+.thb:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.res { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
+.res.w { background: #e8f5ec; color: #166534; }
+.res.l { background: #fdeeee; color: #b42318; }
+.res.o { background: #fdf2e1; color: #b45309; }
+.res.p { color: var(--muted); font-weight: 500; padding: 2px 0; }
+.gxin { display: grid; gap: 8px; padding: 4px 0 2px 36px; max-width: 980px; }
+.gxin .why { font-size: 12px; color: #374151; }
+.gxb { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.gxin details > summary { cursor: pointer; font-size: 10.5px; font-weight: 700; letter-spacing: .07em; color: var(--acc); list-style: none; }
+.gxin details > summary::-webkit-details-marker { display: none; }
+.gxin details > summary::before { content: "▸ "; }
+.gxin details[open] > summary::before { content: "▾ "; }
+.gxin details > div { padding-top: 8px; }
+.gxin .mcard { border-color: #dfe5f6; }
+.chipsm { display: inline-flex; flex-wrap: wrap; gap: 3px; white-space: normal; }
+.chipsm .res { font-size: 10px; padding: 1px 6px; }
+.p1x2 { display: inline-flex; gap: 6px; color: #4b5563; }
+.p1x2 b { color: var(--ink); }
+.note { color: var(--muted); font-size: 11px; }
+
+/* Statistiche: gruppi delle giocate (MULTIBET PRIMO TEMPO, ESITI PRIMO TEMPO) */
+table.stab tr.grp th { white-space: normal; line-height: 1.25; text-align: center; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; padding: 5px 8px; border-bottom: 1px solid var(--line); background: #fff; }
+table.stab tr.grp th.g.mb { background: #eef2fd; color: var(--acc); }
+table.stab tr.grp th.g.es { background: #f3f4f6; color: #374151; border-left: 2px solid #fff; }
+table.stab tr.grp th.g.mp { background: #eef2fd; color: var(--acc); border-left: 2px solid #fff; }
+table.stab tr.grp th.g.st { background: #f3f4f6; color: #374151; border-left: 2px solid #fff; }
+table.stab tr.grp th.g.re { background: #fdf3e7; color: #9a5b13; border-left: 2px solid #fff; }
+table.cmp tr.grh td { background: #f7f8fa; color: #374151; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-align: left; padding: 5px 10px; }
+.lrow.rad .ln { white-space: normal; line-height: 1.3; }
+.lay table.stab th, .lay table.stab td { padding-left: 7px; padding-right: 7px; }
+.lay table.stab .sb { min-width: 34px; }
+.lgh { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: #374151; margin: 4px 0 1px 4px; }
+
+@media (max-width: 760px) {
+  /* sul telefono ogni giocata diventa una scheda su tre righe: ora e campionato, squadre, giocata ed esito */
+  table.gt, table.gt tbody { display: block; }
+  table.gt thead { display: none; }
+  table.gt tr.row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto auto; grid-template-areas: "tm cp ht ft" "tm h h h" "tm mk pr es" "tm ch ch ch"; column-gap: 8px; row-gap: 3px; padding: 8px 10px; border-bottom: 1px solid var(--line2); }
+  table.gt tr.row td { padding: 0 !important; border: 0; white-space: normal; background: none !important; box-shadow: none !important; }
+  table.gt tr.row.sel { background: #f5f8ff; box-shadow: inset 3px 0 0 var(--acc); }
+  table.gt td.tm { grid-area: tm; } table.gt td.cp { grid-area: cp; min-width: 0; } table.gt td.ht { grid-area: ht; } table.gt td.ft { grid-area: ft; }
+  table.gt td.h { grid-area: h; } table.gt td.mk { grid-area: mk; min-width: 0; } table.gt td.pr { grid-area: pr; } table.gt td.es { grid-area: es; } table.gt td.ch { grid-area: ch; }
+  table.gt td.a, table.gt td.cf, table.gt td.qt, table.gt td.px { display: none; }
+  table.gt td.cp .cpi { max-width: none; font-size: 11px; }
+  .vs { display: inline; }
+  table.gt tr.gx, table.gt tr.dh, table.gt tr.gx td, table.gt tr.dh td { display: block; }
+  table.gt tr.dh td .r { float: none; display: block; }
+  .actions .btn.primary, .actions .btn:nth-child(2):last-child { grid-column: auto; }
+  .actions .btn { padding: 8px; }
+  .shell { flex-direction: column; }
+  .rail { flex-direction: row; height: auto; width: 100%; padding: 6px 8px; gap: 4px; }
+  .rail .logo { margin: 0 6px; }
+  .rail button { width: auto; flex: 1 1 0; grid-auto-flow: column; justify-content: center; align-items: center; gap: 6px; font-size: 11.5px; padding: 8px 4px; }
+  .lay { flex-direction: column; min-height: 0; }
+  .side { position: static; width: auto; height: auto; flex: none; border-right: 0; border-bottom: 1px solid var(--line); padding: 8px 10px; overflow: visible; }
+  .sidetog { display: flex; align-items: center; gap: 8px; width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 7px; padding: 9px 10px; font: inherit; font-weight: 700; font-size: 11px; letter-spacing: .06em; color: var(--ink); }
+  .sidetog .mut { font-weight: 500; letter-spacing: 0; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sidein { display: none; padding-top: 12px; }
+  .side.open .sidein { display: grid; }
+  .side.open .car { transform: rotate(180deg); }
+  .lay > .wrap { padding: 12px 10px 44px; }
+  .head .hr { justify-content: flex-start; }
+  .gxin { padding-left: 0; }
+  .cd { padding: 7px 0 8px; }
+  .lrow { padding: 7px 4px; }
+}
+</style>
+<meta name="robots" content="noindex, nofollow">
+<style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" role="tablist" aria-label="Sezioni"><span class="logo" title="Wincere Gold"></span><button type="button" role="tab" data-app="idee" aria-selected="false" title="analisi delle partite e marcatori consigliati"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Pronostici</span></button><button type="button" role="tab" data-app="stats" aria-selected="false" title="come vanno le squadre nel primo tempo, in casa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg><span>Statistiche</span></button><button type="button" role="tab" data-app="storico" aria-selected="false" title="tutti gli esiti dei pronostici e dei marcatori"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 8v4l3 2"></path></svg><span>Storico</span></button></nav>
+<div id="app"></div>
+</div>
+<template id="tpl-idee">
+<div class="lay">
+  <aside class="side" id="side" aria-label="Filtri"></aside>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>Pronostici <small id="tb-left"></small></h1>
+        <div class="sub num" id="tb-right"></div>
+      </div>
+      <div class="hr">
+        <section class="kpis" id="kpis" aria-label="Numeri principali"></section>
+        <div class="actions"><button class="btn primary" data-act="new-pick" type="button">+ PRONOSTICO</button><button class="btn" data-act="new-idea" type="button">+ MARCATORE</button></div>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <div id="i-body" class="body"></div>
+  </div>
+</div>
+</template>
+
+<template id="tpl-stats">
+<div class="lay">
+  <aside class="side" id="side" aria-label="Filtri"></aside>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>Statistiche <small id="tb-left"></small></h1>
+        <div class="sub num" id="tb-right"></div>
+      </div>
+      <div class="hr">
+        <section class="kpis" id="kpis" aria-label="Numeri principali"></section>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <div id="s-body" class="body"></div>
+  </div>
+</div>
+</template>
+
+<template id="tpl-storico">
+<div class="lay">
+  <aside class="side" id="side" aria-label="Filtri"></aside>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>Storico <small id="tb-left"></small></h1>
+        <div class="sub num" id="tb-right"></div>
+      </div>
+      <div class="hr">
+        <section class="kpis" id="kpis" aria-label="Numeri principali"></section>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <div id="h-body" class="body"></div>
+  </div>
+</div>
+</template>
+
+<div class="overlay" id="overlay" hidden><form class="sheet" id="sheet" novalidate></form></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+// una sola sezione è attiva alla volta: le due app condividono foglio, avvisi e connessione ai dati
+window.APP = { active: null, apps: {}, p: {}, use(n) { if (n !== "db") return Promise.reject(new Error("non disponibile")); if (!this.p.db) this.p.db = Promise.resolve(fileDB()); return this.p.db; } };
+// VERSIONE GITHUB: i dati si leggono dai file data/<collezione>.json (li aggiorna Claude); la pagina è in sola lettura
+function fileDB() {
+  const cache = {};
+  // se la lettura non riesce riprova fino a 3 volte; un errore non resta in memoria
+  const get = (c, n) => fetch("data/" + c + ".json?v=" + Date.now(), { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+    .catch((e) => (n > 0 ? new Promise((res) => setTimeout(res, 700)).then(() => get(c, n - 1)) : Promise.reject(e)));
+  const load = (c) => cache[c] || (cache[c] = get(c, 3).catch((e) => { delete cache[c]; throw e; }));
+  const snap = (rows) => ({ docs: rows.map((o) => { const rest = Object.assign({}, o); delete rest.id; return { id: o.id, data: () => Object.assign({}, rest) }; }) });
+  const ro = () => Promise.reject(Object.assign(new Error("sola lettura"), { code: "not_granted" }));
+  const doc = () => ({ set: ro, update: ro, delete: ro });
+  return { collection: (c) => ({ onSnapshot(ok, err) { load(c).then((rows) => ok(snap(rows)), (e) => { if (err) err(e); }); return () => {}; }, doc }) };
+}
+// strumenti comuni alle tre sezioni: bandiere dei campionati, calendario e gruppi della colonna dei filtri
+(function () {
+  "use strict";
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const plain = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/\s+/g, " ").trim();
+  const stars = [[2.1, 1], [2.02, 1.3], [1.8, 1.52], [1.5, 1.6], [1.2, 1.52], [0.98, 1.3], [0.9, 1], [0.98, 0.7], [1.2, 0.48], [1.5, 0.4], [1.8, 0.48], [2.02, 0.7]];
+  const SVG = {
+    it: '<rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ce2b37"/>',
+    fr: '<rect width="1" height="2" fill="#0055a4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ef4135"/>',
+    de: '<rect width="3" height=".67" fill="#000"/><rect y=".66" width="3" height=".67" fill="#dd0000"/><rect y="1.32" width="3" height=".68" fill="#ffce00"/>',
+    es: '<rect width="3" height="2" fill="#aa151b"/><rect y=".5" width="3" height="1" fill="#f1bf00"/>',
+    en: '<rect width="3" height="2" fill="#fff"/><rect x="1.3" width=".4" height="2" fill="#ce1124"/><rect y=".8" width="3" height=".4" fill="#ce1124"/>',
+    nl: '<rect width="3" height=".67" fill="#ae1c28"/><rect y=".66" width="3" height=".67" fill="#fff"/><rect y="1.32" width="3" height=".68" fill="#21468b"/>',
+    pt: '<rect width="3" height="2" fill="#ff0000"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".36" fill="#ffcc00"/><circle cx="1.2" cy="1" r=".22" fill="#ff0000"/>',
+    br: '<rect width="3" height="2" fill="#009c3b"/><polygon points="1.5,.18 2.75,1 1.5,1.82 .25,1" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".42" fill="#002776"/>',
+    eu: '<rect width="3" height="2" fill="#003399"/>' + stars.map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r=".08" fill="#ffcc00"/>').join(""),
+    wd: '<rect width="3" height="2" fill="#dbe7f7"/><circle cx="1.5" cy="1" r=".7" fill="none" stroke="#2453d4" stroke-width=".12"/><path d="M.8 1h1.4M1.5 .3c-.45.4-.45 1 0 1.4M1.5 .3c.45.4.45 1 0 1.4" fill="none" stroke="#2453d4" stroke-width=".1"/>',
+    xx: '<rect width="3" height="2" fill="#e5e7eb"/>'
+  };
+  const NAT = { it: "Italia", en: "Inghilterra", es: "Spagna", de: "Germania", fr: "Francia", nl: "Olanda", pt: "Portogallo", br: "Brasile", eu: "Coppe europee", wd: "Nazionali", xx: "Altro" };
+  const ORDER = ["it", "en", "es", "de", "fr", "nl", "pt", "eu", "wd", "br", "xx"];
+  // nazione del campionato, dal nome in italiano (SERIE A, CHAMPIONSHIP, LIGUE 2, BRASILE SERIE A…)
+  function country(comp) {
+    const c = plain(comp);
+    if (!c) return "xx";
+    if (/BRASIL/.test(c)) return "br";
+    if (/CHAMPIONSHIP|PREMIER|LEAGUE ONE|LEAGUE TWO|FA CUP|CARABAO|EFL|INGHILTERRA/.test(c)) return "en";
+    if (/CHAMPIONS|EUROPA LEAGUE|CONFERENCE|NATIONS LEAGUE|EUROPEI|UEFA|SUPERCOPPA EUROPEA/.test(c)) return "eu";
+    if (/MONDIAL|AMICHEVOL|QUALIFICAZ|NAZIONAL/.test(c)) return "wd";
+    if (/^SERIE [ABC]\b|COPPA ITALIA|SUPERCOPPA ITALIANA|ITALIA/.test(c)) return "it";
+    if (/^LIGA\b|LALIGA|SEGUNDA|COPPA DEL RE|SPAGNA/.test(c)) return "es";
+    if (/BUNDESLIGA|DFB|GERMANIA/.test(c)) return "de";
+    if (/LIGUE|FRANCIA/.test(c)) return "fr";
+    if (/EREDIVISIE|EERSTE|OLANDA/.test(c)) return "nl";
+    if (/PRIMEIRA|PORTOGALLO|PORTUGAL/.test(c)) return "pt";
+    return "xx";
+  }
+  // "SERIE A" → "Serie A", "2. BUNDESLIGA" → "2. Bundesliga"
+  const tc = (str) => String(str || "").toLowerCase().replace(/(^|[\s.\-\/(])(\p{L})/gu, (m0, a, b) => a + b.toUpperCase());
+  const flag = (comp) => { const k = country(comp); return '<span class="flag" title="' + esc(NAT[k]) + '"><svg viewBox="0 0 3 2" aria-hidden="true">' + SVG[k] + "</svg></span>"; };
+  // ordina i campionati per nazione (Italia, Inghilterra, Spagna…) e poi per nome
+  const compOrder = (a, b) => ORDER.indexOf(country(a)) - ORDER.indexOf(country(b)) || String(a).localeCompare(String(b));
+  const MESI = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
+  const pad = (n) => String(n).padStart(2, "0");
+  // calendario del mese: o = { month "YYYY-MM", sel: Set dei giorni scelti, marks: Map giorno → numero (solo i giorni con dati), act, nav, today }
+  function cal(o) {
+    const [y, m] = o.month.split("-").map(Number), lead = (new Date(y, m - 1, 1).getDay() + 6) % 7, dim = new Date(y, m, 0).getDate();
+    let h = '<div class="cal2"><div class="calh"><button type="button" class="calnav" data-act="' + o.nav + '" data-v="-1" aria-label="Mese precedente">‹</button><span>' + MESI[m - 1] + " " + y + '</span><button type="button" class="calnav" data-act="' + o.nav + '" data-v="1" aria-label="Mese successivo">›</button></div><div class="calg">' +
+      ["L", "M", "M", "G", "V", "S", "D"].map((d) => '<span class="cw">' + d + "</span>").join("") + "<span></span>".repeat(lead);
+    for (let d = 1; d <= dim; d++) {
+      const iso = y + "-" + pad(m) + "-" + pad(d), has = o.marks.has(iso), n = o.marks.get(iso) || 0, on = o.sel.has(iso);
+      h += '<button type="button" class="cd' + (on ? " on" : "") + (iso === o.today ? " td" : "") + (n ? " has" : "") + '" data-act="' + o.act + '" data-day="' + iso + '"' + (has ? "" : " disabled") +
+        ' aria-pressed="' + on + '" title="' + d + " " + MESI[m - 1] + (n ? " · " + n : "") + '">' + d + "</button>";
+    }
+    return h + "</div></div>";
+  }
+  const monthOf = (iso) => String(iso || "").slice(0, 7);
+  const addMonth = (ym, n) => { const [y, m] = ym.split("-").map(Number), d = new Date(y, m - 1 + n, 1); return d.getFullYear() + "-" + pad(d.getMonth() + 1); };
+  // gruppo della colonna dei filtri, e la colonna intera (sul telefono si apre toccando FILTRI)
+  const group = (title, body, right) => '<div class="sg"><div class="sl"><span>' + title + "</span>" + (right || "") + "</div>" + body + "</div>";
+  const side = (html, note) => '<button type="button" class="sidetog" data-sidetog aria-expanded="false"><span>FILTRI</span><span class="mut">' + esc(note || "") + '</span><span class="car">▾</span></button><div class="sidein">' + html + "</div>";
+  // righe dei campionati con bandiera: list [{ c: nome, n: numero }], set vuoto = tutti
+  function leagues(list, set, act) {
+    return '<div class="lgl"><button type="button" class="lrow' + (set.size ? "" : " on") + '" data-act="' + act + '" data-c=""><span class="ck"></span><span class="ln">Tutti</span><span class="lc num">' + list.reduce((s, x) => s + (x.n || 0), 0) + "</span></button>" +
+      list.map((x) => '<button type="button" class="lrow' + (set.has(x.c) ? " on" : "") + (x.n ? "" : " zero") + '" data-act="' + act + '" data-c="' + esc(x.c) + '"><span class="ck"></span>' + flag(x.c) + '<span class="ln">' + esc(x.label || tc(x.c)) + '</span><span class="lc num">' + (x.n || "") + "</span></button>").join("") + "</div>";
+  }
+  // bottoni a scelta: opts [[valore, etichetta]], on(valore) → acceso
+  const pills = (act, opts, on) => '<div class="pills">' + opts.map(([v, l]) => '<button type="button" class="pill' + (on(v) ? " on" : "") + '" data-act="' + act + '" data-c="' + esc(v) + '" aria-pressed="' + !!on(v) + '">' + l + "</button>").join("") + "</div>";
+  window.APP.ui = { esc, tc, flag, country, compOrder, cal, monthOf, addMonth, group, side, leagues, pills, NAT };
+})();
+</script>
+<script>
+// CALENDARIO E ROSE: partite (fixtures/*) e giocatori (squads/*) caricati da Claude.
+// I campi con data-cb="comp|match|player" dei moduli aprono un menu: competizioni del giorno → partite di quella competizione → giocatori delle due squadre.
+(function () {
+  "use strict";
+  const C = { fixtures: [], squads: new Map() };
+  const P = { inp: null, opts: [], act: -1, typed: false, silent: false };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const SP = { "Ø": "O", "ø": "o", "Æ": "AE", "æ": "ae", "Þ": "TH", "þ": "th", "Ð": "D", "ð": "d", "ß": "SS", "Ł": "L", "ł": "l", "Đ": "D", "đ": "d", "ı": "i", "Œ": "OE", "œ": "oe" };
+  const plain = (s) => String(s || "").replace(/[ØøÆæÞþÐðßŁłĐđıŒœ]/g, (c) => SP[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/\s+/g, " ").trim();
+  const norm = (s) => plain(s).replace(/\s*-\s*/g, " - ");
+  const key = (team) => plain(team).replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  const matchOf = (f) => norm(f.home) + " - " + norm(f.away);
+  const short = (iso) => (iso ? iso.slice(8) + "/" + iso.slice(5, 7) : "");
+  const byTime = (a, b) => String(a.time || "").localeCompare(String(b.time || "")) || matchOf(a).localeCompare(matchOf(b));
+  const onDate = (date) => C.fixtures.filter((f) => f.date === date).sort(byTime);
+  function findFixture(date, match) {
+    const m = norm(match); if (!m) return null;
+    return onDate(date).find((f) => matchOf(f) === m) || C.fixtures.find((f) => matchOf(f) === m) || null;
+  }
+  const pval = (p) => plain((p.n ? p.n + " " : "") + p.s);
+  const ROLE = { P: "POR", D: "DIF", C: "CEN", A: "ATT" };
+  function playersOf(f) {
+    const out = [];
+    [f.home, f.away].forEach((t) => { const sq = C.squads.get(key(t)); if (sq) (sq.players || []).forEach((p) => out.push({ s: p.s || "", n: p.n || "", r: p.r || "", team: plain(t) })); });
+    const ks = (p) => plain(p.s) + " " + plain(p.n);
+    return out.sort((a, b) => ks(a).localeCompare(ks(b)));
+  }
+  function ctx(inp) {
+    const sh = inp.closest(".sheet"), g = inp.closest(".leg") || sh, d = sh && sh.querySelector("#f-date, #i-date");
+    const get = (k) => (g ? g.querySelector('[data-cb="' + k + '"]') : null);
+    return { date: d ? d.value : "", comp: get("comp"), match: get("match"), player: get("player") };
+  }
+  const histOf = (inp) => Array.from(document.querySelectorAll("#" + (inp.dataset.hist || "x") + " option")).map((o) => o.value).filter(Boolean);
+  const noDate = (date) => (date ? "Nessuna partita caricata per il " + short(date) + ". Scrivi a mano, oppure chiedi a Claude di caricare le partite di quel giorno." : "Scegli prima la data.");
+
+  // opzioni del menu: prima quelle del calendario, poi (se scrivi o se il calendario è vuoto) i nomi già usati in passato
+  function build(inp, q) {
+    const c = ctx(inp), kind = inp.dataset.cb, Q = plain(q), day = onDate(c.date), groups = []; let note = "";
+    const fil = (arr, txt) => (Q ? arr.filter((o) => plain(txt(o)).includes(Q)) : arr);
+    const addHist = (exclude, hasCal) => {
+      if (hasCal && !Q) return;
+      const ex = new Set(exclude), items = histOf(inp).filter((v) => !ex.has(norm(v)) && (!Q || plain(v).includes(Q))).slice(0, 40).map((v) => ({ v, html: esc(v) }));
+      if (items.length) groups.push({ h: "GIÀ USATI IN PASSATO", items });
+    };
+    if (kind === "comp") {
+      const comps = [];
+      day.forEach((f) => { const k = norm(f.comp); let x = comps.find((y) => y.v === k); if (!x) comps.push((x = { v: k, n: 0 })); x.n++; });
+      const items = fil(comps, (o) => o.v).map((o) => ({ v: o.v, html: esc(o.v), sub: o.n + (o.n === 1 ? " partita" : " partite") }));
+      if (items.length) groups.push({ h: "COMPETIZIONI DEL " + short(c.date), items });
+      if (!day.length) note = noDate(c.date);
+      addHist(comps.map((o) => o.v), items.length);
+    } else if (kind === "match") {
+      const cv = norm(c.comp ? c.comp.value : ""), inComp = day.filter((f) => norm(f.comp) === cv), list = inComp.length ? inComp : day;
+      const items = fil(list, (f) => matchOf(f) + " " + norm(f.comp)).map((f) => ({ v: matchOf(f), html: esc(matchOf(f)), sub: [f.time, inComp.length ? "" : norm(f.comp)].filter(Boolean).join(" · "), f }));
+      if (items.length) groups.push({ h: (inComp.length ? cv : "TUTTE LE PARTITE") + " · " + short(c.date), items });
+      if (!day.length) note = noDate(c.date);
+      addHist(list.map(matchOf), items.length);
+    } else {
+      const f = findFixture(c.date, c.match ? c.match.value : ""), ps = f ? playersOf(f) : [];
+      const items = fil(ps, (p) => pval(p) + " " + p.team).map((p) => ({ v: pval(p), html: "<b>" + esc(plain(p.s)) + "</b> " + esc(p.n), sub: p.team + (p.r ? " · " + (ROLE[p.r] || p.r) : "") }));
+      if (items.length) groups.push({ h: "GIOCATORI · " + matchOf(f), items });
+      else if (f && !ps.length) note = "Rose di " + matchOf(f) + " non ancora caricate: scrivi il nome a mano.";
+      else if (!f && !(c.match && c.match.value.trim())) note = "Scegli prima la partita: qui compariranno i giocatori delle due squadre.";
+      addHist(ps.map(pval), items.length);
+    }
+    return { note, groups };
+  }
+  function popEl(inp) {
+    const sh = inp.closest(".sheet"); let el = $("cb-pop");
+    if (!el || el.parentNode !== sh) { if (el) el.remove(); el = document.createElement("div"); el.id = "cb-pop"; el.setAttribute("role", "listbox"); el.hidden = true; sh.appendChild(el); }
+    return el;
+  }
+  function show(inp) {
+    if (!inp || !inp.isConnected || !inp.closest(".sheet")) return hide();
+    P.inp = inp; P.opts = []; P.act = -1;
+    const r = build(inp, P.typed ? inp.value : ""), cur = plain(inp.value);
+    let h = r.note ? '<div class="cb-note">' + esc(r.note) + "</div>" : "";
+    r.groups.forEach((g) => {
+      h += '<div class="cb-h">' + esc(g.h) + "</div>";
+      g.items.forEach((o) => { const i = P.opts.push(o) - 1; h += '<button type="button" tabindex="-1" role="option" class="cb-o' + (plain(o.v) === cur ? " cur" : "") + '" data-cbi="' + i + '"><span>' + o.html + "</span>" + (o.sub ? '<span class="s">' + esc(o.sub) + "</span>" : "") + "</button>"; });
+    });
+    if (!h) { const el = $("cb-pop"); if (el) { el.hidden = true; el.innerHTML = ""; } return; }
+    const el = popEl(inp); el.innerHTML = h; el.hidden = false; el.scrollTop = 0; place();
+  }
+  function place() {
+    const el = $("cb-pop"); if (!el || el.hidden || !P.inp) return;
+    const sh = P.inp.closest(".sheet"), a = P.inp.getBoundingClientRect(), b = sh.getBoundingClientRect();
+    const w = Math.min(b.width - 16, Math.max(a.width, 270)); let left = a.left - b.left - sh.clientLeft;
+    if (left + w > b.width - 8) left = Math.max(8, b.width - 8 - w);
+    el.style.top = a.bottom - b.top - sh.clientTop + sh.scrollTop + 3 + "px"; el.style.left = left + "px"; el.style.width = w + "px";
+  }
+  function hide() { const el = $("cb-pop"); if (el) { el.hidden = true; el.innerHTML = ""; } P.inp = null; P.opts = []; P.act = -1; }
+  function setv(inp, v) { if (!inp || inp.value === v) return; inp.value = v; inp.dispatchEvent(new Event("input", { bubbles: true })); }
+  function pick(i) {
+    const o = P.opts[i], inp = P.inp; if (!o || !inp) return;
+    const c = ctx(inp), kind = inp.dataset.cb; let next = null;
+    P.silent = true;
+    setv(inp, o.v);
+    if (kind === "comp") {
+      const list = onDate(c.date).filter((f) => norm(f.comp) === o.v), m = c.match ? c.match.value.trim() : "";
+      if (list.length && m && !list.some((f) => matchOf(f) === norm(m))) { setv(c.match, ""); setv(c.player, ""); }
+      next = c.match;
+    } else if (kind === "match") {
+      if (o.f) {
+        setv(c.comp, norm(o.f.comp));
+        const ps = playersOf(o.f).map(pval), pv = c.player ? c.player.value.trim() : "";
+        if (pv && ps.length && !ps.includes(plain(pv))) setv(c.player, "");
+      }
+      next = c.player;
+    }
+    P.silent = false;
+    hide();
+    if (next) next.focus();
+  }
+  function mark() {
+    const el = $("cb-pop"); if (!el) return;
+    el.querySelectorAll(".cb-o").forEach((b) => b.classList.toggle("on", Number(b.dataset.cbi) === P.act));
+    const on = el.querySelector(".cb-o.on"); if (on) on.scrollIntoView({ block: "nearest" });
+  }
+  const isCb = (t) => !!(t && t.dataset && t.dataset.cb);
+  document.addEventListener("focusin", (ev) => { const t = ev.target; if (isCb(t)) { P.typed = false; show(t); } else if (!(t && t.closest && t.closest("#cb-pop"))) hide(); });
+  document.addEventListener("input", (ev) => { const t = ev.target; if (P.silent || !isCb(t) || document.activeElement !== t) return; P.typed = true; show(t); });
+  document.addEventListener("pointerdown", (ev) => { if (!P.inp) return; const t = ev.target; if (t === P.inp || (t.closest && t.closest("#cb-pop"))) return; hide(); });
+  // tiene il cursore nel campo mentre tocchi il menu
+  document.addEventListener("mousedown", (ev) => { if (ev.target.closest && ev.target.closest("#cb-pop")) ev.preventDefault(); });
+  window.addEventListener("click", (ev) => { const b = ev.target.closest && ev.target.closest(".cb-o"); if (!b) return; ev.preventDefault(); ev.stopPropagation(); pick(Number(b.dataset.cbi)); }, true);
+  window.addEventListener("keydown", (ev) => {
+    const el = $("cb-pop"); if (!P.inp || ev.target !== P.inp || !el || el.hidden) return;
+    const n = P.opts.length;
+    if ((ev.key === "ArrowDown" || ev.key === "ArrowUp") && n) { ev.preventDefault(); P.act = ev.key === "ArrowDown" ? (P.act + 1) % n : (P.act - 1 + n) % n; mark(); }
+    else if (ev.key === "Enter") { const i = P.act >= 0 ? P.act : P.typed && n ? 0 : -1; if (i >= 0) { ev.preventDefault(); ev.stopPropagation(); pick(i); } else hide(); }
+    else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); hide(); }
+  }, true);
+  window.addEventListener("resize", place);
+  window.APP.cal = { onDate, findFixture, playersOf, key };
+  (async function start() {
+    let db = null; try { db = await window.APP.use("db"); } catch (e) { db = null; }
+    if (!db) return;
+    const docs = (s) => s.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+    const again = () => { if (P.inp && P.inp.isConnected) show(P.inp); };
+    db.collection("fixtures").onSnapshot((s) => { C.fixtures = docs(s); again(); }, () => {});
+    db.collection("squads").onSnapshot((s) => { C.squads = new Map(docs(s).map((d) => [key(d.team || d.id), d])); again(); }, () => {});
+  })();
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const ME = "idee", on = () => window.APP.active === ME;
+  // PRONOSTICI (ex IDEE): analisi delle partite e marcatori, scritti da Claude o a mano.
+  //  ideas/*    marcatori  { date, time?, player, match, comp, conf: alta|media|bassa, prob (0-100), why, odds, hit: true|false|null, created }
+  //  picks/*    pronostici { date, time, comp, match, market, conf, prob, why, odds, hit, created }
+  //  fixtures/* partite    { date, time, comp, home, away, venue, tv, p1, px, p2, table, analysis, absent, lineups, links: [{ t, u }] }
+  //  squads/*   rose       { team, players: [{ s, n, r: P|D|C|A }] }
+  // Le partite giocate dopo mezzanotte (prima delle 06:00) compaiono nella giornata precedente, come "notte".
+  const S = { db: null, canWrite: false, ideas: [], picks: [], fixtures: [], squads: new Map(), marca: [], lists: { players: [], matches: [], comps: [] }, ready: { ideas: false, picks: false, fixtures: false }, sheet: null, picked: new Set(), bannerMsg: "", tab: "giocate", day: null, open: new Set(),
+    comps: new Set(), kinds: new Set(), confs: new Set(), sort: "time", rows: new Set(), mrows: new Set(), month: "" };
+
+  // ---------- utilità ----------
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const round2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
+  const nf = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const n2 = (n) => nf.format(round2(n));
+  const sgn = (n) => (round2(n) > 0 ? "+" : "") + n2(n);
+  const eurS = (n) => sgn(n) + " €";
+  const pctF = new Intl.NumberFormat("it-IT", { style: "percent", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const pct = (n) => pctF.format(n || 0);
+  const pad = (n) => String(n).padStart(2, "0");
+  const isoOf = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const todayISO = () => isoOf(new Date());
+  const toDate = (iso) => { const [y, m, d] = String(iso).split("-").map(Number); return new Date(y, (m || 1) - 1, d || 1); };
+  const addDays = (iso, n) => { const d = toDate(iso); d.setDate(d.getDate() + n); return isoOf(d); };
+  const dm = (iso) => String(iso).slice(8, 10) + "/" + String(iso).slice(5, 7);
+  const longDay = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long" });
+  const wd = new Intl.DateTimeFormat("it-IT", { weekday: "short" });
+  const up = (s) => String(s || "").trim().replace(/\s+/g, " ").toUpperCase();
+  function parseMoney(str) {
+    let s = String(str == null ? "" : str).trim().replace(/€|\s/g, "");
+    if (s === "") return null;
+    if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+    const n = Number(s);
+    return Number.isFinite(n) ? round2(n) : NaN;
+  }
+  function parsePct(str) {
+    const s = String(str == null ? "" : str).trim().replace("%", "").replace(",", ".");
+    if (s === "") return null;
+    const n = Number(s);
+    return Number.isFinite(n) && n >= 0 && n <= 100 ? Math.round(n) : NaN;
+  }
+  const moneyInput = (n) => (n == null || n === "" ? "" : String(round2(n)).replace(".", ","));
+  const SP = { "Ø": "O", "ø": "o", "Æ": "AE", "æ": "ae", "Þ": "TH", "þ": "th", "Ð": "D", "ð": "d", "ß": "SS", "Ł": "L", "ł": "l", "Đ": "D", "đ": "d", "ı": "i", "Œ": "OE", "œ": "oe" };
+  const plain = (s) => String(s || "").replace(/[ØøÆæÞþÐðßŁłĐđıŒœ]/g, (c) => SP[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/\s+/g, " ").trim();
+  const norm = (s) => plain(s).replace(/\s*-\s*/g, " - ");
+  const key = (team) => plain(team).replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  const matchOf = (f) => norm(f.home) + " - " + norm(f.away);
+  let toastT = null;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200); }
+  function banner(msg) { S.bannerMsg = msg || ""; showBanner(); }
+  function showBanner() { const b = $("banner"); if (!on() || !b) return; b.textContent = S.bannerMsg || ""; b.hidden = !S.bannerMsg; }
+
+  const NIGHT = "06:00";
+  const vdayOf = (date, time) => (time && time < NIGHT ? addDays(date, -1) : date);
+  const CONF = ["alta", "media", "bassa"], confTxt = { alta: "ALTA", media: "MEDIA", bassa: "BASSA" }, confCls = { alta: "w", media: "o", bassa: "l" };
+  const confTag = (c) => '<span class="tag conf ' + (confCls[c] || "p") + '" title="fiducia">' + (confTxt[c] || "—") + "</span>";
+  const hasProb = (p) => p !== null && p !== undefined && p !== "" && Number.isFinite(Number(p));
+  const pp = (p) => (hasProb(p) ? '<span class="pp num" title="probabilità stimata da Claude">' + Math.round(Number(p)) + "%</span>" : "");
+  const hitTag = (h, yes, no) => (h === true ? '<span class="tag w">✓ ' + yes + "</span>" : h === false ? '<span class="tag l">✗ ' + no + "</span>" : "");
+  const legsOf = (b) => (Array.isArray(b.legs) ? b.legs : []);
+  const ROLES = [["P", "POR"], ["D", "DIF"], ["C", "CEN"], ["A", "ATT"]];
+
+  // ---------- calcoli ----------
+  function compute() {
+    const today = todayISO(), byPlayer = new Map(), fxBy = new Map();
+    for (const f of S.fixtures) fxBy.set(f.date + "|" + matchOf(f), f);
+    const fxOf = (date, match) => (match ? fxBy.get(date + "|" + norm(match)) || null : null);
+    for (const b of S.marca) for (const l of legsOf(b)) if (l.player) { if (!byPlayer.has(l.player)) byPlayer.set(l.player, []); byPlayer.get(l.player).push({ date: b.date, hit: l.hit }); }
+    const ideas = S.ideas.map((i) => {
+      const lk = (byPlayer.get(i.player) || []).filter((x) => x.date <= i.date && x.date >= addDays(i.date, -1)).sort((a, b) => b.date.localeCompare(a.date))[0];
+      const own = i.hit === true || i.hit === false, hit = own ? i.hit : lk && (lk.hit === true || lk.hit === false) ? lk.hit : null;
+      const fx = fxOf(i.date, i.match), time = i.time || (fx && fx.time) || "";
+      return Object.assign({}, i, { played: !!lk, hit, auto: !own && hit !== null, fx, time, vday: vdayOf(i.date, time) });
+    });
+    const picks = S.picks.map((p) => {
+      const fx = fxOf(p.date, p.match), time = p.time || (fx && fx.time) || "";
+      return Object.assign({}, p, { hit: p.hit === true || p.hit === false ? p.hit : null, fx, time, vday: vdayOf(p.date, time) });
+    });
+    const fixtures = S.fixtures.map((f) => Object.assign({}, f, { vday: vdayOf(f.date, f.time || "") }));
+    const days = Array.from(new Set([].concat(ideas.map((i) => i.vday), picks.map((p) => p.vday), fixtures.map((f) => f.vday)).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || "")))).sort();
+    const agg = (list) => {
+      const k = list.filter((i) => i.hit !== null), ok = k.filter((i) => i.hit).length, wo = k.filter((i) => Number(i.odds) > 1), wp = k.filter((i) => hasProb(i.prob));
+      return { n: list.length, known: k.length, ok, rate: k.length ? ok / k.length : 0, theo: round2(wo.reduce((s, i) => s + (i.hit ? Number(i.odds) - 1 : -1), 0)), nOdds: wo.length,
+        nProb: wp.length, avgProb: wp.length ? wp.reduce((s, i) => s + Number(i.prob), 0) / wp.length / 100 : 0, okProb: wp.filter((i) => i.hit).length };
+    };
+    return {
+      today, ideas, picks, fixtures, days,
+      iAll: agg(ideas), iConf: CONF.map((c) => Object.assign({ k: c }, agg(ideas.filter((i) => i.conf === c)))),
+      pAll: agg(picks), pConf: CONF.map((c) => Object.assign({ k: c }, agg(picks.filter((p) => p.conf === c)))),
+      played: agg(ideas.filter((i) => i.played)), notPlayed: agg(ideas.filter((i) => !i.played))
+    };
+  }
+  function curDay(C) {
+    if (S.day && C.days.includes(S.day)) return S.day;
+    if (C.days.includes(C.today)) return C.today;
+    return C.days.find((d) => d > C.today) || C.days[C.days.length - 1] || C.today;
+  }
+  const byTimeConf = (a, b) => (a.date + (a.time || "99")).localeCompare(b.date + (b.time || "99")) || CONF.indexOf(a.conf) - CONF.indexOf(b.conf) || (Number(b.prob) || 0) - (Number(a.prob) || 0) || (a.created || 0) - (b.created || 0);
+  const isRich = (c) => c.picks.length || c.ideas.length || (c.fx && (hasProb(c.fx.p1) || c.fx.analysis));
+  function dayData(C, day) {
+    const ideas = C.ideas.filter((i) => i.vday === day).sort(byTimeConf), picks = C.picks.filter((p) => p.vday === day), map = new Map();
+    const get = (date, match, comp, time, fx) => {
+      const k = date + "|" + norm(match);
+      if (!map.has(k)) map.set(k, { k, date, match: norm(match), comp: norm(comp || (fx && fx.comp) || ""), time: time || (fx && fx.time) || "", fx: fx || null, picks: [], ideas: [] });
+      return map.get(k);
+    };
+    C.fixtures.filter((f) => f.vday === day).forEach((f) => get(f.date, matchOf(f), f.comp, f.time, f));
+    picks.forEach((p) => get(p.date, p.match, p.comp, p.time, p.fx).picks.push(p));
+    ideas.forEach((i) => { if (i.match) get(i.date, i.match, i.comp, i.time, i.fx).ideas.push(i); });
+    const cards = Array.from(map.values()).sort((a, b) => (a.date + (a.time || "99")).localeCompare(b.date + (b.time || "99")) || a.match.localeCompare(b.match));
+    cards.forEach((c) => c.picks.sort(byTimeConf));
+    return { day, ideas, picks, cards, rich: cards.filter(isRich), plain: cards.filter((c) => !isRich(c)) };
+  }
+
+  // ---------- render ----------
+  // LAYOUT C: colonna dei filtri a sinistra (giorno, campionati, giocata, fiducia), poi una tabella con una riga per ogni giocata
+  const U = window.APP.ui;
+  const kindOf = (o) => (o.t === "i" ? "MARCATORI" : /passa il turno/i.test(o.x.market || "") ? "PASSA IL TURNO" : up(o.x.market) || "ALTRO");
+  const confLow = (c) => (confTxt[c] ? confTxt[c].charAt(0) + confTxt[c].slice(1).toLowerCase() : "—");
+  function render() {
+    if (!on()) return;
+    const C = compute(), day = curDay(C), D = dayData(C, day), G = giocate(C, D);
+    if (!S.month) S.month = U.monthOf(day);
+    $("tb-left").textContent = "· " + (day === C.today ? "oggi, " : "") + longDay.format(toDate(day));
+    $("tb-right").textContent = D.cards.length + (D.cards.length === 1 ? " partita" : " partite") + " · " + D.picks.length + " pronostici · " + D.ideas.length + " marcatori";
+    renderKpis(C, D);
+    $("side").innerHTML = sideHtml(C, D, G, day);
+    const wait = C.picks.filter((p) => p.hit === null && p.vday < C.today).length + C.ideas.filter((i) => i.hit === null && i.vday < C.today).length;
+    const tabs = '<nav class="tabs" role="tablist">' + [["giocate", "GIOCATE", G.all.length], ["partite", "PARTITE", D.cards.length], ["esiti", "DA VERIFICARE", wait]]
+      .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="ptab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + "</nav>";
+    $("i-body").innerHTML = tabs + (S.tab === "esiti" ? tabResults(C) : S.tab === "partite" ? tabMatches(C, D, G, day) : tabPlays(C, D, G, day));
+    showBanner(); updatePick();
+    document.querySelectorAll('#app [data-act="new-idea"], #app [data-act="new-pick"]').forEach((b) => { b.disabled = !(S.db && S.canWrite); });
+  }
+  const k = (l, v, c, n) => '<div class="k"><span class="l">' + l + '</span><span class="v num ' + (c || "") + '">' + v + "</span>" + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+  function renderKpis(C, D) {
+    const one = (list) => { const kk = list.filter((x) => x.hit !== null), ok = kk.filter((x) => x.hit).length; return { v: kk.length ? ok + "/" + kk.length : "—", c: !kk.length ? "" : ok / kk.length >= 0.6 ? "up" : ok / kk.length < 0.4 ? "down" : "" }; };
+    const p = one(D.picks), i = one(D.ideas);
+    $("kpis").innerHTML = k("PRONOSTICI", p.v, p.c, "presi nel giorno") + k("MARCATORI", i.v, i.c, "a segno") +
+      k("STORICO", C.pAll.known ? pct(C.pAll.rate) : "—", "amb", C.pAll.known ? C.pAll.ok + " su " + C.pAll.known + " presi" : "");
+  }
+  // tutte le giocate del giorno (pronostici + marcatori), con squadre, risultato, filtri e ordine
+  function giocate(C, D) {
+    const cards = new Map(D.cards.map((c) => [c.k, c])), res = new Map();
+    const items = [].concat(D.picks.map((x) => ({ t: "p", x })), D.ideas.filter((x) => x.match).map((x) => ({ t: "i", x })));
+    items.forEach((o) => { const kk = o.x.date + "|" + norm(o.x.match), r = res.get(kk) || {}; if (o.x.result && !r.result) r.result = String(o.x.result); if (o.x.ht && !r.ht) r.ht = String(o.x.ht); res.set(kk, r); });
+    const all = items.map((o) => {
+      const kk = o.x.date + "|" + norm(o.x.match), c = cards.get(kk) || null, tm = c ? teamsOf(c) : norm(o.x.match).split(" - ");
+      return Object.assign(o, { kk, c, home: tm[0] || "", away: tm[1] || "", comp: norm(o.x.comp || (c && c.comp) || ""), kind: kindOf(o), r: res.get(kk) || {}, rid: o.t + ":" + o.x.id });
+    });
+    const list = all.filter((o) => (!S.comps.size || S.comps.has(o.comp)) && (!S.kinds.size || S.kinds.has(o.kind)) && (!S.confs.size || S.confs.has(o.x.conf)));
+    const ci = (o) => (CONF.indexOf(o.x.conf) < 0 ? 9 : CONF.indexOf(o.x.conf)), tk = (o) => o.x.date + (o.x.time || "99"), pr = (o) => (hasProb(o.x.prob) ? Number(o.x.prob) : -1);
+    const cmp = {
+      time: (a, b) => tk(a).localeCompare(tk(b)) || a.comp.localeCompare(b.comp) || a.kk.localeCompare(b.kk) || (a.t === "i") - (b.t === "i") || ci(a) - ci(b) || pr(b) - pr(a),
+      prob: (a, b) => pr(b) - pr(a) || tk(a).localeCompare(tk(b)),
+      comp: (a, b) => U.compOrder(a.comp, b.comp) || tk(a).localeCompare(tk(b)) || a.kk.localeCompare(b.kk) || (a.t === "i") - (b.t === "i"),
+      conf: (a, b) => ci(a) - ci(b) || pr(b) - pr(a)
+    };
+    list.sort(cmp[S.sort] || cmp.time);
+    return { all, list, res };
+  }
+  function resCell(o, today) {
+    const h = o.x.hit;
+    if (h === true) return '<span class="res w">✓ ' + (o.t === "i" ? "SEGNATO" : "PRESO") + "</span>";
+    if (h === false) return '<span class="res l">✗ ' + (o.t === "i" ? "NO" : "PERSO") + "</span>";
+    return o.x.vday < today ? '<span class="res o">DA VERIFICARE</span>' : '<span class="res p">da giocare</span>';
+  }
+  const th = (v, l, cls) => '<th class="' + (cls || "") + '">' + (v ? '<button type="button" class="thb' + (S.sort === v ? " on" : "") + '" data-act="psort" data-v="' + v + '">' + l + (S.sort === v ? " ▾" : "") + "</button>" : l) + "</th>";
+  function tabPlays(C, D, G, day) {
+    if (!G.all.length) return '<div class="panel"><div class="empty">' + (S.ready.picks && S.ready.ideas ? "Nessuna giocata per questo giorno. Chiedi a Claude i pronostici del giorno, oppure aggiungili con + PRONOSTICO." : "CARICAMENTO…") + "</div></div>";
+    if (!G.list.length) return '<div class="panel"><div class="empty">Nessuna giocata con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
+    let h = '<div class="gtw"><table class="gt"><thead><tr>' + th("time", "ORA") + th("comp", "CAMPIONATO") + th("", "CASA") + th("", "OSPITE") + th("", "PT", "c") + th("", "FIN", "c") +
+      th("", "GIOCATA") + th("conf", "FIDUCIA") + th("prob", "PROB", "r") + th("", "QUOTA", "r") + th("", "ESITO", "r") + "</tr></thead><tbody>";
+    for (const o of G.list) {
+      const open = S.rows.has(o.rid), x = o.x, night = x.date !== day;
+      h += '<tr class="row' + (open ? " sel" : "") + '" data-act="prow" data-id="' + esc(o.rid) + '" aria-expanded="' + open + '">' +
+        '<td class="tm">' + esc(x.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + "</td>" +
+        '<td class="cp"><span class="cpi">' + U.flag(o.comp) + esc(U.tc(o.comp)) + "</span></td>" +
+        '<td class="tn h">' + esc(o.home) + '<span class="vs"> – ' + esc(o.away) + '</span></td><td class="tn a">' + esc(o.away) + "</td>" +
+        '<td class="c ht">' + esc(o.r.ht || "") + '</td><td class="c ft">' + esc(o.r.result || "") + "</td>" +
+        '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(x.player) : esc(x.market)) + "</td>" +
+        '<td class="cf">' + confLow(x.conf) + '</td><td class="r pr"><b>' + (hasProb(x.prob) ? Math.round(Number(x.prob)) + "%" : "—") + "</b></td>" +
+        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : "") + '</td><td class="r es">' + resCell(o, C.today) + "</td></tr>";
+      if (open) h += '<tr class="gx"><td colspan="11">' + expand(o, day, C.today) + "</td></tr>";
+    }
+    return h + '</tbody></table></div><div class="note">Una riga per ogni giocata. Tocca una riga per leggere il motivo e aprire la scheda della partita. Tocca ORA, CAMPIONATO, FIDUCIA o PROB per ordinare.</div>';
+  }
+  function expand(o, day, today) {
+    const x = o.x, ok = S.db && S.canWrite, col = o.t === "p" ? "p" : "i";
+    let h = '<div class="gxin">' + (x.why ? '<div class="why">' + esc(x.why) + "</div>" : '<div class="why mut">Nessun motivo scritto.</div>') +
+      '<div class="gxb"><span class="pt">' + confTag(x.conf) + pp(x.prob) + (Number(x.odds) > 1 ? '<span class="mut num">@ ' + n2(x.odds) + "</span>" : "") + "</span>";
+    if (ok) {
+      h += '<button type="button" class="btn small" data-act="edit-' + (o.t === "p" ? "pick" : "idea") + '" data-id="' + esc(x.id) + '">MODIFICA</button>';
+      if (x.hit === null && x.vday <= today) h += '<button type="button" class="btn small up" data-act="' + col + '-hit" data-v="1" data-id="' + esc(x.id) + '">✓ ' + (o.t === "p" ? "PRESO" : "SEGNATO") + '</button><button type="button" class="btn small down" data-act="' + col + '-hit" data-v="0" data-id="' + esc(x.id) + '">✗ ' + (o.t === "p" ? "PERSO" : "NO") + "</button>";
+    }
+    h += "</div>";
+    if (o.c) h += det(o.kk + "|card", "SCHEDA PARTITA · ANALISI, ASSENTI, FORMAZIONI E ROSE", card(o.c, day));
+    return h + "</div>";
+  }
+  // PARTITE: una riga per partita del giorno (anche senza pronostici); tocca per la scheda completa
+  function tabMatches(C, D, G, day) {
+    if (!D.cards.length) return '<div class="panel"><div class="empty">' + (S.ready.fixtures && S.ready.picks ? "Nessuna partita per questo giorno. Chiedi a Claude i pronostici del giorno: li scrive qui." : "CARICAMENTO…") + "</div></div>";
+    const cards = D.cards.filter((c) => !S.comps.size || S.comps.has(c.comp));
+    if (!cards.length) return '<div class="panel"><div class="empty">Nessuna partita con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
+    let h = '<div class="gtw"><table class="gt"><thead><tr><th>ORA</th><th>CAMPIONATO</th><th>CASA</th><th>OSPITE</th><th>1 · X · 2 <span class="mut">stima</span></th><th>GIOCATE</th><th class="c">PT</th><th class="c">FIN</th></tr></thead><tbody>';
+    for (const c of cards) {
+      const open = S.mrows.has(c.k), f = c.fx || {}, [home, away] = teamsOf(c), r = G.res.get(c.k) || {}, night = c.date !== day;
+      const chips = [].concat(c.picks.map((p) => ({ l: p.market, h: p.hit })), c.ideas.map((i) => ({ l: i.player, h: i.hit })))
+        .map((y) => '<span class="res ' + (y.h === true ? "w" : y.h === false ? "l" : "p") + '">' + esc(y.l) + (y.h === true ? " ✓" : y.h === false ? " ✗" : "") + "</span>").join("");
+      h += '<tr class="row' + (open ? " sel" : "") + '" data-act="pmrow" data-id="' + esc(c.k) + '" aria-expanded="' + open + '">' +
+        '<td class="tm">' + esc(c.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + '</td><td class="cp"><span class="cpi">' + U.flag(c.comp) + esc(U.tc(c.comp)) + "</span></td>" +
+        '<td class="tn h">' + esc(home) + '<span class="vs"> – ' + esc(away) + '</span></td><td class="tn a">' + esc(away) + "</td>" +
+        '<td class="px">' + (hasProb(f.p1) ? '<span class="p1x2 num"><span>1 <b>' + Math.round(f.p1) + "%</b></span><span>X <b>" + Math.round(Number(f.px) || 0) + "%</b></span><span>2 <b>" + Math.round(Number(f.p2) || 0) + "%</b></span></span>" : '<span class="mut">—</span>') + "</td>" +
+        '<td class="ch"><span class="chipsm">' + (chips || '<span class="mut">nessuna</span>') + "</span></td>" +
+        '<td class="c ht">' + esc(r.ht || "") + '</td><td class="c ft">' + esc(r.result || "") + "</td></tr>";
+      if (open) h += '<tr class="gx"><td colspan="8"><div class="gxin">' + card(c, day) + "</div></td></tr>";
+    }
+    return h + '</tbody></table></div><div class="note">Tocca una partita per la scheda completa: probabilità, analisi, assenti, formazioni, rose e link.</div>';
+  }
+  // colonna dei filtri
+  function sideHtml(C, D, G, day) {
+    const marks = new Map(); C.days.forEach((d) => marks.set(d, 0));
+    C.picks.forEach((p) => marks.set(p.vday, (marks.get(p.vday) || 0) + 1)); C.ideas.forEach((i) => marks.set(i.vday, (marks.get(i.vday) || 0) + 1));
+    const cal = U.cal({ month: S.month, sel: new Set([day]), marks, act: "pday", nav: "pmon", today: C.today });
+    const goToday = C.days.includes(C.today) && day !== C.today ? '<button type="button" class="linkbtn" data-act="pday" data-day="' + C.today + '">OGGI</button>' : "";
+    const cnt = new Map(); D.cards.forEach((c) => { if (c.comp && !cnt.has(c.comp)) cnt.set(c.comp, 0); }); G.all.forEach((o) => { if (o.comp) cnt.set(o.comp, (cnt.get(o.comp) || 0) + 1); });
+    const comps = Array.from(cnt.keys()).sort(U.compOrder).map((c) => ({ c, n: cnt.get(c) }));
+    const kc = new Map(); G.all.forEach((o) => kc.set(o.kind, (kc.get(o.kind) || 0) + 1));
+    const kinds = Array.from(kc.keys()).sort((a, b) => (a === "MARCATORI") - (b === "MARCATORI") || kc.get(b) - kc.get(a) || a.localeCompare(b));
+    const any = S.comps.size || S.kinds.size || S.confs.size;
+    const html = U.group("GIORNO", cal, goToday) +
+      U.group("CAMPIONATI <span class=\"mut\">· giocate</span>", comps.length ? U.leagues(comps, S.comps, "pcomp") : '<div class="hint">Nessuna partita in questo giorno.</div>') +
+      U.group("GIOCATA", kinds.length ? U.pills("pkind", [["", "Tutte"]].concat(kinds.map((x) => [x, esc(x) + ' <span class="mut">' + kc.get(x) + "</span>"])), (v) => (v ? S.kinds.has(v) : !S.kinds.size)) : '<div class="hint">Nessuna giocata.</div>') +
+      U.group("FIDUCIA", U.pills("pconf", [["", "Tutte"], ["alta", "Alta"], ["media", "Media"], ["bassa", "Bassa"]], (v) => (v ? S.confs.has(v) : !S.confs.size))) +
+      (any ? '<div><button type="button" class="btn small" data-act="preset">TOGLI I FILTRI</button></div>' : "");
+    return U.side(html, longDay.format(toDate(day)) + (any ? " · filtri attivi" : ""));
+  }
+  const sect = (t, body) => '<div class="sect"><div class="st">' + t + '</div><p>' + esc(body) + "</p></div>";
+  const det = (id, title, inner) => '<details data-k="' + esc(id) + '"' + (S.open.has(id) ? " open" : "") + "><summary>" + title + "</summary><div>" + inner + "</div></details>";
+  function teamsOf(c) {
+    if (c.fx) return [norm(c.fx.home), norm(c.fx.away)];
+    const p = c.match.split(" - "); return [p[0] || c.match, p.slice(1).join(" - ")];
+  }
+  function probBar(f, home, away) {
+    const a = Number(f.p1) || 0, x = Number(f.px) || 0, b = Number(f.p2) || 0;
+    return '<div class="sect"><div class="st">PROBABILITÀ DEL RISULTATO <span class="mut">· stima di Claude</span></div><div class="pbar" aria-hidden="true"><i class="a" style="flex:' + a + '"></i><i class="x" style="flex:' + x + '"></i><i class="b" style="flex:' + b + '"></i></div>' +
+      '<div class="plg num"><span><i class="dot a"></i>1 · ' + esc(home) + " <b>" + Math.round(a) + '%</b></span><span><i class="dot x"></i>X · pareggio <b>' + Math.round(x) + '%</b></span><span><i class="dot b"></i>2 · ' + esc(away) + " <b>" + Math.round(b) + "%</b></span></div></div>";
+  }
+  const pickRow = (p) => '<button type="button" class="prow" data-act="edit-pick" data-id="' + esc(p.id) + '"><span class="pt"><span class="mk">' + esc(p.market) + "</span>" + confTag(p.conf) + pp(p.prob) +
+    (Number(p.odds) > 1 ? '<span class="mut num">@ ' + n2(p.odds) + "</span>" : "") + hitTag(p.hit, "PRESO", "PERSO") + "</span>" + (p.why ? '<span class="why">' + esc(p.why) + "</span>" : "") + "</button>";
+  const pname = (p) => (p.n ? p.n + " " : "") + p.s;
+  function roster(home, away) {
+    const teams = [home, away].map((t) => ({ t, sq: S.squads.get(key(t)) })).filter((x) => x.sq && (x.sq.players || []).length);
+    if (!teams.length) return "";
+    const col = (x) => {
+      const ps = (x.sq.players || []).slice().sort((a, b) => plain(a.s + " " + a.n).localeCompare(plain(b.s + " " + b.n)));
+      return '<div><h5>' + esc(x.t) + ' <span class="mut">· ' + ps.length + " giocatori</span></h5>" +
+        ROLES.map(([r, l]) => { const g = ps.filter((p) => p.r === r); return g.length ? '<div class="rr"><span>' + l + "</span>" + g.map((p) => esc(pname(p))).join(", ") + "</div>" : ""; }).join("") +
+        ((x.sq.players || []).some((p) => !ROLES.some(([r]) => r === p.r)) ? '<div class="rr"><span>ALTRI</span>' + x.sq.players.filter((p) => !ROLES.some(([r]) => r === p.r)).map((p) => esc(pname(p))).join(", ") + "</div>" : "") + "</div>";
+    };
+    return '<div class="sect"><div class="st">ROSE</div><div class="hint">Rosa completa della squadra, non i convocati: i titolari li trovi nel link delle formazioni ufficiali, circa un\'ora prima.</div><div class="roster">' + teams.map(col).join("") + "</div></div>";
+  }
+  function card(c, day) {
+    const f = c.fx || {}, night = c.date !== day, [home, away] = teamsOf(c);
+    let h = '<article class="mcard"><div class="mh"><span>' + (c.time ? '<span class="tm num">' + esc(c.time) + "</span>" : "") + "<b>" + esc(c.comp || "") + "</b>" + (night ? ' <span class="tag o">NOTTE · ' + dm(c.date) + "</span>" : "") + "</span>" +
+      "<span>" + esc([f.venue, f.tv].filter(Boolean).join(" · ")) + "</span></div><h4>" + esc(home + (away ? " – " + away : "")) + "</h4>" + (f.table ? '<div class="tbl">' + esc(f.table) + "</div>" : "");
+    if (hasProb(f.p1)) h += probBar(f, home, away);
+    if (c.picks.length) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div>' + c.picks.map(pickRow).join("") + "</div>";
+    else if (hasProb(f.p1) || f.analysis) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div><p class="mut">Nessuno: partita troppo incerta, meglio evitarla.</p></div>';
+    if (f.analysis) h += sect("ANALISI", f.analysis);
+    if (c.ideas.length) h += '<div class="sect"><div class="st">MARCATORI</div><div class="chips">' + c.ideas.map((i) => '<button type="button" class="pchip" data-act="goto-scorer" data-id="' + esc(i.id) + '">' + esc(i.player) + (hasProb(i.prob) ? ' <span class="mut num">' + Math.round(Number(i.prob)) + "%</span>" : "") + (i.hit === true ? ' <span class="up">✓</span>' : i.hit === false ? ' <span class="down">✗</span>' : "") + "</button>").join("") + "</div></div>";
+    if (f.absent) h += sect("ASSENTI E DUBBI", f.absent);
+    const more = (f.lineups ? sect("PROBABILI FORMAZIONI", f.lineups) : "") + roster(home, away);
+    if (more) h += det(c.k + "|more", "PROBABILI FORMAZIONI E ROSE", more);
+    const links = (Array.isArray(f.links) ? f.links : []).filter((l) => l && /^https?:\/\//.test(l.u || ""));
+    if (links.length) h += '<div class="links">' + links.map((l) => '<a href="' + esc(l.u) + '" target="_blank" rel="noopener noreferrer">' + esc(l.t || l.u) + " ↗</a>").join("") + "</div>";
+    return h + "</article>";
+  }
+  const meta = (i, withDate) => [withDate ? dm(i.date) : "", i.time ? i.time + (i.date !== i.vday ? " (notte)" : "") : "", i.match, i.comp].filter(Boolean).map(esc).join(" · ") + (Number(i.odds) > 1 ? " · @ " + n2(i.odds) : "");
+  const playedTag = (i) => (i.played ? ' <span class="tag c">GIOCATA</span>' : "");
+  function updatePick() {
+    const ids = new Set(S.ideas.filter((i) => i.hit !== true && i.hit !== false).map((i) => i.id)); for (const id of Array.from(S.picked)) if (!ids.has(id)) S.picked.delete(id);
+    const n = $("pick-n"); if (!n) return;
+    n.textContent = S.picked.size ? S.picked.size + (S.picked.size === 1 ? " marcatore spuntato: spuntane almeno 2 per una multipla" : " marcatori spuntati") : "Spunta più marcatori per giocarli insieme in multipla.";
+    const b = document.querySelector('[data-act="play-sel"]'); if (b) b.disabled = S.picked.size < 2;
+  }
+  function tabResults(C) {
+    const today = C.today, toCheck = [].concat(C.picks.filter((p) => p.hit === null && p.vday < today).map((p) => ({ t: "p", x: p })), C.ideas.filter((i) => i.hit === null && i.vday < today).map((i) => ({ t: "i", x: i })))
+      .sort((a, b) => b.x.vday.localeCompare(a.x.vday) || byTimeConf(a.x, b.x));
+    const lbl = (o) => (o.t === "p" ? esc(o.x.market) + ' <span class="mut">· pronostico</span>' : esc(o.x.player) + ' <span class="mut">· marcatore</span>');
+    const edit = (o) => (o.t === "p" ? "edit-pick" : "edit-idea");
+    let h = "";
+    if (toCheck.length) h += '<div class="panel"><div class="ph"><span>DA VERIFICARE (' + toCheck.length + ')</span><span class="r">puoi chiedere a Claude di aggiornarli</span></div>' +
+      toCheck.map((o) => '<div class="irow nopick"><button type="button" class="ibody" data-act="' + edit(o) + '" data-id="' + esc(o.x.id) + '"><span><b>' + lbl(o) + "</b> " + confTag(o.x.conf) + pp(o.x.prob) + '</span><span class="m num">' + meta(o.x, true) + "</span></button>" +
+        '<div class="btns"><button type="button" class="btn small down" data-act="' + o.t + '-hit" data-v="0" data-id="' + esc(o.x.id) + '">✗ NO</button><button type="button" class="btn small up" data-act="' + o.t + '-hit" data-v="1" data-id="' + esc(o.x.id) + '">✓ SÌ</button></div></div>').join("") + "</div>";
+    if (!toCheck.length) h += '<div class="panel"><div class="empty">Nessuna giocata da verificare: gli esiti sono tutti segnati.</div></div>';
+    h += '<div class="panel"><div class="ifoot" style="border-top:0;border-radius:var(--r)"><span>Percentuali, riepiloghi e tutte le partite pronosticate sono nella sezione STORICO.</span><button type="button" class="btn primary" data-app="storico">APRI LO STORICO →</button></div></div>';
+    return h;
+  }
+
+  // ---------- fogli ----------
+  function lists() {
+    const u = (a) => Array.from(new Set(a.filter(Boolean))).sort(), legs = S.marca.flatMap(legsOf);
+    return {
+      players: u(S.lists.players.concat(S.ideas.map((i) => i.player), legs.map((l) => l.player))),
+      matches: u(S.lists.matches.concat(S.ideas.map((i) => i.match), S.picks.map((p) => p.match), legs.map((l) => l.match))),
+      comps: u(S.lists.comps.concat(S.ideas.map((i) => i.comp), S.picks.map((p) => p.comp), legs.map((l) => l.comp)))
+    };
+  }
+  const dl = (id, arr) => '<datalist id="' + id + '">' + arr.map((x) => '<option value="' + esc(x) + '">').join("") + "</datalist>";
+  const confSeg = (v) => '<div class="field"><span class="lab" id="lab-conf">FIDUCIA</span><div class="seg seg3" role="group" aria-labelledby="lab-conf">' +
+    CONF.map((c) => '<button type="button" data-act="conf" data-v="' + c + '" aria-pressed="' + (v === c) + '">' + confTxt[c] + "</button>").join("") + "</div></div>";
+  const hitSeg = (h, yes, auto) => {
+    const hv = h === true ? "1" : h === false ? "0" : "";
+    return '<div class="field"><span class="lab" id="lab-ihit">COM\'È ANDATA</span><div class="seg seg3" role="group" aria-labelledby="lab-ihit">' +
+      [["", "DA VEDERE"], ["1", "✓ " + yes], ["0", "✗ NO"]].map(([v, t]) => '<button type="button" data-act="ihit" data-v="' + v + '" aria-pressed="' + (hv === v) + '">' + t + "</button>").join("") + "</div>" +
+      (auto ? '<span class="hint">Esito preso dalla giocata MarcaPlus.</span>' : "") + "</div>";
+  };
+  const probWhy = (x, ph) => '<div class="field"><label for="i-prob">PROBABILITÀ % (FACOLTATIVA)</label><input id="i-prob" inputmode="numeric" autocomplete="off" placeholder="es. 45" value="' + esc(hasProb(x.prob) ? Math.round(Number(x.prob)) : "") + '"></div>' +
+    '<div class="field"><label for="i-why">PERCHÉ</label><textarea id="i-why" rows="4" placeholder="' + esc(ph) + '">' + esc(x.why || "") + "</textarea></div>";
+  const footer = (isNew, more) => '<div class="err" id="f-err"></div><div class="foot">' + (isNew ? "" : '<button type="button" class="btn danger" data-act="delete">ELIMINA</button>') +
+    '<div class="r"><button type="button" class="btn ghost" data-act="close">ANNULLA</button>' + (isNew ? '<button type="button" class="btn" data-act="save-more">' + more + "</button>" : "") + '<button type="submit" class="btn primary">SALVA</button></div></div>';
+  function paintHist() {
+    const h = $("i-hist"), p = $("i-player"); if (!h || !p) return;
+    const n = up(p.value), I = n ? window.APP.ideas.player(n) : null;
+    h.textContent = !I ? "" : I.n ? "Storico: consigliato " + I.n + (I.n === 1 ? " volta" : " volte") + ", ha segnato " + I.gol + " su " + I.n + " (" + pct(I.gol / I.n) + ")" : "Mai consigliato finora.";
+  }
+  function ideaSheet(i, keep) {
+    const isNew = !i, L = lists();
+    i = i || Object.assign({ date: todayISO(), player: "", match: "", comp: "", conf: "media", odds: null, prob: null, why: "", hit: null }, keep || {});
+    S.sheet = { kind: "idea", id: isNew ? null : i.id };
+    $("sheet").innerHTML = "<h3>" + (isNew ? "NUOVO MARCATORE" : "MODIFICA MARCATORE") + "</h3>" +
+      '<div class="g2"><div class="field"><label for="i-date">DATA DELLA PARTITA</label><input type="date" id="i-date" value="' + esc(i.date) + '"></div>' +
+      '<div class="field"><label for="i-odds">QUOTA (FACOLTATIVA)</label><input id="i-odds" inputmode="decimal" autocomplete="off" placeholder="es. 2,10" value="' + esc(i.odds ? moneyInput(i.odds) : "") + '"></div></div>' +
+      '<div class="g2 cb2"><div class="field"><label for="i-comp">1 · COMPETIZIONE</label><input id="i-comp" data-cb="comp" data-hist="dl-icomps" autocomplete="off" placeholder="es. NATIONS LEAGUE" value="' + esc(i.comp || "") + '"></div>' +
+      '<div class="field"><label for="i-match">2 · PARTITA</label><input id="i-match" data-cb="match" data-hist="dl-imatches" autocomplete="off" placeholder="es. SPAGNA - INGHILTERRA" value="' + esc(i.match || "") + '"></div></div>' +
+      '<div class="field"><label for="i-player">3 · GIOCATORE</label><input id="i-player" data-cb="player" data-hist="dl-iplayers" autocomplete="off" placeholder="es. KANE" value="' + esc(i.player || "") + '"><div class="lg-hist hint num" id="i-hist"></div></div>' +
+      dl("dl-iplayers", L.players) + dl("dl-imatches", L.matches) + dl("dl-icomps", L.comps) +
+      confSeg(i.conf) + probWhy(i, "es. 20 gol in campionato, l'avversario subisce molto…") + hitSeg(i.hit, "SEGNATO", i.auto) + footer(isNew, "SALVA E AGGIUNGI");
+    $("overlay").hidden = false; paintHist();
+    const f = $(keep ? "i-player" : "i-date"); if (f) f.focus();
+  }
+  function pickSheet(p, keep) {
+    const isNew = !p, L = lists();
+    p = p || Object.assign({ date: todayISO(), time: "", match: "", comp: "", market: "", conf: "media", odds: null, prob: null, why: "", hit: null }, keep || {});
+    S.sheet = { kind: "pick", id: isNew ? null : p.id };
+    $("sheet").innerHTML = "<h3>" + (isNew ? "NUOVO PRONOSTICO" : "MODIFICA PRONOSTICO") + "</h3>" +
+      '<div class="g2"><div class="field"><label for="i-date">DATA DELLA PARTITA</label><input type="date" id="i-date" value="' + esc(p.date) + '"></div>' +
+      '<div class="field"><label for="i-time">ORA (FACOLTATIVA)</label><input type="time" id="i-time" value="' + esc(p.time || "") + '"></div></div>' +
+      '<div class="g2 cb2"><div class="field"><label for="i-comp">1 · COMPETIZIONE</label><input id="i-comp" data-cb="comp" data-hist="dl-pcomps" autocomplete="off" placeholder="es. SERIE A" value="' + esc(p.comp || "") + '"></div>' +
+      '<div class="field"><label for="i-match">2 · PARTITA</label><input id="i-match" data-cb="match" data-hist="dl-pmatches" autocomplete="off" placeholder="es. INTER - MILAN" value="' + esc(p.match || "") + '"></div></div>' +
+      dl("dl-pmatches", L.matches) + dl("dl-pcomps", L.comps) +
+      '<div class="g2"><div class="field"><label for="i-market">3 · PRONOSTICO</label><input id="i-market" autocomplete="off" placeholder="es. 1, Under 2,5, Goal" value="' + esc(p.market || "") + '"></div>' +
+      '<div class="field"><label for="i-odds">QUOTA (FACOLTATIVA)</label><input id="i-odds" inputmode="decimal" autocomplete="off" placeholder="es. 1,65" value="' + esc(p.odds ? moneyInput(p.odds) : "") + '"></div></div>' +
+      confSeg(p.conf) + probWhy(p, "es. in casa ha vinto le ultime 5, l'avversario è senza il capocannoniere…") + hitSeg(p.hit, "PRESO", false) + footer(isNew, "SALVA E AGGIUNGI");
+    $("overlay").hidden = false;
+    const f = $(keep ? "i-market" : "i-date"); if (f) f.focus();
+  }
+  function closeSheet() { $("overlay").hidden = true; $("sheet").innerHTML = ""; S.sheet = null; }
+
+  // ---------- scritture ----------
+  function writeFailed(e) {
+    const code = e && e.code;
+    if (code === "invalid_argument" || code === "revoked" || code === "not_granted") { S.canWrite = false; render(); toast("Non hai i permessi per modificare questi dati."); }
+    else if (code === "quota_exceeded") toast("Spazio dati esaurito: elimina qualche voce vecchia.");
+    else toast("Salvataggio non riuscito, riprova tra un attimo.");
+  }
+  async function retryOnce(fn) {
+    try { return await fn(); }
+    catch (e) { if (e && e.code === "unavailable") { await new Promise((r) => setTimeout(r, 600 + Math.random() * 600)); return fn(); } throw e; }
+  }
+  function common() {
+    const err = $("f-err"), date = $("i-date").value, match = up($("i-match").value), comp = up($("i-comp").value), odds = parseMoney($("i-odds").value), prob = parsePct($("i-prob").value), why = String($("i-why").value || "").trim();
+    const cb = $("sheet").querySelector('[data-act="conf"][aria-pressed="true"]'), hb = $("sheet").querySelector('[data-act="ihit"][aria-pressed="true"]');
+    const conf = cb ? cb.dataset.v : "media", hv = hb ? hb.dataset.v : "";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { err.textContent = "Inserisci la data della partita."; return null; }
+    if (odds !== null && (Number.isNaN(odds) || odds <= 1)) { err.textContent = "La quota deve essere maggiore di 1, per esempio 2,10."; return null; }
+    if (Number.isNaN(prob)) { err.textContent = "La probabilità è un numero da 0 a 100, per esempio 45."; return null; }
+    return { err, date, match, comp, odds, prob, why, conf, hit: hv === "1" ? true : hv === "0" ? false : null };
+  }
+  async function submit(more) {
+    const c = common(); if (!c) return;
+    const kind = S.sheet.kind, id = S.sheet.id, col = kind === "pick" ? "picks" : "ideas", prev = id ? (kind === "pick" ? S.picks : S.ideas).find((x) => x.id === id) : null;
+    let data, keep, msg;
+    if (kind === "pick") {
+      const market = String($("i-market").value || "").trim().replace(/\s+/g, " ");
+      if (!c.match) return (c.err.textContent = "Scegli la partita.");
+      if (!market) return (c.err.textContent = "Scrivi il pronostico, per esempio 1 oppure Under 2,5.");
+      let time = $("i-time").value || "";
+      if (!time) { const f = S.fixtures.find((x) => x.date === c.date && matchOf(x) === norm(c.match)); if (f && f.time) time = f.time; }
+      data = { date: c.date, time, comp: c.comp, match: c.match, market, conf: c.conf, prob: c.prob, why: c.why, odds: c.odds, hit: c.hit, created: prev && prev.created ? prev.created : Date.now() };
+      keep = { date: c.date, time, match: c.match, comp: c.comp, conf: c.conf }; msg = id ? "Pronostico aggiornato" : "Pronostico salvato: " + market;
+    } else {
+      const player = up($("i-player").value);
+      if (!player) return (c.err.textContent = "Scrivi il nome del giocatore.");
+      data = Object.assign({}, prev ? { time: prev.time || "" } : {}, { date: c.date, player, match: c.match, comp: c.comp, conf: c.conf, prob: c.prob, why: c.why, odds: c.odds, hit: c.hit, created: prev && prev.created ? prev.created : Date.now() });
+      if (!data.time) delete data.time;
+      keep = { date: c.date, match: c.match, comp: c.comp, conf: c.conf }; msg = id ? "Marcatore aggiornato" : "Marcatore salvato: " + player;
+    }
+    if (prev && prev.date === data.date && norm(prev.match) === norm(data.match)) ["result", "ht"].forEach((f) => { if (prev[f] != null && prev[f] !== "") data[f] = prev[f]; });
+    const ref = id ? S.db.collection(col).doc(id) : S.db.collection(col).doc();
+    const btns = $("sheet").querySelectorAll("button"); btns.forEach((b) => { b.disabled = true; });
+    try { await retryOnce(() => ref.set(data)); toast(msg); if (more) (kind === "pick" ? pickSheet : ideaSheet)(null, keep); else closeSheet(); }
+    catch (e) { btns.forEach((b) => { b.disabled = false; }); writeFailed(e); }
+  }
+  function setHit(col, id, v) { retryOnce(() => S.db.collection(col).doc(id).update({ hit: v })).then(() => toast(v ? "Segnato ✓" : "Segnato ✗")).catch(writeFailed); }
+  // ---------- eventi ----------
+  let armed = false;
+  function act(el) {
+    const a = el.dataset.act, id = el.dataset.id, ok = S.db && S.canWrite;
+    if (a === "ptab") { S.tab = el.dataset.tab; render(); }
+    else if (a === "pday") { S.day = el.dataset.day; S.month = U.monthOf(S.day); render(); }
+    else if (a === "pmon") { S.month = U.addMonth(S.month || U.monthOf(todayISO()), Number(el.dataset.v)); render(); }
+    else if (a === "pcomp" || a === "pkind" || a === "pconf") { const set = a === "pcomp" ? S.comps : a === "pkind" ? S.kinds : S.confs, v = el.dataset.c; if (!v) set.clear(); else if (set.has(v)) set.delete(v); else set.add(v); render(); }
+    else if (a === "preset") { S.comps.clear(); S.kinds.clear(); S.confs.clear(); render(); }
+    else if (a === "psort") { S.sort = el.dataset.v; render(); }
+    else if (a === "prow" || a === "pmrow") { const set = a === "prow" ? S.rows : S.mrows, r = el.dataset.id; if (set.has(r)) set.delete(r); else set.add(r); render(); }
+    else if (a === "new-idea") { if (ok) ideaSheet(null, { date: S.day && S.day > todayISO() ? S.day : todayISO() }); }
+    else if (a === "new-pick") { if (ok) pickSheet(null, { date: S.day && S.day > todayISO() ? S.day : todayISO() }); }
+    else if (a === "edit-idea") { const i = compute().ideas.find((x) => x.id === id); if (i && ok) ideaSheet(i); }
+    else if (a === "edit-pick") { const p = S.picks.find((x) => x.id === id); if (p && ok) pickSheet(p); }
+    else if (a === "goto-scorer") { S.tab = "giocate"; S.rows.add("i:" + id); render(); const r = document.querySelector('#i-body tr[data-id="i:' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'); if (r) { r.scrollIntoView({ block: "center" }); r.classList.add("flash"); setTimeout(() => r.classList.remove("flash"), 1400); } }
+    else if (a === "close") closeSheet();
+    else if (a === "conf" || a === "ihit") $("sheet").querySelectorAll('[data-act="' + a + '"]').forEach((b) => b.setAttribute("aria-pressed", String(b === el)));
+    else if (a === "save-more") submit(true);
+    else if (a === "i-hit") { if (ok) setHit("ideas", id, el.dataset.v === "1"); }
+    else if (a === "p-hit") { if (ok) setHit("picks", id, el.dataset.v === "1"); }
+    else if (a === "delete" && S.sheet) {
+      if (!armed) { armed = true; el.classList.add("armed"); el.textContent = "CONFERMA ELIMINAZIONE"; return; }
+      armed = false; const did = S.sheet.id, col = S.sheet.kind === "pick" ? "picks" : "ideas";
+      retryOnce(() => S.db.collection(col).doc(did).delete()).then(() => { closeSheet(); toast("Eliminato"); }).catch(writeFailed);
+    }
+    if (a !== "delete") armed = false;
+  }
+  document.addEventListener("click", (ev) => { if (!on()) return; const el = ev.target.closest("[data-act]"); if (el) act(el); else if (ev.target === $("overlay")) closeSheet(); });
+  document.addEventListener("change", (ev) => { if (!on()) return; const t = ev.target; if (t.classList && t.classList.contains("pick")) { if (t.checked) S.picked.add(t.dataset.id); else S.picked.delete(t.dataset.id); updatePick(); } });
+  document.addEventListener("input", (ev) => { if (!on()) return; if (ev.target.id === "i-player") paintHist(); });
+  document.addEventListener("keydown", (ev) => { if (!on()) return; if (ev.key === "Escape" && !$("overlay").hidden) closeSheet(); });
+  document.addEventListener("toggle", (ev) => { const d = ev.target; if (!on() || !d || !d.dataset || !d.dataset.k) return; if (d.open) S.open.add(d.dataset.k); else S.open.delete(d.dataset.k); }, true);
+  $("sheet").addEventListener("submit", (ev) => { ev.preventDefault(); if (!on()) return; if (S.sheet) submit(false); });
+
+  // quante volte un giocatore è andato a segno nei marcatori consigliati (storico sotto il nome nel modulo)
+  window.APP.ideas = { player(name) { const n = up(name), list = compute().ideas.filter((i) => i.player === n && i.hit !== null); return { n: list.length, gol: list.filter((i) => i.hit).length, no: list.filter((i) => !i.hit).length }; } };
+
+  // ---------- avvio ----------
+  window.APP.apps[ME] = { render, close() { if (S.sheet) closeSheet(); } };
+  (async function start() {
+    let db = null; try { db = await window.APP.use("db"); } catch (e) { db = null; }
+    if (!db) { banner("I dati non sono raggiungibili. Ricarica la pagina tra qualche minuto."); render(); return; }
+    S.db = db;
+    const docs = (snap) => snap.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+    const fail = () => (e) => banner(e && e.code === "revoked" ? "L'accesso ai dati è stato revocato." : "Errore nel leggere i dati. Ricarica la pagina tra qualche minuto.");
+    db.collection("ideas").onSnapshot((s) => { S.ideas = docs(s); S.ready.ideas = true; render(); }, fail());
+    db.collection("picks").onSnapshot((s) => { S.picks = docs(s); S.ready.picks = true; render(); }, fail());
+    db.collection("fixtures").onSnapshot((s) => { S.fixtures = docs(s); S.ready.fixtures = true; render(); }, fail());
+    db.collection("squads").onSnapshot((s) => { S.squads = new Map(docs(s).map((d) => [key(d.team || d.id), d])); render(); }, () => {});
+  })();
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const ME = "stats", on = () => window.APP.active === ME;
+  // STATISTICHE: come vanno le squadre nel PRIMO TEMPO, in casa (e le ospiti in trasferta).
+  //  stats.json (file accanto alla pagina, lo rigenera Claude con web/stats/hstats.py da football-data.co.uk):
+  //   { updated, last, matches, leagues: [{ code, name, country, matches, last, teams: [{ t, al?, h: { s, l, r }, a: { s, l, r } }] }] }
+  //   s = stagione in corso, l = ultime 15 partite; ogni blocco = [n, V, N, P, golF, golS, segna, nonSubisce, over0.5, over1.5, combo, comboAvv, vinteFinale]
+  //   r = ultime 5: "dd/mm|AVVERSARIA|PT|FINALE"
+  //   next = prossime partite di campionato (10 giorni, da ESPN): [[codice campionato, data, ora italiana, casa, ospite]]
+  //  fixtures/* (sola lettura): altre partite caricate da Claude, con i nomi delle squadre in italiano.
+  const S = { data: null, err: "", idx: new Map(), byCode: new Map(), next: new Map(), evs: [], fixtures: [], ready: false, tab: "partite", day: null, mk: "cb", league: "ALL", comp: "", sample: "l", open: new Set(),
+    onlyHome: false, rankAll: false, edays: new Set(), ecomps: new Set(), evAll: false, ovSide: "h", ovView: "rank", month: "" };
+  const ALL = "ALL", minN = () => (S.sample === "l" ? 8 : 5), RANK_TOP = 50, EV_TOP = 40;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const pad = (n) => String(n).padStart(2, "0");
+  const isoOf = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const todayISO = () => isoOf(new Date());
+  const toDate = (iso) => { const [y, m, d] = String(iso).split("-").map(Number); return new Date(y, (m || 1) - 1, d || 1); };
+  const addDays = (iso, n) => { const d = toDate(iso); d.setDate(d.getDate() + n); return isoOf(d); };
+  const dm = (iso) => String(iso).slice(8, 10) + "/" + String(iso).slice(5, 7);
+  const longDay = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long" });
+  const wd = new Intl.DateTimeFormat("it-IT", { weekday: "short" });
+  const SP = { "Ø": "O", "ø": "o", "Æ": "AE", "æ": "ae", "ß": "SS", "Ł": "L", "ł": "l", "ı": "i", "Œ": "OE", "œ": "oe" };
+  const plain = (s) => String(s || "").replace(/[ØøÆæßŁłıŒœ]/g, (c) => SP[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/\s+/g, " ").trim();
+  const key = (t) => plain(t).replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  const NIGHT = "06:00";
+  const vdayOf = (date, time) => (time && time < NIGHT ? addDays(date, -1) : date);
+  function banner(msg) { const b = $("banner"); if (!b) return; b.textContent = msg || ""; b.hidden = !msg; }
+
+  // mercati: [id, nome, spiegazione, indice nel blocco casa, come si calcola per l'ospite in trasferta]
+  const MK = [
+    ["cb", "1 PT O OVER 1,5 PT", "la squadra di casa è in vantaggio all'intervallo, oppure nel primo tempo si segnano almeno 2 gol", (b) => b[10], (b) => b[11]],
+    ["w1", "1 PT", "la squadra di casa è in vantaggio all'intervallo", (b) => b[1], (b) => b[3]],
+    ["sc", "CASA SEGNA NEL PT", "la squadra di casa segna almeno un gol nel primo tempo", (b) => b[6], (b) => b[0] - b[7]],
+    ["o05", "OVER 0,5 PT", "almeno 1 gol nel primo tempo", (b) => b[8], (b) => b[8]],
+    ["o15", "OVER 1,5 PT", "almeno 2 gol nel primo tempo", (b) => b[9], (b) => b[9]],
+    ["m02", "MULTIGOL 0-2 PT", "nel primo tempo si segnano da 0 a 2 gol in tutto (0-0, 1-0, 1-1, 2-0 vinte; 2-1 e 3-0 perse)", (b) => b[13] ?? 0, (b) => b[13] ?? 0],
+    ["m13", "MULTIGOL 1-3 PT", "nel primo tempo si segnano da 1 a 3 gol in tutto (0-0 e 2-2 perse)", (b) => b[14] ?? 0, (b) => b[14] ?? 0],
+    ["m14", "MULTIGOL 1-4 PT", "nel primo tempo si segnano da 1 a 4 gol in tutto (0-0 e 3-2 perse)", (b) => b[15] ?? 0, (b) => b[15] ?? 0],
+    ["c2", "COMBO OVER 0,5 PT + OVER 0,5 2T", "almeno un gol nel primo tempo E almeno un gol nel secondo tempo (1-0 all'intervallo e 2-0 alla fine vinta; 0-0 all'intervallo persa; 1-0 all'intervallo e 1-0 alla fine persa)", (b) => b[22] ?? 0, (b) => b[22] ?? 0],
+    ["s05", "OVER 0,5 2T", "almeno un gol nel secondo tempo (contano solo i gol fatti dopo l'intervallo)", (b) => b[21] ?? 0, (b) => b[21] ?? 0],
+    // RISULTATI ESATTI (finale). Nel blocco: [23] pari 0-0/1-1, [24] vince 1-0/2-0/2-1, [25] perde 0-1/0-2/1-2 (visto dalla squadra).
+    //  Per l'ospite in trasferta: "casa vince 1-0/2-0/2-1" = l'ospite perde 0-1/0-2/1-2, e viceversa.
+    ["rx", "RIS. ESATTI 0-0 / 1-1", "la partita finisce 0-0 oppure 1-1", (b) => b[23] ?? 0, (b) => b[23] ?? 0],
+    ["r1", "RIS. ESATTI 1-0 / 2-0 / 2-1", "la partita finisce 1-0, 2-0 oppure 2-1 (vince la squadra di casa con pochi gol)", (b) => b[24] ?? 0, (b) => b[25] ?? 0],
+    ["r2", "RIS. ESATTI 0-1 / 0-2 / 1-2", "la partita finisce 0-1, 0-2 oppure 1-2 (vince l'ospite con pochi gol)", (b) => b[25] ?? 0, (b) => b[24] ?? 0]
+  ];
+  const RE = new Set(["rx", "r1", "r2"]), RSG = { rx: ["0-0", "1-1"], r1: ["1-0", "2-0", "2-1"], r2: ["0-1", "0-2", "1-2"] };
+  // gruppi delle giocate: MULTIBET PRIMO TEMPO (1 PT o Over 1,5 PT) ed ESITI PRIMO TEMPO (tutte le altre)
+  const GRP = [["mb", "MULTIBET PRIMO TEMPO", ["cb"]], ["es", "ESITI PRIMO TEMPO", ["w1", "sc", "o05", "o15", "m02", "m13", "m14"]], ["mp", "MULTIBET PARTITA", ["c2"]], ["st", "ESITI SECONDO TEMPO", ["s05"]], ["re", "RISULTATI ESATTI", ["rx", "r1", "r2"]]];
+  const grpOf = (id) => (GRP.find((g) => g[2].includes(id)) || GRP[1])[0];
+  // riga sopra le colonne delle giocate: before/after = quante colonne ci sono prima e dopo
+  const grpHead = (before, after) => '<tr class="grp">' + (before ? '<th colspan="' + before + '"></th>' : "") + GRP.map((g) => '<th colspan="' + MK.filter((m) => grpOf(m[0]) === g[0]).length + '" class="g ' + g[0] + '">' + g[1] + "</th>").join("") + (after ? '<th colspan="' + after + '"></th>' : "") + "</tr>";
+  // nome corto per le intestazioni delle tabelle
+  const SH = { cb: "1 PT O OV 1,5", w1: "1 PT", sc: "CASA SEGNA PT", o05: "OVER 0,5 PT", o15: "OVER 1,5 PT", m02: "MG 0-2 PT", m13: "MG 1-3 PT", m14: "MG 1-4 PT", c2: "COMBO PT+2T", s05: "OVER 0,5 2T", rx: "0-0 / 1-1", r1: "1-0 / 2-0 / 2-1", r2: "0-1 / 0-2 / 1-2" };
+  const mkOf = (id) => MK.find((m) => m[0] === id) || MK[0];
+  const blk = (team, side) => { if (!team) return null; const x = team[side] || {}; const b = x[S.sample]; return b && b[0] ? b : (x.s && x.s[0] ? x.s : null); };
+  const rate = (num, n) => (n ? num / n : null);
+  // stima di un mercato: media tra la squadra di casa (in casa) e l'ospite (in trasferta)
+  function est(H, A, m) {
+    const hb = blk(H, "h"), ab = blk(A, "a"), hr = hb ? rate(m[3](hb), hb[0]) : null, ar = ab ? rate(m[4](ab), ab[0]) : null;
+    const v = hr !== null && ar !== null ? (hr + ar) / 2 : hr !== null ? hr : ar;
+    return { v, hr, ar, hn: hb ? hb[0] : 0, an: ab ? ab[0] : 0, hx: hb ? m[3](hb) : 0, ax: ab ? m[4](ab) : 0 };
+  }
+  const P = (x) => (x === null || x === undefined ? "—" : Math.round(x * 100) + "%");
+  const cls = (x, id) => { const re = RE.has(id); return x === null || x === undefined ? "mut" : x >= (re ? 0.4 : 0.7) ? "up" : x < (re ? 0.2 : 0.4) ? "mut" : ""; };
+
+  // ---------- dati ----------
+  function index() {
+    S.idx = new Map(); S.byCode = new Map(); S.next = new Map(); S.evs = [];
+    for (const L of (S.data && S.data.leagues) || []) for (const t of L.teams) {
+      const row = Object.assign({ L }, t);
+      S.byCode.set(L.code + "|" + t.t, row);
+      [t.t].concat(t.al || []).forEach((n) => { const k = key(n); if (k && !S.idx.has(k)) S.idx.set(k, row); });
+    }
+    const today = todayISO();
+    for (const e of (S.data && S.data.next) || []) {
+      const [code, date, time, home, away] = e;
+      if (!date || date < today) continue;
+      const H = S.byCode.get(code + "|" + home) || null, A = S.byCode.get(code + "|" + away) || null, L = (H || A || {}).L;
+      const x = { f: { date, time, home, away, comp: L ? L.name : code }, H, A, comp: L ? L.name : code };
+      S.evs.push(x);
+      if (!S.next.has(code + "|" + home)) S.next.set(code + "|" + home, { home: true, x, opp: away });
+      if (!S.next.has(code + "|" + away)) S.next.set(code + "|" + away, { home: false, x, opp: home });
+    }
+  }
+  const find = (name) => S.idx.get(key(name)) || null;
+  const withE = (x) => { const E = {}; MK.forEach((m) => { E[m[0]] = est(x.H, x.A, m); }); return Object.assign({}, x, { E, k: x.f.date + "|" + key(x.f.home) + "|" + key(x.f.away) }); };
+  // tutte le partite conosciute: calendario di stats.json + partite caricate da Claude nel db (senza doppioni)
+  function allFix() {
+    const out = [], seen = new Set();
+    const add = (x) => { const kk = vdayOf(x.f.date, x.f.time || "") + "|" + (x.H ? x.H.t : key(x.f.home)) + "|" + (x.A ? x.A.t : key(x.f.away)); if (!seen.has(kk)) { seen.add(kk); out.push(x); } };
+    S.evs.forEach(add);
+    for (const f of S.fixtures) { const H = find(f.home), A = find(f.away); if (H || A) add({ f, H, A, comp: (H && H.L.name) || (A && A.L.name) || f.comp || "" }); }
+    return out;
+  }
+  const dayMatches = (day) => allFix().filter((x) => vdayOf(x.f.date, x.f.time || "") === day).map(withE);
+  function days() {
+    const set = new Set();
+    for (const x of allFix()) set.add(vdayOf(x.f.date, x.f.time || ""));
+    return Array.from(set).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+  }
+  function curDay(ds, today) {
+    if (S.day && ds.includes(S.day)) return S.day;
+    if (ds.includes(today)) return today;
+    return ds.find((d) => d > today) || ds[ds.length - 1] || today;
+  }
+
+  // ---------- render ----------
+  // LAYOUT C: i filtri (giorno, campione, ordine, campionati) stanno nella colonna a sinistra, le schede a destra
+  const U = window.APP.ui, FL = (c) => U.flag(c) + " ";
+  const TABN = { eventi: "migliori eventi dei prossimi giorni", scelta: "migliore scelta", classifiche: "classifiche in casa" };
+  const MKL = { cb: "1 PT o Over 1,5 PT", w1: "1 PT", sc: "Casa segna nel PT", o05: "Over 0,5 PT", o15: "Over 1,5 PT", m02: "Multigol 0-2 PT", m13: "Multigol 1-3 PT", m14: "Multigol 1-4 PT", c2: "Combo Over 0,5 PT + Over 0,5 2T", s05: "Over 0,5 2T", rx: "Esatti 0-0 / 1-1", r1: "Esatti 1-0 / 2-0 / 2-1", r2: "Esatti 0-1 / 0-2 / 1-2" };
+  function render() {
+    if (!on()) return;
+    if (!["partite", "eventi", "scelta", "classifiche"].includes(S.tab)) S.tab = "partite";
+    const today = todayISO(), ds = days(), day = curDay(ds, today);
+    if (!S.month) S.month = day.slice(0, 7);
+    let M = dayMatches(day);
+    const m = mkOf(S.mk);
+    M.sort((a, b) => (b.E[m[0]].v ?? -1) - (a.E[m[0]].v ?? -1) || (a.f.time || "").localeCompare(b.f.time || ""));
+    $("tb-left").textContent = "· " + (S.tab === "partite" ? (day === today ? "oggi, " : "") + longDay.format(toDate(day)) : TABN[S.tab] || "");
+    $("tb-right").textContent = S.data ? "Primo tempo · dati fino al " + dm(S.data.last) + " · " + S.data.matches + " partite di " + S.data.leagues.length + " campionati · aggiornate il " + dm(S.data.updated) + " (football-data.co.uk)" : "";
+    kpis(M, m);
+    $("side").innerHTML = S.data ? sideHtml(ds, day, today, M) : "";
+    const tabs = '<nav class="tabs" role="tablist">' + [["partite", "PARTITE DEL GIORNO", M.length], ["eventi", "MIGLIORI EVENTI", S.evs.filter((x) => x.H).length], ["scelta", "MIGLIORE SCELTA", 0], ["classifiche", "CLASSIFICHE IN CASA", 0]]
+      .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="stab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + "</nav>";
+    let body;
+    if (S.err) body = '<div class="panel"><div class="empty">' + esc(S.err) + "</div></div>";
+    else if (!S.data) body = '<div class="panel"><div class="empty">CARICAMENTO…</div></div>';
+    else body = S.tab === "classifiche" ? tabRank() : S.tab === "eventi" ? tabEvents() : S.tab === "scelta" ? tabChoice() : tabDay(M, m, day);
+    $("s-body").innerHTML = tabs + body + howTo();
+  }
+  const k = (l, v, c, n) => '<div class="k"><span class="l">' + l + '</span><span class="v num ' + (c || "") + '" title="' + esc(v) + '">' + v + '</span>' + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+  function kpis(M, m) {
+    const best = M[0], top = M.filter((x) => (x.E.cb.v || 0) >= 0.7).length;
+    $("kpis").innerHTML = k("PARTITE", String(M.length), "", "nel giorno") + k("SOPRA IL 70%", String(top), "up", "in 1 PT o Over 1,5") +
+      k("MIGLIORE", best && best.E[m[0]].v !== null ? P(best.E[m[0]].v) : "—", "amb", best ? esc(best.f.home + " – " + best.f.away) : "");
+  }
+  function sideHtml(ds, day, today, M) {
+    const t = S.tab, evTab = t === "eventi" || t === "scelta", rank = t === "classifiche";
+    let html = "";
+    if (t === "partite") {
+      const marks = new Map(ds.map((d) => [d, dayMatches(d).length]));
+      html += U.group("GIORNO", U.cal({ month: S.month, sel: new Set([day]), marks, act: "sday", nav: "smon", today }), ds.includes(today) && day !== today ? '<button type="button" class="linkbtn" data-act="sday" data-day="' + today + '">OGGI</button>' : "");
+    } else if (evTab) {
+      const marks = new Map(); S.evs.filter((x) => x.H).forEach((x) => { const d = vdayOf(x.f.date, x.f.time || ""); marks.set(d, (marks.get(d) || 0) + 1); });
+      html += U.group('GIORNI <span class="mut">· anche più di uno</span>', U.cal({ month: S.month, sel: S.edays, marks, act: "seday", nav: "smon", today }), S.edays.size ? '<button type="button" class="linkbtn" data-act="seday" data-day="">TUTTI</button>' : '<span class="mut">tutti</span>');
+    }
+    html += U.group("CAMPIONE", U.pills("ssamp", [["l", "Ultime 15"], ["s", "Solo stagione"]], (v) => S.sample === v));
+    if (t === "partite" || t === "eventi" || t === "classifiche")
+      html += U.group("ORDINA PER", GRP.map((g) => '<div class="lgh">' + g[1] + '</div><div class="lgl">' + MK.filter((x) => grpOf(x[0]) === g[0]).map((x) => '<button type="button" class="lrow rad' + (S.mk === x[0] ? " on" : "") + '" data-act="smk" data-mk="' + x[0] + '" title="' + esc(x[2]) + '"><span class="ck"></span><span class="ln">' + esc(MKL[x[0]] || x[1]) + "</span></button>").join("") + "</div>").join(""));
+    if (rank) html += U.group("PROSSIMA PARTITA", U.pills("shome", [["0", "Tutte le squadre"], ["1", "Solo chi gioca in casa"]], (v) => (v === "1") === S.onlyHome));
+    const cnt = new Map();
+    if (t === "partite") M.forEach((x) => cnt.set(x.comp, (cnt.get(x.comp) || 0) + 1));
+    else if (evTab) S.evs.filter((x) => x.H && (!S.edays.size || S.edays.has(vdayOf(x.f.date, x.f.time || "")))).forEach((x) => cnt.set(x.comp, (cnt.get(x.comp) || 0) + 1));
+    else S.data.leagues.forEach((L) => cnt.set(L.name, L.teams.length));
+    S.data.leagues.forEach((L) => { if (!cnt.has(L.name)) cnt.set(L.name, 0); });
+    const list = Array.from(cnt.keys()).filter(Boolean).sort(U.compOrder).map((c) => ({ c, n: cnt.get(c) }));
+    html += U.group('CAMPIONATI <span class="mut">· ' + (rank ? "squadre" : "partite") + "</span>", U.leagues(list, S.ecomps, "secomp"));
+    const note = (t === "partite" ? longDay.format(toDate(day)) : TABN[t]) + (S.ecomps.size ? " · " + S.ecomps.size + (S.ecomps.size === 1 ? " campionato" : " campionati") : "");
+    return U.side(html, note);
+  }
+  const mkSeg = () => '<div class="mkseg" role="group" aria-label="Ordina per">' + MK.map((x) => '<button type="button" data-act="smk" data-mk="' + x[0] + '" aria-pressed="' + (S.mk === x[0]) + '" title="' + esc(x[2]) + '">' + x[1] + "</button>").join("") + "</div>";
+  const sampSeg = () => '<div class="seg sseg" role="group" aria-label="Campione"><button type="button" data-act="ssamp" data-s="l" aria-pressed="' + (S.sample === "l") + '">ULTIME 15</button><button type="button" data-act="ssamp" data-s="s" aria-pressed="' + (S.sample === "s") + '">SOLO STAGIONE</button></div>';
+  function tabDay(M, m, day) {
+    if (!M.length) return '<div class="panel"><div class="empty">' + (S.ready ? "Nessuna partita dei 12 campionati in questo giorno. Scegli un altro giorno qui sopra, oppure chiedi a Claude di aggiornare le statistiche." : "CARICAMENTO…") + "</div></div>";
+    const list = S.ecomps.size ? M.filter((x) => S.ecomps.has(x.comp)) : M;
+    if (!list.length) return '<div class="panel"><div class="empty">Nessuna partita dei campionati scelti in questo giorno.</div></div>';
+    let h = '<div class="note"><b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". La stima è la media tra la squadra di casa nelle partite in casa e l'ospite nelle partite in trasferta.</div>";
+    h += '<div class="panel"><div class="ph"><span>PARTITE (' + list.length + ")</span><span class=\"r\">tocca una partita per i dettagli</span></div><div class=\"scroll\"><table class=\"stab\"><thead>" + grpHead(2, 0) + "<tr><th class=\"l\">#</th><th class=\"l\">PARTITA</th>" +
+      MK.map((x) => '<th class="' + (x[0] === m[0] ? "on" : "") + '" title="' + esc(x[1]) + '">' + SH[x[0]] + "</th>").join("") + "</tr></thead><tbody>";
+    list.forEach((x, i) => {
+      const open = S.open.has(x.k), night = x.f.date !== day;
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc([x.f.time ? x.f.time + (night ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ")) + "</span></td>" +
+        MK.map((mm) => { const e = x.E[mm[0]]; return '<td class="num ' + cls(e.v, mm[0]) + (mm[0] === m[0] ? " on" : "") + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>"; }).join("") + "</tr>";
+      if (open) h += '<tr class="det"><td colspan="' + (MK.length + 2) + '">' + detail(x) + "</td></tr>";
+    });
+    return h + "</tbody></table></div></div>";
+  }
+  const nn = (n) => (n === 1 ? "1 partita" : n + " partite");
+  function recs(list, home) {
+    if (!list || !list.length) return '<span class="mut">nessuna</span>';
+    return list.slice().reverse().map((r) => { const [d, o, ht, ft] = r.split("|"); const [a, b] = ht.split("-").map(Number), g = home ? a - b : b - a;
+      return '<span class="rc ' + (g > 0 ? "w" : g < 0 ? "l" : "d") + '" title="' + esc(d + " · " + (home ? "contro " : "in casa di ") + o + " · primo tempo " + ht + " · finale " + ft) + '"><b class="num">' + esc(ht) + '</b> ' + esc(o) + ' <span class="mut num">' + esc(d) + " · fin. " + esc(ft) + "</span></span>"; }).join("");
+  }
+  function line(t, side) {
+    const b = blk(t, side); if (!b) return "";
+    return '<span class="num">' + nn(b[0]) + " · primo tempo " + b[1] + "V " + b[2] + "N " + b[3] + "P · gol nel PT " + b[4] + " fatti, " + b[5] + " subiti (" + (b[4] / b[0]).toFixed(1).replace(".", ",") + " a partita)" +
+      (side === "a" ? "<br>Primo tempo perso o pareggiato: <b>" + P((b[2] + b[3]) / b[0]) + "</b> (" + (b[2] + b[3]) + "/" + b[0] + ") · subisce almeno 1 gol nel PT: <b>" + P((b[0] - b[7]) / b[0]) + "</b> (" + (b[0] - b[7]) + "/" + b[0] + ")" : "") + "</span>";
+  }
+  // l'ospite in trasferta: PT perso o pari, subisce almeno un gol nel PT
+  const awayNP = (b) => (b ? { np: (b[2] + b[3]) / b[0], npx: b[2] + b[3], con: (b[0] - b[7]) / b[0], conx: b[0] - b[7], n: b[0] } : null);
+  const whenOf = (f) => wd.format(toDate(f.date)).replace(".", "") + " " + dm(f.date) + (f.time ? " " + f.time : "");
+  function nxCell(nx, m) {
+    if (!nx) return '<td class="l nxc mut">nessuna nei prossimi 10 giorni</td>';
+    const v = nx.home ? est(nx.x.H, nx.x.A, m).v : null;
+    return '<td class="l nxc"><span class="nx ' + (nx.home ? "in" : "out") + '">' + (nx.home ? "IN CASA" : "FUORI") + "</span> " + esc(nx.home ? "con " + nx.opp : "a " + nx.opp) +
+      ' <span class="mut num">' + esc(whenOf(nx.x.f)) + "</span>" + (v !== null && v !== undefined ? ' <span class="evp ' + cls(v, m[0]) + '" title="probabilità dell\'evento: media tra questa squadra in casa e ' + esc(nx.opp) + ' in trasferta">evento <b class="num">' + P(v) + "</b></span>" : "") + "</td>";
+  }
+  const chip = (act, val, on, label) => '<button type="button" class="pchip' + (on ? " on" : "") + '" data-act="' + act + '" data-c="' + esc(val) + '">' + label + "</button>";
+  // MIGLIORE SCELTA: per ogni prossima partita, Multigol 1-3 PT contro 1 PT o Over 1,5 PT.
+  //  Vincono tutte e due con 1-0, 1-1, 2-0, 2-1; perdono tutte e due con 0-0.
+  //  Solo il Multigol 1-3 vince con 0-1 (segna solo l'ospite); solo "1 PT o Over 1,5" vince con 4 o più gol nel PT.
+  function tabChoice() {
+    const today = todayISO();
+    let rows = S.evs.filter((x) => x.H).map(withE);
+    const dset = Array.from(new Set(rows.map((x) => vdayOf(x.f.date, x.f.time || "")))).sort();
+    S.edays.forEach((d) => { if (!dset.includes(d)) S.edays.delete(d); });
+    const comps = Array.from(new Set(rows.map((x) => x.comp))).sort();
+    if (S.edays.size) rows = rows.filter((x) => S.edays.has(vdayOf(x.f.date, x.f.time || "")));
+    if (S.ecomps.size) rows = rows.filter((x) => S.ecomps.has(x.comp));
+    rows = rows.map((x) => { const a = x.E.m13.v, b = x.E.cb.v, best = a === null && b === null ? null : (a ?? -1) >= (b ?? -1) ? "m13" : "cb";
+      return Object.assign(x, { best, bv: best ? x.E[best].v : null, diff: a !== null && b !== null ? Math.abs(a - b) : null }); });
+    rows.sort((a, b) => (b.bv ?? -1) - (a.bv ?? -1) || (a.f.date + a.f.time).localeCompare(b.f.date + b.f.time));
+    const lab = (d) => (d === today ? "OGGI" : d === addDays(today, 1) ? "DOMANI" : wd.format(toDate(d)).replace(".", "").toUpperCase() + " " + dm(d));
+    const nm = { m13: "MULTIGOL 1-3 PT", cb: "1 PT O OVER 1,5 PT" };
+    let h = '<div class="note">Per ogni partita confronto <b>Multigol 1-3 PT</b> e <b>1 PT o Over 1,5 PT</b>. Vincono tutte e due con 1-0, 1-1, 2-0 e 2-1 all\'intervallo e perdono tutte e due con lo 0-0. Il Multigol 1-3 vince anche con 0-1 (segna solo l\'ospite); 1 PT o Over 1,5 vince anche con 4 o più gol nel primo tempo. Se le due percentuali sono vicine (meno di 4 punti) scegli quella con la quota migliore.</div>';
+    if (!rows.length) return h + '<div class="panel"><div class="empty">Nessuna partita in calendario. Chiedi a Claude di aggiornare le statistiche.</div></div>';
+    const shown = S.evAll ? rows : rows.slice(0, EV_TOP);
+    const bar = (v, on) => '<td class="num ' + cls(v) + (on ? " on" : "") + '">' + (v === null || v === undefined ? "—" : '<span class="pv">' + P(v) + '</span><i class="sb"><i style="width:' + Math.round(v * 100) + '%"></i></i>') + "</td>";
+    h += '<div class="panel"><div class="ph"><span>LE MIGLIORI SOLUZIONI (' + rows.length + ')</span><span class="r">tocca una partita per i dettagli</span></div><div class="scroll"><table class="stab ev"><thead><tr><th class="l">#</th><th class="l">PARTITA</th>' +
+      '<th class="l">GIOCA</th><th title="nel primo tempo da 1 a 3 gol in tutto">MULTIGOL<br><span class="mut">1-3 PT</span></th><th title="la casa in vantaggio all\'intervallo, oppure almeno 2 gol nel PT">1 PT O<br><span class="mut">OVER 1,5 PT</span></th>' +
+      '<th title="0-0 all\'intervallo: perdono tutte e due">RISCHIO<br><span class="mut">0-0 PT</span></th></tr></thead><tbody>';
+    shown.forEach((x, i) => {
+      const open = S.open.has(x.k), few = (x.E.cb.hn && x.E.cb.hn < minN()) || (x.E.cb.an && x.E.cb.an < minN()), z = x.E.o05.v === null ? null : 1 - x.E.o05.v;
+      const close = x.diff !== null && x.diff < 0.04;
+      const why = !x.best ? "" : close ? "quasi uguali: scegli la quota più alta" : x.best === "m13" ? "copre anche lo 0-1 (gol solo dell'ospite)" : "copre anche i primi tempi con 4 o più gol";
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
+        '<td class="l mt">' + (x.best ? '<span class="pick ' + (close ? "eq" : "") + '">' + nm[x.best] + "</span>" : "—") + '<span class="m">' + esc(why) + "</span></td>" +
+        bar(x.E.m13.v, x.best === "m13") + bar(x.E.cb.v, x.best === "cb") +
+        '<td class="num ' + (z !== null && z >= 0.25 ? "warn" : "mut") + '">' + (z === null ? "—" : P(z)) + "</td></tr>";
+      if (open) h += '<tr class="det"><td colspan="6">' + detail(x) + "</td></tr>";
+    });
+    h += "</tbody></table></div>" + (rows.length > EV_TOP ? '<div class="more"><button type="button" class="btn" data-act="sevall">' + (S.evAll ? "MOSTRA SOLO LE PRIME " + EV_TOP : "MOSTRA TUTTE (" + rows.length + ")") + "</button></div>" : "") + "</div>";
+    return h;
+  }
+  // RISULTATI ESATTI per campionato: quante partite della stagione sono finite con ogni risultato (si vede con una giocata RIS. ESATTI)
+  function leagueRS(m) {
+    if (!RE.has(m[0])) return "";
+    const Ls = S.data.leagues.filter((L) => L.rs && L.matches && (!S.ecomps.size || S.ecomps.has(L.name)));
+    if (!Ls.length) return "";
+    const pc = (L, ks) => ks.reduce((a, k2) => a + (L.rs[k2] || 0), 0) / L.matches;
+    const rows = Ls.map((L) => ({ L, v: pc(L, RSG[m[0]]) })).sort((a, b) => b.v - a.v || a.L.name.localeCompare(b.L.name));
+    const gs = ["rx", "r1", "r2"], all = gs.flatMap((g) => RSG[g]);
+    let h = '<div class="panel"><div class="ph"><span>PER CAMPIONATO · ' + esc(m[1]) + '</span><span class="r">tutte le partite di questa stagione</span></div><div class="scroll"><table class="stab rank"><thead><tr class="grp"><th colspan="3"></th>' +
+      gs.map((g) => '<th colspan="' + (1 + RSG[g].length) + '" class="g re">' + SH[g] + "</th>").join("") + '</tr><tr><th class="l">#</th><th class="l">CAMPIONATO</th><th>PARTITE</th>' +
+      gs.map((g) => '<th class="' + (g === m[0] ? "on" : "") + '">IN TUTTO</th>' + RSG[g].map((r) => "<th>" + r + "</th>").join("")).join("") + "</tr></thead><tbody>";
+    rows.forEach((r, i) => {
+      h += '<tr><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + FL(r.L.name) + esc(r.L.name) + '</b></td><td class="num">' + r.L.matches + "</td>" +
+        gs.map((g) => { const v = pc(r.L, RSG[g]); return '<td class="num ' + cls(v, g) + (g === m[0] ? " on" : "") + '"><b>' + P(v) + "</b></td>" +
+          RSG[g].map((x) => '<td class="num mut">' + P((r.L.rs[x] || 0) / r.L.matches) + ' <span class="mut">' + (r.L.rs[x] || 0) + "</span></td>").join(""); }).join("") + "</tr>";
+    });
+    return h + "</tbody></table></div></div>";
+  }
+  function tabEvents() {
+    const m = mkOf(S.mk), today = todayISO();
+    let rows = S.evs.filter((x) => x.H).map(withE);
+    const dset = Array.from(new Set(rows.map((x) => vdayOf(x.f.date, x.f.time || "")))).sort();
+    S.edays.forEach((d) => { if (!dset.includes(d)) S.edays.delete(d); });
+    const comps = Array.from(new Set(rows.map((x) => x.comp))).sort();
+    if (S.edays.size) rows = rows.filter((x) => S.edays.has(vdayOf(x.f.date, x.f.time || "")));
+    if (S.ecomps.size) rows = rows.filter((x) => S.ecomps.has(x.comp));
+    rows.sort((a, b) => (b.E[m[0]].v ?? -1) - (a.E[m[0]].v ?? -1) || (a.f.date + a.f.time).localeCompare(b.f.date + b.f.time));
+    const lab = (d) => (d === today ? "OGGI" : d === addDays(today, 1) ? "DOMANI" : wd.format(toDate(d)).replace(".", "").toUpperCase() + " " + dm(d));
+    let h = '<div class="note"><b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". <b>Probabilità</b> = media tra la squadra di casa nelle sue partite in casa e l'avversaria nelle sue partite in trasferta. Il calendario arriva fino al " + (dset.length ? dm(dset[dset.length - 1]) : "—") + ".</div>";
+    h += leagueRS(m);
+    if (!rows.length) return h + '<div class="panel"><div class="empty">Nessuna partita in calendario. Chiedi a Claude di aggiornare le statistiche.</div></div>';
+    const re = RE.has(m[0]), shown = S.evAll ? rows : rows.slice(0, EV_TOP), MI = re ? 5 : 7;
+    h += '<div class="panel"><div class="ph"><span>MIGLIORI EVENTI PER ' + esc(m[1]) + " (" + rows.length + ')</span><span class="r">tocca una partita per i dettagli</span></div><div class="scroll"><table class="stab ev"><thead><tr><th class="l">#</th><th class="l">PARTITA</th>' +
+      '<th title="la squadra di casa nelle sue partite in casa">CASA<br><span class="mut">in casa</span></th><th title="l\'avversaria nelle sue partite in trasferta">OSPITE<br><span class="mut">in trasferta</span></th>' +
+      (re ? "" : '<th title="quante volte l\'ospite, in trasferta, ha perso o pareggiato il primo tempo">OSPITE PT<br><span class="mut">perso o pari</span></th><th title="quante volte l\'ospite, in trasferta, ha subito almeno 1 gol nel primo tempo">OSPITE SUBISCE<br><span class="mut">gol nel PT</span></th>') +
+      '<th class="on">PROBABILITÀ</th></tr></thead><tbody>';
+    shown.forEach((x, i) => {
+      const e = x.E[m[0]], open = S.open.has(x.k), a = awayNP(blk(x.A, "a")), few = (e.hn && e.hn < minN()) || (e.an && e.an < minN());
+      const pc = (v, num, n, id) => (v === null || v === undefined ? '<td class="num mut">—</td>' : '<td class="num ' + cls(v, id) + '">' + P(v) + ' <span class="mut">' + num + "/" + n + "</span></td>");
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
+        pc(e.hr, e.hx, e.hn, m[0]) + pc(e.ar, e.ax, e.an, m[0]) + (re ? "" : a ? pc(a.np, a.npx, a.n) + pc(a.con, a.conx, a.n) : '<td class="num mut">—</td><td class="num mut">—</td>') +
+        '<td class="num on ' + cls(e.v, m[0]) + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td></tr>";
+      if (open) h += '<tr class="det"><td colspan="' + MI + '">' + detail(x) + "</td></tr>";
+    });
+    h += "</tbody></table></div>" + (rows.length > EV_TOP ? '<div class="more"><button type="button" class="btn" data-act="sevall">' + (S.evAll ? "MOSTRA SOLO LE PRIME " + EV_TOP : "MOSTRA TUTTE (" + rows.length + ")") + "</button></div>" : "") + "</div>";
+    return h;
+  }
+  function detail(x) {
+    const smp = S.sample === "l" ? "ultime 15" : "stagione";
+    let h = '<div class="sdet"><table class="cmp"><thead><tr><th class="l">MERCATO</th><th>' + esc(x.f.home) + ' <span class="mut">in casa</span></th><th>' + esc(x.f.away) + ' <span class="mut">in trasferta</span></th><th>STIMA</th></tr></thead><tbody>' +
+      MK.map((m, i) => { const e = x.E[m[0]], g = grpOf(m[0]), head = i === 0 || grpOf(MK[i - 1][0]) !== g ? '<tr class="grh"><td colspan="4">' + GRP.find((y) => y[0] === g)[1] + "</td></tr>" : "";
+        return head + '<tr><td class="l" title="' + esc(m[2]) + '">' + m[1] + '</td><td class="num">' + (e.hr === null ? "—" : P(e.hr) + ' <span class="mut">' + e.hx + "/" + e.hn + "</span>") + '</td><td class="num">' + (e.ar === null ? "—" : P(e.ar) + ' <span class="mut">' + e.ax + "/" + e.an + "</span>") + '</td><td class="num ' + cls(e.v, m[0]) + '"><b>' + P(e.v) + "</b></td></tr>"; }).join("") + "</tbody></table>";
+    h += '<div class="hint">Campione: ' + smp + ". Per l'ospite, “1 PT” conta le volte che in trasferta era sotto all'intervallo e “casa segna” le volte che ha subito gol nel primo tempo.</div>";
+    h += '<div class="sgrid"><div><h5>' + esc(x.f.home) + ' <span class="mut">· in casa</span></h5>' + (x.H ? '<div class="hint">' + line(x.H, "h") + '</div><div class="rcs">' + recs(x.H.h.r, true) + "</div>" : '<div class="hint">Squadra non presente nelle statistiche.</div>') + "</div>" +
+      '<div><h5>' + esc(x.f.away) + ' <span class="mut">· in trasferta</span></h5>' + (x.A ? '<div class="hint">' + line(x.A, "a") + '</div><div class="rcs">' + recs(x.A.a.r, false) + "</div>" : '<div class="hint">Squadra non presente nelle statistiche.</div>') + "</div></div>";
+    return h + '<div class="hint">Ultime 5 della stagione: in grassetto il risultato del primo tempo. Verde = in vantaggio all\'intervallo, rosso = in svantaggio.</div></div>';
+  }
+  function tabRank() {
+    const Ls = S.data.leagues, sel = Ls.filter((x) => !S.ecomps.size || S.ecomps.has(x.name));
+    const L = sel.length === 1 ? sel[0] : null, all = !L, m = mkOf(S.mk), mn = minN();
+    let h = '<div class="note">Solo le partite giocate IN CASA. <b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". Le squadre che la prossima partita giocano FUORI sono in grigio." + (all ? " In classifica entra solo chi ha almeno " + mn + " partite in casa nel campione scelto." : "") + "</div>";
+    h += leagueRS(m);
+    const pool = sel.flatMap((x) => x.teams.map((t) => ({ t, L: x })));
+    let rows = pool.map(({ t, L }) => { const b = blk(t, "h"); return { t, L, b, v: b ? m[3](b) / b[0] : null, nx: S.next.get(L.code + "|" + t.t) || null }; });
+    if (all) rows = rows.filter((r) => r.b && r.b[0] >= mn);
+    if (S.onlyHome) rows = rows.filter((r) => r.nx && r.nx.home);
+    // a pari percentuale: nel Multigol 0-2 prima chi fa meno gol nel PT, nelle altre giocate prima chi ne fa di più
+    const gpt = (r) => (r.b && r.b[0] ? (r.b[4] + r.b[5]) / r.b[0] : 0), dir = m[0] === "m02" ? 1 : -1;
+    rows.sort((a, b) => (b.v ?? -1) - (a.v ?? -1) || ((b.b || [0])[0] - (a.b || [0])[0]) || dir * (gpt(a) - gpt(b)) || a.t.t.localeCompare(b.t.t));
+    const total = rows.length;
+    if (all && !S.rankAll) rows = rows.slice(0, RANK_TOP);
+    const title = all ? (S.ecomps.size ? "CAMPIONATI SCELTI" : "TUTTI I CAMPIONATI") : L.name, right = all ? total + " squadre in classifica" : L.matches + " partite giocate · ultima il " + dm(L.last);
+    h += '<div class="panel"><div class="ph"><span>' + esc(title) + " · CLASSIFICA IN CASA PER " + esc(m[1]) + '</span><span class="r">' + esc(right) + "</span></div><div class=\"scroll\"><table class=\"stab rank\"><thead>" + grpHead(5, 2) + "<tr><th class=\"l\">#</th><th class=\"l\">SQUADRA</th><th class=\"l\">PROSSIMA PARTITA</th><th>PARTITE</th><th>PT V-N-P</th>" +
+      MK.map((x) => '<th class="' + (x[0] === m[0] ? "on" : "") + '" title="' + esc(x[1]) + '">' + SH[x[0]].replace("CASA SEGNA PT", "SEGNA NEL PT") + "</th>").join("") +
+      '<th>GOL PT</th><th class="l">ULTIME 5 IN CASA (PT)</th></tr></thead><tbody>';
+    if (!rows.length) h += '<tr><td colspan="' + (MK.length + 7) + '" class="mut">Nessuna squadra.</td></tr>';
+    rows.forEach((r, i) => {
+      const b = r.b;
+      h += '<tr class="' + (r.nx && !r.nx.home ? "fuori" : "") + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(r.t.t) + "</b>" + (all ? '<span class="m">' + FL(r.L.name) + esc(r.L.name) + "</span>" : "") + "</td>" + nxCell(r.nx, m) +
+        (b ? '<td class="num">' + b[0] + '</td><td class="num">' + b[1] + "-" + b[2] + "-" + b[3] + "</td>" +
+        MK.map((x) => { const v = x[3](b) / b[0]; return '<td class="num ' + cls(v, x[0]) + (x[0] === m[0] ? " on" : "") + '">' + P(v) + ' <span class="mut">' + x[3](b) + "</span></td>"; }).join("") +
+        '<td class="num">' + b[4] + "-" + b[5] + '</td><td class="l"><span class="mini">' + (r.t.h.r || []).slice().reverse().map((s) => { const p = s.split("|"), [a, c] = p[2].split("-").map(Number);
+          return '<i class="' + (a > c ? "w" : a < c ? "l" : "d") + '" title="' + esc(p[0] + " contro " + p[1] + " · PT " + p[2] + " · finale " + p[3]) + '">' + esc(p[2]) + "</i>"; }).join("") + "</span></td>"
+        : '<td colspan="' + (MK.length + 4) + '" class="mut">nessuna partita in casa</td>') + "</tr>";
+    });
+    h += "</tbody></table></div>" + (all && total > RANK_TOP ? '<div class="more"><button type="button" class="btn" data-act="srankall">' + (S.rankAll ? "MOSTRA SOLO LE PRIME " + RANK_TOP : "MOSTRA TUTTE (" + total + ")") + "</button></div>" : "") + "</div>";
+    return h;
+  }
+  const howTo = () => '<details class="panel how"' + (S.open.has("how") ? " open" : "") + ' data-k="how"><summary>COME FUNZIONANO QUESTE STATISTICHE</summary><div class="hint">' +
+    "Conta solo il primo tempo. Per ogni squadra guardo le partite giocate in casa (e, per l'ospite, quelle in trasferta): quante volte era in vantaggio all'intervallo, quante volte ha segnato nel primo tempo e quanti gol ci sono stati.<br>" +
+    "<b>ULTIME 15</b> usa le ultime 15 partite in casa, anche della stagione scorsa: è un campione più solido. <b>SOLO STAGIONE</b> usa solo quest'anno: è più aggiornato ma conta poche partite.<br>" +
+    "<b>1 PT O OVER 1,5 PT</b> vince se all'intervallo la squadra di casa è in vantaggio, oppure se nel primo tempo ci sono almeno 2 gol (1-0 vinta, 1-1 vinta, 0-0 e 0-1 perse).<br>" +
+    "<b>MULTIGOL 0-2 / 1-3 / 1-4 PT</b> contano i gol totali del primo tempo (di tutte e due le squadre): vince se sono tra i due numeri. Il Multigol 0-2 premia le partite con pochi gol, gli altri due perdono con lo 0-0.<br>" +
+    "<b>MIGLIORI EVENTI</b>: le prossime partite di campionato (10 giorni), ordinate per probabilità. La probabilità è la media tra la squadra di casa in casa e l'avversaria in trasferta; per l'avversaria vedi anche quante volte fuori casa perde o pareggia il primo tempo e quante volte subisce almeno un gol nel primo tempo. “Poche partite” = meno di " + minN() + " partite nel campione: numero meno affidabile.<br>" +
+    "<b>COMBO OVER 0,5 PT + OVER 0,5 2T</b> (gruppo MULTIBET PARTITA) vince se c'è almeno un gol nel primo tempo e almeno un gol nel secondo tempo. <b>OVER 0,5 2T</b> (ESITI SECONDO TEMPO) vince se c'è almeno un gol nel secondo tempo: i gol del secondo tempo sono quelli finali meno quelli dell'intervallo.<br>" +
+    "<b>RISULTATI ESATTI</b> (risultato finale): <b>0-0 / 1-1</b> vince se la partita finisce 0-0 o 1-1; <b>1-0 / 2-0 / 2-1</b> se vince la squadra di casa con uno di questi risultati; <b>0-1 / 0-2 / 1-2</b> se vince l'ospite con uno di questi. La stima è la media tra la squadra di casa nelle sue partite in casa e l'avversaria nelle sue trasferte: per esempio, per 0-0 / 1-1 conto i pareggi 0-0 e 1-1 della squadra di casa in casa e quelli dell'ospite in trasferta. Nelle schede MIGLIORI EVENTI e CLASSIFICHE IN CASA c'è anche la tabella PER CAMPIONATO, con tutte le partite di questa stagione. Per queste giocate il verde parte dal 40% e il grigio è sotto il 20%, perché sono risultati precisi e le percentuali sono più basse.<br>" +
+    "Verde = almeno 70%. I risultati vengono da football-data.co.uk, il calendario da ESPN: Claude li aggiorna quando glielo chiedi.</div></details>";
+
+  // ---------- eventi ----------
+  document.addEventListener("click", (ev) => {
+    if (!on()) return;
+    const b = ev.target.closest("[data-act]"); if (!b || !b.closest("#s-body, #side")) return;
+    const a = b.dataset.act;
+    if (a === "stab") { S.tab = b.dataset.tab; render(); }
+    else if (a === "sday") { S.day = b.dataset.day; S.month = S.day.slice(0, 7); render(); }
+    else if (a === "smon") { S.month = U.addMonth(S.month || todayISO().slice(0, 7), Number(b.dataset.v)); render(); }
+    else if (a === "smk") { S.mk = b.dataset.mk; render(); }
+    else if (a === "ssamp") { S.sample = b.dataset.s || b.dataset.c; render(); }
+    else if (a === "scomp") { S.comp = b.dataset.c; render(); }
+    else if (a === "sleague") { S.league = b.dataset.c; S.rankAll = false; render(); }
+    else if (a === "shome") { S.onlyHome = (b.dataset.v || b.dataset.c) === "1"; render(); }
+    else if (a === "srankall") { S.rankAll = !S.rankAll; render(); }
+    // giorni e campionati: si accendono e si spengono uno per uno; "TUTTI" spegne tutto
+    else if (a === "seday" || a === "secomp") {
+      const set = a === "seday" ? S.edays : S.ecomps, v = a === "seday" ? b.dataset.day : b.dataset.c;
+      if (a === "secomp") S.rankAll = false;
+      if (!v) set.clear(); else if (set.has(v)) set.delete(v); else set.add(v);
+      render();
+    }
+    else if (a === "sevall") { S.evAll = !S.evAll; render(); }
+    else if (a === "sopen") { const kk = b.dataset.k; if (S.open.has(kk)) S.open.delete(kk); else S.open.add(kk); render(); }
+  });
+  document.addEventListener("toggle", (ev) => { const d = ev.target; if (!on() || !d || !d.dataset || d.dataset.k !== "how") return; if (d.open) S.open.add("how"); else S.open.delete("how"); }, true);
+
+  // ---------- avvio ----------
+  window.APP.apps[ME] = { render, close() {} };
+  (async function start() {
+    try {
+      const r = await fetch("stats.json", { cache: "no-store" });
+      if (!r.ok) throw new Error(String(r.status));
+      S.data = await r.json(); index();
+    } catch (e) { S.err = "Statistiche non disponibili: chiedi a Claude di aggiornarle."; }
+    render();
+    let db = null; try { db = await window.APP.use("db"); } catch (e) { db = null; }
+    if (!db) { S.ready = true; render(); return; }
+    db.collection("fixtures").onSnapshot((s) => { S.fixtures = s.docs.map((d) => Object.assign({ id: d.id }, d.data())); S.ready = true; render(); }, () => { S.ready = true; render(); });
+  })();
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const ME = "storico", on = () => window.APP.active === ME;
+  // STORICO: tutte le partite pronosticate (fino a oggi) con l'esito di ogni pronostico e marcatore. Solo lettura: gli esiti si segnano nei Pronostici.
+  //  picks/* { date, time, comp, match, market, conf, prob, why, odds, hit, result "2-1", ht "1-0" }   ideas/* { date, time?, comp, match, player, conf, prob, why, odds, hit, result }
+  const S = { picks: [], ideas: [], fixtures: [], ready: { picks: false, ideas: false }, err: "", period: "all", res: "all", kinds: new Set(), comps: new Set(), group: "kind", open: new Set(), limit: 80 };
+
+  // ---------- utilità ----------
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const SP = { "Ø": "O", "ø": "o", "Æ": "AE", "æ": "ae", "Þ": "TH", "þ": "th", "Ð": "D", "ð": "d", "ß": "SS", "Ł": "L", "ł": "l", "Đ": "D", "đ": "d", "ı": "i", "Œ": "OE", "œ": "oe" };
+  const plain = (s) => String(s || "").replace(/[ØøÆæÞþÐðßŁłĐđıŒœ]/g, (c) => SP[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/\s+/g, " ").trim();
+  const norm = (s) => plain(s).replace(/\s*-\s*/g, " - ");
+  const up = (s) => String(s || "").trim().replace(/\s+/g, " ").toUpperCase();
+  const pad = (n) => String(n).padStart(2, "0");
+  const isoOf = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const todayISO = () => isoOf(new Date());
+  const toDate = (iso) => { const [y, m, d] = String(iso).split("-").map(Number); return new Date(y, (m || 1) - 1, d || 1); };
+  const addDays = (iso, n) => { const d = toDate(iso); d.setDate(d.getDate() + n); return isoOf(d); };
+  const dm = (iso) => String(iso).slice(8, 10) + "/" + String(iso).slice(5, 7);
+  const longDay = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long" });
+  const pctF = new Intl.NumberFormat("it-IT", { style: "percent", maximumFractionDigits: 0 });
+  const pct = (n) => pctF.format(n || 0);
+  const nf = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const NIGHT = "06:00";
+  const vdayOf = (date, time) => (time && time < NIGHT ? addDays(date, -1) : date);
+  const CONF = ["alta", "media", "bassa"], confTxt = { alta: "ALTA", media: "MEDIA", bassa: "BASSA" }, confCls = { alta: "w", media: "o", bassa: "l" };
+  const confTag = (c) => '<span class="tag conf ' + (confCls[c] || "p") + '" title="fiducia">' + (confTxt[c] || "—") + "</span>";
+  const hasProb = (p) => p !== null && p !== undefined && p !== "" && Number.isFinite(Number(p));
+  const SC = "MARCATORI";
+  const kindOf = (o) => (o.t === "i" ? SC : /passa il turno/i.test(o.market || "") ? "PASSA IL TURNO" : up(o.market) || "ALTRO");
+  function banner(msg) { S.err = msg || ""; const b = $("banner"); if (!on() || !b) return; b.textContent = S.err; b.hidden = !S.err; }
+
+  // ---------- calcoli ----------
+  function items() {
+    const fx = new Map(S.fixtures.map((f) => [f.date + "|" + norm(f.home) + " - " + norm(f.away), f])), today = todayISO();
+    const mk = (t) => (x) => {
+      const f = fx.get(x.date + "|" + norm(x.match)), time = x.time || (f && f.time) || "";
+      const o = Object.assign({}, x, { t, time, vday: vdayOf(x.date, time), match: norm(x.match), comp: norm(x.comp || (f && f.comp) || ""), hit: x.hit === true || x.hit === false ? x.hit : null });
+      o.kind = kindOf(o); return o;
+    };
+    return [].concat(S.picks.map(mk("p")), S.ideas.map(mk("i"))).filter((o) => o.match && /^\d{4}-\d{2}-\d{2}$/.test(o.vday || "") && o.vday <= today);
+  }
+  const fromOf = () => (S.period === "7" ? addDays(todayISO(), -6) : S.period === "30" ? addDays(todayISO(), -29) : "");
+  const inPeriod = (all) => { const from = fromOf(); return from ? all.filter((o) => o.vday >= from) : all; };
+  const filtered = (all) => inPeriod(all).filter((o) => (!S.kinds.size || S.kinds.has(o.kind)) && (!S.comps.size || S.comps.has(o.comp)) &&
+    (S.res === "all" || (S.res === "ok" ? o.hit === true : S.res === "ko" ? o.hit === false : o.hit === null)));
+  function agg(list) {
+    const k = list.filter((o) => o.hit !== null), ok = k.filter((o) => o.hit).length, wp = k.filter((o) => hasProb(o.prob));
+    return { n: list.length, known: k.length, ok, ko: k.length - ok, wait: list.length - k.length, rate: k.length ? ok / k.length : 0, nProb: wp.length, avgProb: wp.length ? wp.reduce((s, o) => s + Number(o.prob), 0) / wp.length / 100 : 0 };
+  }
+  const isP = (o) => o.t === "p", isI = (o) => o.t === "i";
+  function matches(F, all) {
+    const res = new Map(), m = new Map(), kk = (o) => o.vday + "|" + o.match;
+    for (const o of all) { const r = res.get(kk(o)) || {}; if (o.result && !r.result) r.result = String(o.result); if (o.ht && !r.ht) r.ht = String(o.ht); res.set(kk(o), r); }
+    for (const o of F) {
+      if (!m.has(kk(o))) m.set(kk(o), Object.assign({ k: kk(o), vday: o.vday, date: o.date, time: o.time, comp: o.comp, match: o.match, items: [] }, res.get(kk(o))));
+      const g = m.get(kk(o)); g.items.push(o); if (!g.comp && o.comp) g.comp = o.comp; if (!g.time && o.time) { g.time = o.time; g.date = o.date; }
+    }
+    const order = (o) => (o.t === "p" ? 0 : 1) * 10 + CONF.indexOf(o.conf);
+    const list = Array.from(m.values()); list.forEach((g) => g.items.sort((a, b) => order(a) - order(b) || (Number(b.prob) || 0) - (Number(a.prob) || 0)));
+    return list.sort((a, b) => b.vday.localeCompare(a.vday) || (a.date + (a.time || "99")).localeCompare(b.date + (b.time || "99")) || a.match.localeCompare(b.match));
+  }
+
+  // ---------- disegno ----------
+  const k = (l, v, c, n) => '<div class="k"><span class="l">' + l + '</span><span class="v num ' + (c || "") + '" title="' + esc(v) + '">' + v + '</span>' + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+  const rateCls = (x, hi, lo) => (!x.known ? "" : x.rate >= hi ? "up" : x.rate < lo ? "down" : "");
+  function render() {
+    if (!on()) return;
+    const all = items(), F = filtered(all), M = matches(F, all), P = agg(F.filter(isP)), I = agg(F.filter(isI));
+    const days = Array.from(new Set(all.map((o) => o.vday))).sort();
+    $("tb-left").textContent = days.length ? "· dal " + dm(days[0]) + " al " + dm(days[days.length - 1]) : "";
+    $("tb-right").textContent = M.length + (M.length === 1 ? " partita" : " partite") + " · " + P.n + " pronostici · " + I.n + " marcatori";
+    // la giocata che funziona meglio: almeno 3 esiti
+    const byKind = new Map(); F.filter(isP).forEach((o) => { if (!byKind.has(o.kind)) byKind.set(o.kind, []); byKind.get(o.kind).push(o); });
+    const best = Array.from(byKind.entries()).map(([kk, l]) => Object.assign({ kk }, agg(l))).filter((x) => x.known >= 3).sort((a, b) => b.rate - a.rate || b.known - a.known)[0];
+    const wait = F.filter((o) => o.hit === null).length;
+    $("kpis").innerHTML = k("PRONOSTICI PRESI", P.known ? pct(P.rate) : "—", rateCls(P, 0.65, 0.5), P.known ? P.ok + " su " + P.known + (P.nProb ? " · stima " + pct(P.avgProb) : "") : "nessuno verificato") +
+      k("MARCATORI A SEGNO", I.known ? pct(I.rate) : "—", rateCls(I, 0.4, 0.2), I.known ? I.ok + " su " + I.known + (I.nProb ? " · stima " + pct(I.avgProb) : "") : "nessuno verificato") +
+      k("PARTITE", String(M.length), "", new Set(M.map((g) => g.vday)).size + " giorni") +
+      k("GIOCATA MIGLIORE", best ? esc(best.kk) : "—", "", best ? best.ok + " su " + best.known + " · " + pct(best.rate) : "servono almeno 3 esiti") +
+      k("IN ATTESA", String(wait), "", wait ? "da verificare" : "tutto verificato");
+    banner(S.err);
+    $("side").innerHTML = all.length ? sideHtml(all) : "";
+    if (!(S.ready.picks && S.ready.ideas)) { $("h-body").innerHTML = '<div class="panel"><div class="empty">CARICAMENTO…</div></div>'; return; }
+    if (!all.length) { $("h-body").innerHTML = '<div class="panel"><div class="empty">Ancora nessun pronostico nello storico.</div></div>'; return; }
+    $("h-body").innerHTML = summary(F) + table(F, all);
+  }
+  const seg = (act, cur, opts) => '<div class="seg sseg" role="group" style="grid-template-columns:repeat(' + opts.length + ',auto)">' + opts.map(([v, l]) => '<button type="button" data-act="' + act + '" data-v="' + v + '" aria-pressed="' + (cur === v) + '">' + l + "</button>").join("") + "</div>";
+  // colonna dei filtri: periodo, esito, giocata, campionati (con bandiera)
+  const U = window.APP.ui;
+  function sideHtml(all) {
+    const P = inPeriod(all), count = (f) => { const m = new Map(); P.forEach((o) => m.set(f(o), (m.get(f(o)) || 0) + 1)); return m; };
+    const kinds = count((o) => o.kind), comps = count((o) => o.comp);
+    const kl = Array.from(kinds.keys()).sort((a, b) => (a === SC) - (b === SC) || kinds.get(b) - kinds.get(a) || a.localeCompare(b));
+    const cl = Array.from(comps.keys()).filter(Boolean).sort(U.compOrder).map((c) => ({ c, n: comps.get(c) }));
+    const any = S.period !== "all" || S.res !== "all" || S.kinds.size || S.comps.size;
+    const html = U.group("PERIODO", U.pills("hper", [["all", "Tutto"], ["7", "Ultimi 7 giorni"], ["30", "Ultimi 30 giorni"]], (v) => S.period === v)) +
+      U.group("ESITO", U.pills("hres", [["all", "Tutti"], ["ok", "✓ Presi"], ["ko", "✗ Persi"], ["wait", "In attesa"]], (v) => S.res === v)) +
+      U.group("GIOCATA", U.pills("hkind", [["", "Tutte"]].concat(kl.map((x) => [x, esc(x) + ' <span class="mut">' + kinds.get(x) + "</span>"])), (v) => (v ? S.kinds.has(v) : !S.kinds.size))) +
+      U.group('CAMPIONATI <span class="mut">· giocate</span>', U.leagues(cl, S.comps, "hcomp")) +
+      (any ? '<div><button type="button" class="btn small" data-act="hreset">TOGLI I FILTRI</button></div>' : "");
+    return U.side(html, (S.period === "all" ? "tutto lo storico" : "ultimi " + S.period + " giorni") + (any ? " · filtri attivi" : ""));
+  }
+  const GROUPS = [["kind", "PER GIOCATA"], ["conf", "PER FIDUCIA"], ["comp", "PER CAMPIONATO"], ["day", "PER GIORNO"]];
+  function summary(F) {
+    const keyOf = { conf: (o) => o.conf || "", kind: (o) => o.kind, comp: (o) => o.comp || "—", day: (o) => o.vday }[S.group];
+    const m = new Map(); F.forEach((o) => { const kk = keyOf(o); if (!m.has(kk)) m.set(kk, []); m.get(kk).push(o); });
+    const rows = Array.from(m.entries()).map(([kk, l]) => ({ kk, p: agg(l.filter(isP)), i: agg(l.filter(isI)) }));
+    const tot = (r) => r.p.n + r.i.n;
+    if (S.group === "conf") rows.sort((a, b) => (CONF.indexOf(a.kk) + 9) % 9 - (CONF.indexOf(b.kk) + 9) % 9);
+    else if (S.group === "day") rows.sort((a, b) => b.kk.localeCompare(a.kk));
+    else rows.sort((a, b) => (a.kk === SC) - (b.kk === SC) || tot(b) - tot(a) || a.kk.localeCompare(b.kk));
+    const label = (kk) => (S.group === "conf" ? "FIDUCIA " + (confTxt[kk] || "—") : S.group === "day" ? longDay.format(toDate(kk)) : S.group === "comp" ? U.flag(kk) + " " + esc(U.tc(kk)) : esc(kk));
+    const cnt = (x) => (!x.n ? '<td class="mut">—</td>' : '<td class="num"><b>' + x.ok + "</b> su " + x.known + (x.wait ? ' <span class="mut">+' + x.wait + " in attesa</span>" : "") + "</td>");
+    const rt = (x, hi, lo) => (!x.known ? '<td class="mut">' + (x.n ? "—" : "") + "</td>" : '<td class="num ' + rateCls(x, hi, lo) + '"><span class="pv">' + pct(x.rate) + '</span><span class="sb"><i style="width:' + (x.rate * 100).toFixed(1) + '%"></i></span></td>');
+    const est = (x) => '<td class="num mut">' + (x.nProb ? pct(x.avgProb) : "") + "</td>";
+    const tr = (name, r, cls) => "<tr" + (cls ? ' class="' + cls + '"' : "") + '><td class="l">' + name + "</td>" + cnt(r.p) + rt(r.p, 0.65, 0.5) + est(r.p) + cnt(r.i) + rt(r.i, 0.4, 0.2) + est(r.i) + "</tr>";
+    const all = { p: agg(F.filter(isP)), i: agg(F.filter(isI)) };
+    return '<div class="panel"><div class="ph hph"><span>RIEPILOGO</span><span class="r">' + seg("hgroup", S.group, GROUPS) + "</span></div>" +
+      '<div class="scroll"><table class="stab hsum"><thead><tr><th class="l"></th><th>PRONOSTICI PRESI</th><th>%</th><th title="probabilità media stimata da Claude">STIMA</th><th>MARCATORI A SEGNO</th><th>%</th><th title="probabilità media stimata da Claude">STIMA</th></tr></thead><tbody>' +
+      (rows.length ? rows.map((r) => tr(label(r.kk), r)).join("") + (rows.length > 1 ? tr("TOTALE", all, "tot") : "") : '<tr><td class="l mut" colspan="7">Nessun dato con questi filtri.</td></tr>') +
+      '</tbody></table></div><div class="hint hnote">STIMA = probabilità media che Claude aveva dato. Se la % reale è più alta, le stime erano prudenti; se è più bassa, erano troppo ottimiste.</div></div>';
+  }
+  // TUTTE LE GIOCATE: una riga per giocata, divise per giorno (dal più recente); tocca una riga per il motivo
+  const confLow = (c) => (confTxt[c] ? confTxt[c].charAt(0) + confTxt[c].slice(1).toLowerCase() : "—");
+  function resCell(o) {
+    if (o.hit === true) return '<span class="res w">✓ ' + (o.t === "i" ? "SEGNATO" : "PRESO") + "</span>";
+    if (o.hit === false) return '<span class="res l">✗ ' + (o.t === "i" ? "NO" : "PERSO") + "</span>";
+    return '<span class="res o">IN ATTESA</span>';
+  }
+  function table(F, all) {
+    const res = new Map(), kk = (o) => o.vday + "|" + o.match;
+    for (const o of all) { const r = res.get(kk(o)) || {}; if (o.result && !r.result) r.result = String(o.result); if (o.ht && !r.ht) r.ht = String(o.ht); res.set(kk(o), r); }
+    const order = (o) => (o.t === "p" ? 0 : 1) * 10 + CONF.indexOf(o.conf);
+    const rows = F.slice().sort((a, b) => b.vday.localeCompare(a.vday) || (a.date + (a.time || "99")).localeCompare(b.date + (b.time || "99")) || a.match.localeCompare(b.match) || order(a) - order(b) || (Number(b.prob) || 0) - (Number(a.prob) || 0));
+    let h = '<div class="panel" style="border:0;background:none"><div class="ph" style="border:0;padding:0 2px 6px"><span>TUTTE LE GIOCATE (' + rows.length + ')</span><span class="r">tocca una riga per rileggere il motivo</span></div>';
+    if (!rows.length) return h + '<div class="gtw"><div class="empty">Nessuna giocata con questi filtri. <button type="button" class="linkbtn" data-act="hreset">Togli i filtri</button></div></div></div>';
+    const shown = rows.slice(0, S.limit);
+    h += '<div class="gtw"><table class="gt"><thead><tr><th>ORA</th><th>CAMPIONATO</th><th>CASA</th><th>OSPITE</th><th class="c">PT</th><th class="c">FIN</th><th>GIOCATA</th><th>FIDUCIA</th><th class="r">PROB</th><th class="r">QUOTA</th><th class="r">ESITO</th></tr></thead><tbody>';
+    let cur = null;
+    for (const o of shown) {
+      if (o.vday !== cur) {
+        cur = o.vday;
+        const d = rows.filter((x) => x.vday === cur), p = agg(d.filter(isP)), i = agg(d.filter(isI));
+        const t = (x, w) => (x.n ? (x.known ? x.ok + " su " + x.known + " " + w : x.n + " in attesa") : "");
+        h += '<tr class="dh"><td colspan="11">' + esc(longDay.format(toDate(cur)).toUpperCase()) + '<span class="r num">' + [t(p, "pronostici presi"), t(i, "marcatori a segno")].filter(Boolean).join(" · ") + "</span></td></tr>";
+      }
+      const r = res.get(kk(o)) || {}, tm = o.match.split(" - "), id = o.t + ":" + o.id, open = S.open.has(id), night = o.date !== o.vday;
+      h += '<tr class="row' + (open ? " sel" : "") + '" data-act="hrow" data-id="' + esc(id) + '" aria-expanded="' + open + '">' +
+        '<td class="tm">' + esc(o.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + "</td>" +
+        '<td class="cp"><span class="cpi">' + U.flag(o.comp) + esc(U.tc(o.comp)) + "</span></td>" +
+        '<td class="tn h">' + esc(tm[0] || "") + '<span class="vs"> – ' + esc(tm.slice(1).join(" - ")) + '</span></td><td class="tn a">' + esc(tm.slice(1).join(" - ")) + "</td>" +
+        '<td class="c ht">' + esc(r.ht || "") + '</td><td class="c ft">' + esc(r.result || "") + "</td>" +
+        '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(o.player) : esc(o.market)) + "</td>" +
+        '<td class="cf">' + confLow(o.conf) + '</td><td class="r pr"><b>' + (hasProb(o.prob) ? Math.round(Number(o.prob)) + "%" : "—") + "</b></td>" +
+        '<td class="r mut qt">' + (Number(o.odds) > 1 ? nf.format(Number(o.odds)) : "") + '</td><td class="r es">' + resCell(o) + "</td></tr>";
+      if (open) h += '<tr class="gx"><td colspan="11"><div class="gxin"><div class="why">' + (o.why ? esc(o.why) : '<span class="mut">Nessun motivo scritto.</span>') + "</div></div></td></tr>";
+    }
+    h += "</tbody></table>";
+    if (rows.length > shown.length) h += '<div class="more"><button type="button" class="btn" data-act="hmore">MOSTRA ALTRE ' + Math.min(80, rows.length - shown.length) + " (ne restano " + (rows.length - shown.length) + ")</button></div>";
+    return h + "</div></div>";
+  }
+
+  // ---------- eventi ----------
+  document.addEventListener("click", (ev) => {
+    if (!on()) return;
+    const b = ev.target.closest("[data-act]"); if (!b || !b.closest("#h-body, #side")) return;
+    const a = b.dataset.act;
+    const tog = (set, v) => { if (!v) set.clear(); else if (set.has(v)) set.delete(v); else set.add(v); };
+    if (a === "hper") { S.period = b.dataset.v || b.dataset.c; S.limit = 80; }
+    else if (a === "hres") { S.res = b.dataset.v || b.dataset.c; S.limit = 80; }
+    else if (a === "hgroup") S.group = b.dataset.v;
+    else if (a === "hkind") { tog(S.kinds, b.dataset.c); S.limit = 80; }
+    else if (a === "hcomp") { tog(S.comps, b.dataset.c); S.limit = 80; }
+    else if (a === "hreset") { S.period = "all"; S.res = "all"; S.kinds.clear(); S.comps.clear(); S.limit = 80; }
+    else if (a === "hmore") S.limit += 80;
+    else if (a === "hrow") { const r = b.dataset.id; if (S.open.has(r)) S.open.delete(r); else S.open.add(r); }
+    else return;
+    render();
+  });
+  document.addEventListener("toggle", (ev) => { const d = ev.target; if (!on() || !d || !d.dataset || !d.dataset.k || !d.closest("#h-body")) return; if (d.open) S.open.add(d.dataset.k); else S.open.delete(d.dataset.k); }, true);
+
+  // ---------- avvio ----------
+  window.APP.apps[ME] = { render, close() {} };
+  (async function start() {
+    let db = null; try { db = await window.APP.use("db"); } catch (e) { db = null; }
+    if (!db) { S.ready.picks = S.ready.ideas = true; S.err = "I dati non sono raggiungibili. Ricarica la pagina tra qualche minuto."; render(); return; }
+    const docs = (s) => s.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+    const fail = (e) => { S.err = e && e.code === "revoked" ? "L'accesso ai dati è stato revocato." : "Errore nel leggere i dati. Ricarica la pagina tra qualche minuto."; render(); };
+    db.collection("picks").onSnapshot((s) => { S.picks = docs(s); S.ready.picks = true; render(); }, fail);
+    db.collection("ideas").onSnapshot((s) => { S.ideas = docs(s); S.ready.ideas = true; render(); }, fail);
+    db.collection("fixtures").onSnapshot((s) => { S.fixtures = docs(s); render(); }, () => {});
+  })();
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const names = ["idee", "stats", "storico"], alias = { pronostici: "idee", statistiche: "stats" }, box = document.getElementById("app");
+  function pick() {
+    const h0 = location.hash.replace("#", ""), h = alias[h0] || h0;
+    if (names.includes(h)) return h;
+    try { const s0 = localStorage.getItem("gold.app"), s = alias[s0] || s0; if (names.includes(s)) return s; } catch (e) { /* niente */ }
+    return "idee";
+  }
+  function mount(name) {
+    if (!names.includes(name) || window.APP.active === name || !window.APP.apps[name]) return;
+    const prev = window.APP.apps[window.APP.active]; if (prev) prev.close();
+    window.APP.active = name;
+    box.replaceChildren(document.getElementById("tpl-" + name).content.cloneNode(true));
+    document.querySelectorAll("[data-app]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.app === name)));
+    try { localStorage.setItem("gold.app", name); } catch (e) { /* niente */ }
+    window.APP.apps[name].render();
+    if (window.APP.budget) window.APP.budget.paint();
+  }
+  // passa a un'altra sezione
+  window.APP.go = (name) => {
+    const was = window.APP.active; mount(name);
+    if (was !== window.APP.active) window.scrollTo(0, 0);
+    try { if (location.hash !== "#" + name) location.hash = name; } catch (e) { /* niente */ }
+  };
+  document.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-app]"); if (!b) return;
+    window.APP.go(b.dataset.app);
+    const g = b.dataset.goto; if (g) setTimeout(() => { const t = document.getElementById(g); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
+  });
+  // sul telefono la colonna dei filtri si apre e si chiude con il bottone FILTRI
+  document.addEventListener("click", (ev) => {
+    const t = ev.target.closest && ev.target.closest("[data-sidetog]"); if (!t) return;
+    const s = t.closest(".side"); if (!s) return;
+    t.setAttribute("aria-expanded", String(s.classList.toggle("open")));
+  });
+  window.addEventListener("hashchange", () => mount(pick()));
+  mount(pick());
+})();
+</script>
+</body>
+</html>
