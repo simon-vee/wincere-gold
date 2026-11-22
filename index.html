@@ -670,11 +670,10 @@ table.cmp tr.grh td { background: #f7f8fa; color: #374151; font-size: 9.5px; fon
 .lvbar .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
 .lvbar .dot.on { background: #dc2626; animation: lvp 1.6s ease-in-out infinite; }
 .lvbar b { color: #dc2626; letter-spacing: .04em; }
-table.stab td.lvx-W { background: #15803d !important; color: #fff !important; }
-table.stab td.lvx-L { background: #c81e1e !important; color: #fff !important; }
-table.stab td.lvx-w { background: #e3f4e8 !important; color: #166534 !important; }
-table.stab td.lvx-l { background: #fdecec !important; color: #b42318 !important; }
-table.stab td.lvx-W .sb, table.stab td.lvx-L .sb { opacity: .35; }
+table.stab tr.lvrow td { background: #fafbfc; border-top: 0; padding-top: 0; padding-bottom: 9px; text-align: center; }
+table.stab tr.lvrow.in td.lvh { box-shadow: inset 3px 0 0 #dc2626; }
+table.stab tr.lvrow td.lvh { text-align: left; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; color: var(--muted); }
+table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1801,7 +1800,12 @@ function fileDB() {
   const sampSeg = () => '<div class="seg sseg" role="group" aria-label="Campione"><button type="button" data-act="ssamp" data-s="l" aria-pressed="' + (S.sample === "l") + '">ULTIME 15</button><button type="button" data-act="ssamp" data-s="s" aria-pressed="' + (S.sample === "s") + '">SOLO STAGIONE</button></div>';
   // LIVE: le giocate della tabella scritte come le capisce window.APP.live.market
   const LVM = { cb: "1 PT o Over 1,5 PT", w1: "1 PT", sc: "Casa segna PT", o05: "Over 0,5 PT", o15: "Over 1,5 PT", m02: "Multigol 0-2 PT", m13: "Multigol 1-3 PT", m14: "Multigol 1-4 PT", c2: "Over 0,5 PT + Over 0,5 2T", s05: "Over 0,5 2T", rx: "Esatti 0-0 / 1-1", r1: "Esatti 1-0 / 2-0 / 2-1", r2: "Esatti 0-1 / 0-2 / 1-2" };
-  const LVI = { W: " ✓", L: " ✗", w: " ·✓", l: " ·✗", n: "" };
+  // LIVE: sotto la partita una riga con l'esito di ogni giocata, nella stessa colonna della sua percentuale (niente colori dentro le caselle)
+  function lvRow(L, m) {
+    const LV = window.APP.live;
+    return '<tr class="lvrow' + (L.state === "in" ? " in" : "") + '"><td></td><td class="l lvh">' + (L.state === "post" ? "ESITO FINALE" : "ESITO LIVE") + "</td>" +
+      MK.map((mm) => { const st = LV.market(LVM[mm[0]], L) || "n"; return '<td class="' + (mm[0] === m[0] ? "on" : "") + '">' + LV.tag(st) + "</td>"; }).join("") + "</tr>";
+  }
   // la partita come la cerca il live: se Claude l'ha caricata nel calendario, uso il suo link ESPN (abbinamento sicuro)
   const liveItem = (x) => { const fx = x.f.links ? x.f : S.fixtures.find((f) => f.date === x.f.date && x.H && x.A && find(f.home) === x.H && find(f.away) === x.A); return { date: x.f.date, time: x.f.time, comp: x.comp, home: x.f.home, away: x.f.away, links: fx && fx.links }; };
   const liveOf = (x) => (window.APP.live ? window.APP.live.get(liveItem(x)) : null);
@@ -1812,15 +1816,16 @@ function fileDB() {
     if (!list.length) return '<div class="panel"><div class="empty">Nessuna partita dei campionati scelti in questo giorno.</div></div>';
     let h = '<div class="note"><b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". La stima è la media tra la squadra di casa nelle partite in casa e l'ospite nelle partite in trasferta.</div>";
     const LV = window.APP.live, anyLive = !!LV && list.some((x) => { const L = liveOf(x); return L && L.state !== "pre"; });
-    if (anyLive) h += LV.bar() + '<div class="note">LIVE: accanto alla partita il risultato in tempo reale (PT tra parentesi). Ogni casella si colora mentre si gioca: <span class="lv lv-W">pieno verde ✓</span> = presa, <span class="lv lv-L">pieno rosso ✗</span> = persa, <span class="lv lv-w">chiaro ·✓</span> / <span class="lv lv-l">chiaro ·✗</span> = per ora, può ancora cambiare.</div>';
+    if (anyLive) h += LV.bar() + '<div class="note">LIVE: accanto alla partita trovi il risultato in tempo reale (primo tempo tra parentesi). Sotto ogni partita iniziata trovi la riga <b>ESITO</b>: sotto ogni percentuale dice come sta andando quella giocata. ' + LV.tag("W") + " e " + LV.tag("L") + " = già deciso · " + LV.tag("w") + " e " + LV.tag("l") + " = com'è adesso, può ancora cambiare · " + LV.tag("n") + ' = si decide più avanti.</div>';
     h += '<div class="panel"><div class="ph"><span>PARTITE (' + list.length + ")</span><span class=\"r\">tocca una partita per i dettagli</span></div><div class=\"scroll\"><table class=\"stab\"><thead>" + grpHead(2, 0) + "<tr><th class=\"l\">#</th><th class=\"l\">PARTITA</th>" +
       MK.map((x) => '<th class="' + (x[0] === m[0] ? "on" : "") + '" title="' + esc(x[1]) + '">' + SH[x[0]] + "</th>").join("") + "</tr></thead><tbody>";
     list.forEach((x, i) => {
       const open = S.open.has(x.k), night = x.f.date !== day, L = liveOf(x), live = !!L && L.state !== "pre";
       const sc = live ? ' <span class="lvs num">' + LV.scoreTxt(L) + ' <span class="mut">(' + LV.htTxt(L) + ")</span></span>" + LV.clockTag(L) : "";
       h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + "</b>" + sc + '<span class="m">' + FL(x.comp) + esc([x.f.time ? x.f.time + (night ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ")) + "</span></td>" +
-        MK.map((mm) => { const e = x.E[mm[0]], s = live ? LV.market(LVM[mm[0]], L) || "n" : null;
-          return '<td class="num ' + cls(e.v, mm[0]) + (mm[0] === m[0] ? " on" : "") + (s ? " lvx-" + s : "") + '"' + (s && s !== "n" ? ' title="' + esc(LV.TXT[s]) + '"' : "") + ">" + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + (s ? LVI[s] : "") + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>"; }).join("") + "</tr>";
+        MK.map((mm) => { const e = x.E[mm[0]];
+          return '<td class="num ' + cls(e.v, mm[0]) + (mm[0] === m[0] ? " on" : "") + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>"; }).join("") + "</tr>";
+      if (live) h += lvRow(L, m);
       if (open) h += '<tr class="det"><td colspan="' + (MK.length + 2) + '">' + detail(x) + "</td></tr>";
     });
     return h + "</tbody></table></div></div>";
