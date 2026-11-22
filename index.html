@@ -654,6 +654,27 @@ table.cmp tr.grh td { background: #f7f8fa; color: #374151; font-size: 9.5px; fon
   .cd { padding: 7px 0 8px; }
   .lrow { padding: 7px 4px; }
 }
+/* LIVE (22/11/2026): risultati in tempo reale e stato delle giocate */
+.lv { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
+.lv-W { background: #15803d; color: #fff; }
+.lv-L { background: #c81e1e; color: #fff; }
+.lv-w { background: #e3f4e8; color: #166534; box-shadow: inset 0 0 0 1px #b7e0c3; }
+.lv-l { background: #fdecec; color: #b42318; box-shadow: inset 0 0 0 1px #f5c2c2; }
+.lv-n { background: #eef1f5; color: #4b5563; }
+.chipsm .lv { font-size: 10px; padding: 1px 6px; }
+.lvc { display: inline-block; margin-left: 5px; padding: 0 5px; border-radius: 3px; background: #dc2626; color: #fff; font-size: 9.5px; font-weight: 700; line-height: 15px; vertical-align: 1px; animation: lvp 1.6s ease-in-out infinite; }
+.lvf { display: inline-block; margin-left: 5px; font-size: 9.5px; font-weight: 700; color: var(--muted); }
+.lvs { font-weight: 700; margin-left: 6px; color: var(--ink); }
+@keyframes lvp { 50% { opacity: .55; } }
+.lvbar { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; font-size: 11.5px; color: var(--muted); padding: 6px 10px; margin: 0 0 8px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); }
+.lvbar .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+.lvbar .dot.on { background: #dc2626; animation: lvp 1.6s ease-in-out infinite; }
+.lvbar b { color: #dc2626; letter-spacing: .04em; }
+table.stab td.lvx-W { background: #15803d !important; color: #fff !important; }
+table.stab td.lvx-L { background: #c81e1e !important; color: #fff !important; }
+table.stab td.lvx-w { background: #e3f4e8 !important; color: #166534 !important; }
+table.stab td.lvx-l { background: #fdecec !important; color: #b42318 !important; }
+table.stab td.lvx-W .sb, table.stab td.lvx-L .sb { opacity: .35; }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -960,6 +981,178 @@ function fileDB() {
 <script>
 (function () {
   "use strict";
+  const ME = "live";
+  // LIVE (dal 22/11/2026): risultati in tempo reale da ESPN (API pubblica, leggibile dalla pagina) e stato di ogni giocata.
+  //  window.APP.live.need(items)  le sezioni dicono quali partite mostrano: [{ date, time, comp, home, away, eid? }]
+  //  window.APP.live.get(item)    → null oppure { state: pre|in|post, h, a, hh, ha, ht: intervallo passato, clock, goals: [{ min, side, name, og }] }
+  //  window.APP.live.market(testo, L) → "W" presa · "L" persa · "w" per ora sì · "l" per ora no · "n" in corso, non si sa ancora · null non valutabile
+  //  window.APP.live.scorer(nome, L, lato?) → "W" ha segnato · "L" non ha segnato · "n" non ancora
+  // Ogni 30 secondi rilegge solo i campionati con partite iniziate oggi e non ancora finite. Lo STORICO resta quello salvato da Claude.
+  const SLUG = { "SERIE A": "ita.1", "SERIE B": "ita.2", "COPPA ITALIA": "ita.coppa_italia", "PREMIER LEAGUE": "eng.1", "CHAMPIONSHIP": "eng.2", "LEAGUE ONE": "eng.3", "FA CUP": "eng.fa", "COPPA DI LEGA": "eng.league_cup",
+    "LIGA": "esp.1", "SEGUNDA DIVISION": "esp.2", "COPPA DEL RE": "esp.copa_del_rey", "BUNDESLIGA": "ger.1", "2. BUNDESLIGA": "ger.2", "COPPA DI GERMANIA": "ger.dfb_pokal", "LIGUE 1": "fra.1", "LIGUE 2": "fra.2",
+    "COPPA DI FRANCIA": "fra.coupe_de_france", "EREDIVISIE": "ned.1", "PRIMEIRA LIGA": "por.1", "BRASILE SERIE A": "bra.1", "CHAMPIONS LEAGUE": "uefa.champions", "EUROPA LEAGUE": "uefa.europa", "CONFERENCE LEAGUE": "uefa.europa.conf",
+    "CHAMPIONS LEAGUE FEMMINILE": "uefa.wchampions", "NATIONS LEAGUE": "uefa.nations", "QUALIFICAZIONI MONDIALI": "fifa.worldq.uefa", "QUALIFICAZIONI EUROPEI": "uefa.euroq", "AMICHEVOLI": "fifa.friendly", "SUPERCOPPA ITALIANA": "ita.super_cup" };
+  const SP = { "Ø": "O", "ø": "o", "Æ": "AE", "æ": "ae", "ß": "SS", "Ł": "L", "ł": "l", "ı": "i", "Œ": "OE", "œ": "oe", "Đ": "D", "đ": "d" };
+  const plain = (s) => String(s || "").replace(/[ØøÆæßŁłıŒœĐđ]/g, (c) => SP[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
+  const ROME = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const romeOf = (d) => { const p = {}; ROME.formatToParts(d).forEach((x) => { p[x.type] = x.value; }); return { date: p.year + "-" + p.month + "-" + p.day, time: p.hour + ":" + p.minute }; };
+  const addDays = (iso, n) => { const [y, m, d] = iso.split("-").map(Number), t = new Date(Date.UTC(y, m - 1, d + n)); return t.toISOString().slice(0, 10); };
+  const vdayOf = (date, time) => (time && time < "06:00" ? addDays(date, -1) : date);
+  const POLL = 30000;
+  const S = { want: new Map(), boards: new Map(), busy: false, again: false, timer: null, at: null, sig: "" };
+
+  const slugOf = (comp) => SLUG[String(comp || "").toUpperCase().replace(/\s+/g, " ").trim()] || null;
+  const eidOf = (it) => { if (it.eid) return String(it.eid); for (const l of it.links || []) { const m = /gameId\/(\d+)/.exec((l && l.u) || ""); if (m) return m[1]; } return null; };
+
+  // ---------- quali partite servono ----------
+  // un solo timer alla volta: schedule() cancella sempre quello vecchio
+  function schedule(ms) { clearTimeout(S.timer); S.timer = setTimeout(tick, ms); }
+  function need(items) {
+    const now = romeOf(new Date()), today = vdayOf(now.date, now.time);
+    let added = false;
+    for (const it of items || []) {
+      if (!it || !it.date) continue;
+      const vd = vdayOf(it.date, it.time || "");
+      if (vd !== today && vd !== addDays(today, -1)) continue;
+      const slug = slugOf(it.comp);
+      if (!slug) continue;
+      const bk = slug + "|" + vd.replace(/-/g, "");
+      if (!S.want.has(bk)) { S.want.set(bk, { slug, date: vd.replace(/-/g, "") }); added = true; }
+    }
+    if (added) schedule(50);
+    else if (!S.timer && !S.busy && S.want.size) schedule(POLL);
+  }
+  async function getBoard(bk, w) {
+    const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/" + w.slug + "/scoreboard?dates=" + w.date, { cache: "no-store" });
+    if (!r.ok) throw new Error(String(r.status));
+    const d = await r.json();
+    S.boards.set(bk, { at: Date.now(), ev: (d.events || []).map(parse).filter(Boolean) });
+  }
+  async function tick() {
+    clearTimeout(S.timer); S.timer = null;
+    if (S.busy) { S.again = true; return; }
+    S.busy = true; S.again = false;
+    let keep = true;
+    try {
+      // si rilegge un campionato se non l'ho mai letto, o se ha una partita iniziata e non ancora finita
+      const nowS = romeOf(new Date()), stamp = nowS.date + " " + nowS.time;
+      const todo = Array.from(S.want.entries()).filter(([bk]) => {
+        const b = S.boards.get(bk);
+        return !b || b.ev.some((e) => e.state === "in" || (e.state === "pre" && e.kick <= stamp));
+      });
+      await Promise.all(todo.map(([bk, w]) => getBoard(bk, w).catch(() => {})));
+      if (todo.length) S.at = new Date();
+      const sig = JSON.stringify(Array.from(S.boards.values()).map((b) => b.ev.map((e) => [e.id, e.state, e.h, e.a, e.clock])));
+      if (sig !== S.sig) { S.sig = sig; redraw(); }
+      // si continua finché c'è una partita da iniziare o in corso (o un campionato non ancora letto)
+      keep = S.want.size > S.boards.size || Array.from(S.boards.values()).some((b) => b.ev.some((e) => e.state !== "post"));
+    } finally {
+      S.busy = false;
+      if (S.again) schedule(50); else if (keep) schedule(POLL);
+    }
+  }
+  function redraw() { const a = window.APP.active, app = a && window.APP.apps[a]; if (app && (a === "idee" || a === "stats") && !document.querySelector("#overlay:not([hidden])")) app.render(); }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && S.want.size) tick(); });
+
+  // ---------- lettura di una partita ESPN ----------
+  const minOf = (txt) => { const m = /(\d+)'?(?:\s*\+\s*(\d+))?/.exec(String(txt || "")); return m ? { m: Number(m[1]), x: Number(m[2] || 0) } : { m: 0, x: 0 }; };
+  function parse(e) {
+    const c = (e.competitions || [])[0]; if (!c) return null;
+    const side = {}; (c.competitors || []).forEach((x) => { side[x.homeAway] = x; });
+    if (!side.home || !side.away) return null;
+    const st = (c.status || {}).type || {}, state = st.state || "pre", name = st.name || "", period = Number((c.status || {}).period) || 0;
+    const hid = String((side.home.team || {}).id || ""), goals = [];
+    for (const x of c.details || []) {
+      if (!x.scoringPlay || x.shootout) continue;
+      const mm = minOf((x.clock || {}).displayValue), tid = String((x.team || {}).id || "");
+      goals.push({ min: mm.m, plus: mm.x, txt: (x.clock || {}).displayValue || "", side: tid === hid ? "h" : "a", name: ((x.athletesInvolved || [])[0] || {}).displayName || "", og: !!x.ownGoal, pen: !!x.penaltyKick });
+    }
+    const pt = goals.filter((g) => g.min <= 45);
+    const ht = state === "post" || name === "STATUS_HALFTIME" || period >= 2;
+    const t = (side) => [side.team.displayName, side.team.shortDisplayName, side.team.name, side.team.abbreviation].filter(Boolean);
+    return { id: String(e.id), kick: romeOf(new Date(e.date)).date + " " + romeOf(new Date(e.date)).time, ktime: romeOf(new Date(e.date)).time, state, name, period, ht,
+      clock: name === "STATUS_HALFTIME" ? "INT." : state === "in" ? ((c.status || {}).displayClock || "") : "", h: Number(side.home.score) || 0, a: Number(side.away.score) || 0,
+      hh: pt.filter((g) => g.side === "h").length, ha: pt.filter((g) => g.side === "a").length, goals, hn: t(side.home), an: t(side.away) };
+  }
+
+  // ---------- da una nostra partita all'evento ESPN ----------
+  // con l'id ESPN (nei link della scheda partita) è sicuro; altrimenti stesso campionato e stessa ora, poi i nomi delle squadre
+  const toks = (s) => plain(s).split(" ").filter((w) => w.length >= 3 && !["FC", "AFC", "CF", "SC", "AC", "SSC", "CLUB", "CALCIO", "REAL", "CITY", "UNITED"].includes(w));
+  const like = (a, b) => toks(a).reduce((n, w) => n + (b.some((x) => toks(x).some((y) => y.slice(0, 4) === w.slice(0, 4))) ? 1 : 0), 0);
+  function find(it) {
+    const id = eidOf(it), slug = slugOf(it.comp), vd = it.date ? vdayOf(it.date, it.time || "").replace(/-/g, "") : "";
+    if (id) for (const b of S.boards.values()) { const e = b.ev.find((x) => x.id === id); if (e) return e; }
+    const b = slug && S.boards.get(slug + "|" + vd); if (!b) return null;
+    const same = b.ev.filter((e) => !it.time || e.ktime === it.time), pool = same.length ? same : b.ev;
+    const sc = pool.map((e) => ({ e, s: like(it.home, e.hn) + like(it.away, e.an) })).sort((x, y) => y.s - x.s);
+    if (same.length === 1) return same[0];
+    return sc[0] && sc[0].s > 0 && (!sc[1] || sc[1].s < sc[0].s) ? sc[0].e : null;
+  }
+  const get = (it) => { const e = find(it); return e && e.state !== "pre" ? e : e ? { state: "pre" } : null; };
+
+  // ---------- valutazione di una giocata ----------
+  // una giocata è fatta di pezzi uniti da " o " (basta uno) oppure da " + " (servono tutti); ogni pezzo vale per PT, 2T o partita intera
+  function atom(t, L) {
+    const s = t.trim(); if (!s) return null;
+    const pt = /\bPT\b|PRIMO TEMPO/.test(s), t2 = /\b2T\b|SECONDO TEMPO/.test(s), q = s.replace(/\bPT\b|\b2T\b|PRIMO TEMPO|SECONDO TEMPO|\bCOMBO\b/g, " ").replace(/\s+/g, " ").trim();
+    if (t2 && !L.ht) return "n";
+    const x = pt ? L.hh : t2 ? L.h - L.hh : L.h, y = pt ? L.ha : t2 ? L.a - L.ha : L.a, closed = pt ? L.ht : L.state === "post", tot = x + y;
+    const res = (now, fin) => (fin ? (now ? "W" : "L") : now ? "w" : "l");
+    let m;
+    if ((m = /^(?:MULTIGOL|MG) (\d+) (\d+)$/.exec(q))) { const a = Number(m[1]), b = Number(m[2]); return res(tot >= a && tot <= b, tot > b || closed); }
+    if ((m = /^OVER (\d+) 5$/.exec(q))) { const n = tot > Number(m[1]); return res(n, n || closed); }
+    if ((m = /^UNDER (\d+) 5$/.exec(q))) { const n = tot <= Number(m[1]); return res(n, !n || closed); }
+    if (/^(GOAL|GG|ENTRAMBE SEGNANO)$/.test(q)) { const n = x > 0 && y > 0; return res(n, n || closed); }
+    if (/^(NO GOAL|NOGOAL|NG)$/.test(q)) { const n = !(x > 0 && y > 0); return res(n, !n || closed); }
+    if (/^CASA SEGNA( NEL)?$/.test(q)) return res(x > 0, x > 0 || closed);
+    if (/^OSPITE SEGNA( NEL)?$/.test(q)) return res(y > 0, y > 0 || closed);
+    if (/^(ESATTI|ESATTO|RISULTATO ESATTO|RIS ESATTI)\b/.test(q)) {
+      const opts = []; q.replace(/(\d+) (\d+)/g, (_, a, b) => { opts.push([Number(a), Number(b)]); return ""; });
+      if (!opts.length) return null;
+      const n = opts.some((o) => o[0] === x && o[1] === y), dead = !opts.some((o) => o[0] >= x && o[1] >= y);
+      return res(n, closed || dead);
+    }
+    const one = { "1": x > y, "X": x === y, "2": x < y, "1X": x >= y, "X2": x <= y, "12": x !== y }[q.replace(/ /g, "")];
+    if (one !== undefined) return res(one, closed);
+    return null;
+  }
+  const all = (v) => (v.includes("L") ? "L" : v.every((x) => x === "W") ? "W" : v.includes("l") ? "l" : v.includes("n") ? "n" : "w");
+  const any = (v) => (v.includes("W") ? "W" : v.every((x) => x === "L") ? "L" : v.includes("w") ? "w" : v.includes("n") ? "n" : "l");
+  function market(text, L) {
+    if (!L || L.state === "pre" || !text) return null;
+    const parts = String(text).split(/\s+o\s+/i).map((part) => {
+      const ands = part.split(/\s*\+\s*/).map((p) => atom(plain(p), L));
+      return ands.includes(null) ? null : all(ands);
+    });
+    return parts.includes(null) ? null : any(parts);
+  }
+  const sameName = (a, b) => { const x = plain(a).split(" "), y = plain(b).split(" "); if (plain(a) === plain(b)) return true; const lx = x[x.length - 1], ly = y[y.length - 1]; return lx.length > 2 && lx === ly && (x.length === 1 || y.length === 1 || x[0][0] === y[0][0]); };
+  function scorer(name, L) {
+    if (!L || L.state === "pre" || !name) return null;
+    const g = L.goals.find((z) => !z.og && sameName(z.name, name));
+    return g ? { s: "W", txt: g.txt } : { s: L.state === "post" ? "L" : "n" };
+  }
+
+  // ---------- pezzi di pagina comuni ----------
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const TXT = { W: "✓ PRESO", L: "✗ PERSO", w: "PER ORA ✓", l: "PER ORA ✗", n: "IN CORSO" };
+  const TIP = { W: "Non può più cambiare: giocata vinta (esito dal live, Claude lo salva quando gli chiedi di aggiornare i risultati)", L: "Non può più cambiare: giocata persa (esito dal live)", w: "In questo momento la giocata sta vincendo, ma può ancora cambiare", l: "In questo momento la giocata sta perdendo, ma si può ancora recuperare", n: "Partita in corso: questa giocata si decide più avanti" };
+  const tag = (s, txt) => (s ? '<span class="lv lv-' + (s === "W" ? "W" : s === "L" ? "L" : s === "w" ? "w" : s === "l" ? "l" : "n") + '" title="' + esc(TIP[s] || "") + '">' + esc(txt || TXT[s]) + "</span>" : "");
+  const scoreTxt = (L) => (L && L.state !== "pre" ? L.h + "-" + L.a : "");
+  const htTxt = (L) => (L && L.state !== "pre" ? L.hh + "-" + L.ha : "");
+  const clockTag = (L) => (!L || L.state === "pre" ? "" : L.state === "in" ? '<span class="lvc" title="partita in corso">' + esc(L.clock || "LIVE") + "</span>" : '<span class="lvf" title="partita finita">FINALE</span>');
+  const bar = () => {
+    const n = Array.from(S.boards.values()).reduce((k, b) => k + b.ev.filter((e) => e.state === "in").length, 0);
+    if (!S.at) return "";
+    return '<div class="lvbar"><span class="dot' + (n ? " on" : "") + '"></span><b>LIVE</b> · ' + (n ? n + (n === 1 ? " partita in corso" : " partite in corso") : "nessuna partita in corso") +
+      " · aggiornato alle " + S.at.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + (n ? " · si aggiorna da solo ogni 30 secondi" : "") + "</div>";
+  };
+  window.APP.live = { need, get, market, scorer, tag, scoreTxt, htTxt, clockTag, bar, TXT };
+})();
+</script>
+<script>
+(function () {
+  "use strict";
   const ME = "idee", on = () => window.APP.active === ME;
   // PRONOSTICI (ex IDEE): analisi delle partite e marcatori, scritti da Claude o a mano.
   //  ideas/*    marcatori  { date, time?, player, match, comp, conf: alta|media|bassa, prob (0-100), why, odds, hit: true|false|null, created }
@@ -1084,6 +1277,7 @@ function fileDB() {
     if (!on()) return;
     const C = compute(), day = curDay(C), D = dayData(C, day), G = giocate(C, D);
     if (!S.month) S.month = U.monthOf(day);
+    if (window.APP.live) window.APP.live.need(D.cards.map((c) => { const [home, away] = teamsOf(c); return { date: c.date, time: c.time, comp: c.comp, home, away, links: c.fx && c.fx.links }; }));
     $("tb-left").textContent = "· " + (day === C.today ? "oggi, " : "") + longDay.format(toDate(day));
     $("tb-right").textContent = D.cards.length + (D.cards.length === 1 ? " partita" : " partite") + " · " + D.picks.length + " pronostici · " + D.ideas.length + " marcatori";
     renderKpis(C, D);
@@ -1122,28 +1316,44 @@ function fileDB() {
     list.sort(cmp[S.sort] || cmp.time);
     return { all, list, res };
   }
-  function resCell(o, today) {
+  // LIVE: risultato in tempo reale della partita (null se non è iniziata o non è stata trovata)
+  const liveOf = (date, time, comp, home, away, fx) => (window.APP.live ? window.APP.live.get({ date, time: time || (fx && fx.time) || "", comp, home, away, links: fx && fx.links }) : null);
+  const liveOn = (L) => !!(L && L.state && L.state !== "pre");
+  function liveRes(o, L) {
+    const LV = window.APP.live;
+    if (o.t === "i") { const s = LV.scorer(o.x.player, L); return s.s === "W" ? LV.tag("W", "✓ SEGNATO " + (s.txt || "")) : s.s === "L" ? LV.tag("L", "✗ NON HA SEGNATO") : LV.tag("n", "NON ANCORA"); }
+    const s = LV.market(o.x.market, L); return s ? LV.tag(s) : LV.tag("n", "IN CORSO");
+  }
+  // PT e finale: durante la partita quelli del live, dopo quelli salvati da Claude (o del live, se Claude non li ha ancora salvati)
+  function scoreCells(r, L) {
+    const LV = window.APP.live, live = liveOn(L), now = live && L.state === "in";
+    const ht = now ? LV.htTxt(L) : r.ht || (live ? LV.htTxt(L) : ""), ft = now ? LV.scoreTxt(L) : r.result || (live ? LV.scoreTxt(L) : "");
+    return '<td class="c ht">' + esc(ht) + '</td><td class="c ft">' + esc(ft) + (now || (live && !r.result) ? LV.clockTag(L) : "") + "</td>";
+  }
+  function resCell(o, today, L) {
     const h = o.x.hit;
     if (h === true) return '<span class="res w">✓ ' + (o.t === "i" ? "SEGNATO" : "PRESO") + "</span>";
     if (h === false) return '<span class="res l">✗ ' + (o.t === "i" ? "NO" : "PERSO") + "</span>";
+    if (liveOn(L)) return liveRes(o, L);
     return o.x.vday < today ? '<span class="res o">DA VERIFICARE</span>' : '<span class="res p">da giocare</span>';
   }
+  const liveBar = () => (window.APP.live ? window.APP.live.bar() : "");
   const th = (v, l, cls) => '<th class="' + (cls || "") + '">' + (v ? '<button type="button" class="thb' + (S.sort === v ? " on" : "") + '" data-act="psort" data-v="' + v + '">' + l + (S.sort === v ? " ▾" : "") + "</button>" : l) + "</th>";
   function tabPlays(C, D, G, day) {
     if (!G.all.length) return '<div class="panel"><div class="empty">' + (S.ready.picks && S.ready.ideas ? "Nessuna giocata per questo giorno. Chiedi a Claude i pronostici del giorno, oppure aggiungili con + PRONOSTICO." : "CARICAMENTO…") + "</div></div>";
     if (!G.list.length) return '<div class="panel"><div class="empty">Nessuna giocata con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
-    let h = '<div class="gtw"><table class="gt"><thead><tr>' + th("time", "ORA") + th("comp", "CAMPIONATO") + th("", "CASA") + th("", "OSPITE") + th("", "PT", "c") + th("", "FIN", "c") +
+    let h = liveBar() + '<div class="gtw"><table class="gt"><thead><tr>' + th("time", "ORA") + th("comp", "CAMPIONATO") + th("", "CASA") + th("", "OSPITE") + th("", "PT", "c") + th("", "FIN", "c") +
       th("", "GIOCATA") + th("conf", "FIDUCIA") + th("prob", "PROB", "r") + th("", "QUOTA", "r") + th("", "ESITO", "r") + "</tr></thead><tbody>";
     for (const o of G.list) {
-      const open = S.rows.has(o.rid), x = o.x, night = x.date !== day;
+      const open = S.rows.has(o.rid), x = o.x, night = x.date !== day, L = liveOf(x.date, x.time, o.comp, o.home, o.away, o.c && o.c.fx);
       h += '<tr class="row' + (open ? " sel" : "") + '" data-act="prow" data-id="' + esc(o.rid) + '" aria-expanded="' + open + '">' +
         '<td class="tm">' + esc(x.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + "</td>" +
         '<td class="cp"><span class="cpi">' + U.flag(o.comp) + esc(U.tc(o.comp)) + "</span></td>" +
         '<td class="tn h">' + esc(o.home) + '<span class="vs"> – ' + esc(o.away) + '</span></td><td class="tn a">' + esc(o.away) + "</td>" +
-        '<td class="c ht">' + esc(o.r.ht || "") + '</td><td class="c ft">' + esc(o.r.result || "") + "</td>" +
+        scoreCells(o.r, L) +
         '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(x.player) : esc(x.market)) + "</td>" +
         '<td class="cf">' + confLow(x.conf) + '</td><td class="r pr"><b>' + (hasProb(x.prob) ? Math.round(Number(x.prob)) + "%" : "—") + "</b></td>" +
-        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : "") + '</td><td class="r es">' + resCell(o, C.today) + "</td></tr>";
+        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : "") + '</td><td class="r es">' + resCell(o, C.today, L) + "</td></tr>";
       if (open) h += '<tr class="gx"><td colspan="11">' + expand(o, day, C.today) + "</td></tr>";
     }
     return h + '</tbody></table></div><div class="note">Una riga per ogni giocata. Tocca una riga per leggere il motivo e aprire la scheda della partita. Tocca ORA, CAMPIONATO, FIDUCIA o PROB per ordinare.</div>';
@@ -1165,17 +1375,19 @@ function fileDB() {
     if (!D.cards.length) return '<div class="panel"><div class="empty">' + (S.ready.fixtures && S.ready.picks ? "Nessuna partita per questo giorno. Chiedi a Claude i pronostici del giorno: li scrive qui." : "CARICAMENTO…") + "</div></div>";
     const cards = D.cards.filter((c) => !S.comps.size || S.comps.has(c.comp));
     if (!cards.length) return '<div class="panel"><div class="empty">Nessuna partita con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
-    let h = '<div class="gtw"><table class="gt"><thead><tr><th>ORA</th><th>CAMPIONATO</th><th>CASA</th><th>OSPITE</th><th>1 · X · 2 <span class="mut">stima</span></th><th>GIOCATE</th><th class="c">PT</th><th class="c">FIN</th></tr></thead><tbody>';
+    let h = liveBar() + '<div class="gtw"><table class="gt"><thead><tr><th>ORA</th><th>CAMPIONATO</th><th>CASA</th><th>OSPITE</th><th>1 · X · 2 <span class="mut">stima</span></th><th>GIOCATE</th><th class="c">PT</th><th class="c">FIN</th></tr></thead><tbody>';
     for (const c of cards) {
-      const open = S.mrows.has(c.k), f = c.fx || {}, [home, away] = teamsOf(c), r = G.res.get(c.k) || {}, night = c.date !== day;
-      const chips = [].concat(c.picks.map((p) => ({ l: p.market, h: p.hit })), c.ideas.map((i) => ({ l: i.player, h: i.hit })))
-        .map((y) => '<span class="res ' + (y.h === true ? "w" : y.h === false ? "l" : "p") + '">' + esc(y.l) + (y.h === true ? " ✓" : y.h === false ? " ✗" : "") + "</span>").join("");
+      const open = S.mrows.has(c.k), f = c.fx || {}, [home, away] = teamsOf(c), r = G.res.get(c.k) || {}, night = c.date !== day, L = liveOf(c.date, c.time, c.comp, home, away, c.fx), LV = window.APP.live;
+      // con la partita in corso (o finita e non ancora segnata) il colore viene dal live: pieno = deciso, chiaro = per ora
+      const lvs = (y) => (y.h !== null || !liveOn(L) ? null : y.t === "i" ? LV.scorer(y.l, L).s : LV.market(y.l, L) || "n");
+      const chips = [].concat(c.picks.map((p) => ({ t: "p", l: p.market, h: p.hit })), c.ideas.map((i) => ({ t: "i", l: i.player, h: i.hit })))
+        .map((y) => { const s = lvs(y); return s ? LV.tag(s, y.l + (s === "W" ? " ✓" : s === "L" ? " ✗" : s === "w" ? " · per ora ✓" : s === "l" ? " · per ora ✗" : "")) : '<span class="res ' + (y.h === true ? "w" : y.h === false ? "l" : "p") + '">' + esc(y.l) + (y.h === true ? " ✓" : y.h === false ? " ✗" : "") + "</span>"; }).join("");
       h += '<tr class="row' + (open ? " sel" : "") + '" data-act="pmrow" data-id="' + esc(c.k) + '" aria-expanded="' + open + '">' +
         '<td class="tm">' + esc(c.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + '</td><td class="cp"><span class="cpi">' + U.flag(c.comp) + esc(U.tc(c.comp)) + "</span></td>" +
         '<td class="tn h">' + esc(home) + '<span class="vs"> – ' + esc(away) + '</span></td><td class="tn a">' + esc(away) + "</td>" +
         '<td class="px">' + (hasProb(f.p1) ? '<span class="p1x2 num"><span>1 <b>' + Math.round(f.p1) + "%</b></span><span>X <b>" + Math.round(Number(f.px) || 0) + "%</b></span><span>2 <b>" + Math.round(Number(f.p2) || 0) + "%</b></span></span>" : '<span class="mut">—</span>') + "</td>" +
         '<td class="ch"><span class="chipsm">' + (chips || '<span class="mut">nessuna</span>') + "</span></td>" +
-        '<td class="c ht">' + esc(r.ht || "") + '</td><td class="c ft">' + esc(r.result || "") + "</td></tr>";
+        scoreCells(r, L) + "</tr>";
       if (open) h += '<tr class="gx"><td colspan="8"><div class="gxin">' + card(c, day) + "</div></td></tr>";
     }
     return h + '</tbody></table></div><div class="note">Tocca una partita per la scheda completa: probabilità, analisi, assenti, formazioni, rose e link.</div>';
@@ -1587,17 +1799,28 @@ function fileDB() {
   }
   const mkSeg = () => '<div class="mkseg" role="group" aria-label="Ordina per">' + MK.map((x) => '<button type="button" data-act="smk" data-mk="' + x[0] + '" aria-pressed="' + (S.mk === x[0]) + '" title="' + esc(x[2]) + '">' + x[1] + "</button>").join("") + "</div>";
   const sampSeg = () => '<div class="seg sseg" role="group" aria-label="Campione"><button type="button" data-act="ssamp" data-s="l" aria-pressed="' + (S.sample === "l") + '">ULTIME 15</button><button type="button" data-act="ssamp" data-s="s" aria-pressed="' + (S.sample === "s") + '">SOLO STAGIONE</button></div>';
+  // LIVE: le giocate della tabella scritte come le capisce window.APP.live.market
+  const LVM = { cb: "1 PT o Over 1,5 PT", w1: "1 PT", sc: "Casa segna PT", o05: "Over 0,5 PT", o15: "Over 1,5 PT", m02: "Multigol 0-2 PT", m13: "Multigol 1-3 PT", m14: "Multigol 1-4 PT", c2: "Over 0,5 PT + Over 0,5 2T", s05: "Over 0,5 2T", rx: "Esatti 0-0 / 1-1", r1: "Esatti 1-0 / 2-0 / 2-1", r2: "Esatti 0-1 / 0-2 / 1-2" };
+  const LVI = { W: " ✓", L: " ✗", w: " ·✓", l: " ·✗", n: "" };
+  // la partita come la cerca il live: se Claude l'ha caricata nel calendario, uso il suo link ESPN (abbinamento sicuro)
+  const liveItem = (x) => { const fx = x.f.links ? x.f : S.fixtures.find((f) => f.date === x.f.date && x.H && x.A && find(f.home) === x.H && find(f.away) === x.A); return { date: x.f.date, time: x.f.time, comp: x.comp, home: x.f.home, away: x.f.away, links: fx && fx.links }; };
+  const liveOf = (x) => (window.APP.live ? window.APP.live.get(liveItem(x)) : null);
   function tabDay(M, m, day) {
+    if (window.APP.live) window.APP.live.need(M.map(liveItem));
     if (!M.length) return '<div class="panel"><div class="empty">' + (S.ready ? "Nessuna partita dei 12 campionati in questo giorno. Scegli un altro giorno qui sopra, oppure chiedi a Claude di aggiornare le statistiche." : "CARICAMENTO…") + "</div></div>";
     const list = S.ecomps.size ? M.filter((x) => S.ecomps.has(x.comp)) : M;
     if (!list.length) return '<div class="panel"><div class="empty">Nessuna partita dei campionati scelti in questo giorno.</div></div>';
     let h = '<div class="note"><b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". La stima è la media tra la squadra di casa nelle partite in casa e l'ospite nelle partite in trasferta.</div>";
+    const LV = window.APP.live, anyLive = !!LV && list.some((x) => { const L = liveOf(x); return L && L.state !== "pre"; });
+    if (anyLive) h += LV.bar() + '<div class="note">LIVE: accanto alla partita il risultato in tempo reale (PT tra parentesi). Ogni casella si colora mentre si gioca: <span class="lv lv-W">pieno verde ✓</span> = presa, <span class="lv lv-L">pieno rosso ✗</span> = persa, <span class="lv lv-w">chiaro ·✓</span> / <span class="lv lv-l">chiaro ·✗</span> = per ora, può ancora cambiare.</div>';
     h += '<div class="panel"><div class="ph"><span>PARTITE (' + list.length + ")</span><span class=\"r\">tocca una partita per i dettagli</span></div><div class=\"scroll\"><table class=\"stab\"><thead>" + grpHead(2, 0) + "<tr><th class=\"l\">#</th><th class=\"l\">PARTITA</th>" +
       MK.map((x) => '<th class="' + (x[0] === m[0] ? "on" : "") + '" title="' + esc(x[1]) + '">' + SH[x[0]] + "</th>").join("") + "</tr></thead><tbody>";
     list.forEach((x, i) => {
-      const open = S.open.has(x.k), night = x.f.date !== day;
-      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc([x.f.time ? x.f.time + (night ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ")) + "</span></td>" +
-        MK.map((mm) => { const e = x.E[mm[0]]; return '<td class="num ' + cls(e.v, mm[0]) + (mm[0] === m[0] ? " on" : "") + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>"; }).join("") + "</tr>";
+      const open = S.open.has(x.k), night = x.f.date !== day, L = liveOf(x), live = !!L && L.state !== "pre";
+      const sc = live ? ' <span class="lvs num">' + LV.scoreTxt(L) + ' <span class="mut">(' + LV.htTxt(L) + ")</span></span>" + LV.clockTag(L) : "";
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + "</b>" + sc + '<span class="m">' + FL(x.comp) + esc([x.f.time ? x.f.time + (night ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ")) + "</span></td>" +
+        MK.map((mm) => { const e = x.E[mm[0]], s = live ? LV.market(LVM[mm[0]], L) || "n" : null;
+          return '<td class="num ' + cls(e.v, mm[0]) + (mm[0] === m[0] ? " on" : "") + (s ? " lvx-" + s : "") + '"' + (s && s !== "n" ? ' title="' + esc(LV.TXT[s]) + '"' : "") + ">" + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + (s ? LVI[s] : "") + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>"; }).join("") + "</tr>";
       if (open) h += '<tr class="det"><td colspan="' + (MK.length + 2) + '">' + detail(x) + "</td></tr>";
     });
     return h + "</tbody></table></div></div>";
