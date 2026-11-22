@@ -622,6 +622,8 @@ table.cmp tr.grh td { background: #f7f8fa; color: #374151; font-size: 9.5px; fon
 .lay table.stab thead tr:last-child th { white-space: normal; line-height: 1.25; vertical-align: bottom; }
 .lay table.stab td.mt { min-width: 160px; }
 .lay table.stab tr.lvrow .lv { white-space: normal; line-height: 1.2; }
+table.stab th.c, table.stab td.c { text-align: center; }
+table.stab td.evx .lv { font-size: 10px; }
 .lgh { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: #374151; margin: 4px 0 1px 4px; }
 
 @media (max-width: 760px) {
@@ -1908,6 +1910,12 @@ function fileDB() {
     });
     return h + "</tbody></table></div></div>";
   }
+  // MIGLIORI EVENTI: esito della giocata scelta, risultato del primo tempo e finale (dal live)
+  function evRes(x, m) {
+    const LV = window.APP.live, L = LV ? liveOf(x) : null;
+    if (!L || L.state === "pre") return '<td class="c mut evx">' + (L || x.f.date >= todayISO() ? "da giocare" : "—") + '</td><td class="c mut">—</td><td class="c mut">—</td>';
+    return '<td class="c evx">' + LV.tag(LV.market(LVM[m[0]], L) || "n") + '</td><td class="c num">' + esc(LV.htTxt(L)) + '</td><td class="c num"><b>' + esc(LV.scoreTxt(L)) + "</b>" + LV.clockTag(L) + "</td>";
+  }
   function tabEvents() {
     const m = mkOf(S.mk), today = todayISO();
     let rows = S.evs.filter((x) => x.H).map(withE);
@@ -1921,17 +1929,18 @@ function fileDB() {
     let h = '<div class="note"><b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". <b>Probabilità</b> = media tra la squadra di casa nelle sue partite in casa e l'avversaria nelle sue partite in trasferta. Il calendario arriva fino al " + (dset.length ? dm(dset[dset.length - 1]) : "—") + ".</div>";
     h += leagueRS(m);
     if (!rows.length) return h + '<div class="panel"><div class="empty">Nessuna partita in calendario. Chiedi a Claude di aggiornare le statistiche.</div></div>';
-    const re = RE.has(m[0]), shown = S.evAll ? rows : rows.slice(0, EV_TOP), MI = re ? 5 : 7;
+    const re = RE.has(m[0]), shown = S.evAll ? rows : rows.slice(0, EV_TOP), MI = re ? 8 : 10, LV = window.APP.live;
+    if (LV) LV.need(shown.map(liveItem));
     h += '<div class="panel"><div class="ph"><span>MIGLIORI EVENTI PER ' + esc(m[1]) + " (" + rows.length + ')</span><span class="r">tocca una partita per i dettagli</span></div><div class="scroll"><table class="stab ev"><thead><tr><th class="l">#</th><th class="l">PARTITA</th>' +
       '<th title="la squadra di casa nelle sue partite in casa">CASA<br><span class="mut">in casa</span></th><th title="l\'avversaria nelle sue partite in trasferta">OSPITE<br><span class="mut">in trasferta</span></th>' +
       (re ? "" : '<th title="quante volte l\'ospite, in trasferta, ha perso o pareggiato il primo tempo">OSPITE PT<br><span class="mut">perso o pari</span></th><th title="quante volte l\'ospite, in trasferta, ha subito almeno 1 gol nel primo tempo">OSPITE SUBISCE<br><span class="mut">gol nel PT</span></th>') +
-      '<th class="on">PROBABILITÀ</th></tr></thead><tbody>';
+      '<th class="on">PROBABILITÀ</th><th class="c" title="esito della giocata scelta in ORDINA PER (dal live, si aggiorna da solo)">ESITO</th><th class="c" title="risultato del primo tempo">PT</th><th class="c" title="risultato finale (durante la partita: risultato adesso e minuto)">FINALE</th></tr></thead><tbody>';
     shown.forEach((x, i) => {
       const e = x.E[m[0]], open = S.open.has(x.k), a = awayNP(blk(x.A, "a")), few = (e.hn && e.hn < minN()) || (e.an && e.an < minN());
       const pc = (v, num, n, id) => (v === null || v === undefined ? '<td class="num mut">—</td>' : '<td class="num ' + cls(v, id) + '">' + P(v) + ' <span class="mut">' + num + "/" + n + "</span></td>");
       h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
         pc(e.hr, e.hx, e.hn, m[0]) + pc(e.ar, e.ax, e.an, m[0]) + (re ? "" : a ? pc(a.np, a.npx, a.n) + pc(a.con, a.conx, a.n) : '<td class="num mut">—</td><td class="num mut">—</td>') +
-        '<td class="num on ' + cls(e.v, m[0]) + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td></tr>";
+        '<td class="num on ' + cls(e.v, m[0]) + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>" + evRes(x, m) + "</tr>";
       if (open) h += '<tr class="det"><td colspan="' + MI + '">' + detail(x) + "</td></tr>";
     });
     h += "</tbody></table></div>" + (rows.length > EV_TOP ? '<div class="more"><button type="button" class="btn" data-act="sevall">' + (S.evAll ? "MOSTRA SOLO LE PRIME " + EV_TOP : "MOSTRA TUTTE (" + rows.length + ")") + "</button></div>" : "") + "</div>";
