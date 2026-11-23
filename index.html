@@ -744,6 +744,25 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
 .ck .ckr .ckn { font-weight: 700; font-size: 11px; }
 .ck .ckq { font-size: 12px; border-top: 1px solid var(--line2); padding-top: 6px; margin-top: 2px; }
 @media (max-width: 760px) { .ck .ckr { grid-template-columns: 15px 1fr; } .ck .ckr .ckt { grid-column: 2; } }
+/* LEGENDA di Pronostici (23/11): pulsante ? e finestra */
+.tabrow { display: flex; align-items: center; gap: 8px; max-width: 100%; }
+.tabrow .tabs { min-width: 0; }
+.legbtn { flex: none; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--acc); font-weight: 800; font-size: 13px; display: grid; place-items: center; cursor: pointer; }
+.legbtn:hover { background: #e8eefc; border-color: var(--acc); }
+.lgsheet { max-width: 780px; padding: 0; gap: 0; max-height: calc(100% - 24px); display: flex; flex-direction: column; overflow: hidden; }
+.lgsheet > h3 { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: none; }
+.lgsheet > :not(h3) { margin: 0; }
+.lgx { border: 0; background: transparent; font-size: 20px; line-height: 1; color: var(--muted); cursor: pointer; padding: 0 4px; }
+.lgbody { overflow-y: auto; padding: 0 16px 16px; display: grid; gap: 14px; }
+.lgtoc { position: sticky; top: 0; z-index: 1; background: #fff; display: flex; flex-wrap: wrap; gap: 5px; padding: 10px 0 8px; border-bottom: 1px solid var(--line2); }
+.lgtoc button { border: 1px solid var(--line); background: var(--panel2); border-radius: 999px; padding: 3px 9px; font-size: 10.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.lgtoc button:hover { border-color: var(--acc); color: var(--acc); }
+.lgs { display: grid; gap: 0; scroll-margin-top: 50px; }
+.lgs h4 { margin: 0 0 4px; font-size: 10.5px; letter-spacing: .07em; color: var(--acc); }
+.lgr { display: grid; grid-template-columns: 210px 1fr; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line2); align-items: start; }
+.lgr .lge { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12px; }
+.lgr .lgt { font-size: 12px; line-height: 1.5; color: #374151; }
+@media (max-width: 760px) { .lgr { grid-template-columns: 1fr; gap: 4px; } .lgsheet { max-height: calc(100% - 4px); } }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1374,8 +1393,8 @@ function fileDB() {
     renderKpis(C, D);
     $("side").innerHTML = sideHtml(C, D, G, day);
     const wait = C.picks.filter((p) => p.hit === null && p.vday < C.today).length + C.ideas.filter((i) => i.hit === null && i.vday < C.today).length;
-    const tabs = '<nav class="tabs" role="tablist">' + [["giocate", "GIOCATE", G.all.length], ["partite", "PARTITE", D.cards.length], ["esiti", "DA VERIFICARE", wait]]
-      .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="ptab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + "</nav>";
+    const tabs = '<div class="tabrow"><nav class="tabs" role="tablist">' + [["giocate", "GIOCATE", G.all.length], ["partite", "PARTITE", D.cards.length], ["esiti", "DA VERIFICARE", wait]]
+      .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="ptab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + '</nav><button type="button" class="legbtn" data-act="legend" title="Legenda: come si legge questa pagina" aria-label="Legenda">?</button></div>';
     $("i-body").innerHTML = tabs + (S.tab === "esiti" ? tabResults(C) : S.tab === "partite" ? tabMatches(C, D, G, day) : tabPlays(C, D, G, day));
     showBanner(); updatePick();
     document.querySelectorAll('#app [data-act="new-idea"], #app [data-act="new-pick"]').forEach((b) => { b.disabled = !(S.db && S.canWrite); });
@@ -2597,6 +2616,112 @@ function fileDB() {
 
   window.APP.fav = { star, open: openSheet };
   window.APP.apps[ME] = { render, close() { closeSheet(); } };
+})();
+</script>
+<script>
+/* LEGENDA di Pronostici (dal 23/11/2026): pulsante "?" accanto alle schede GIOCATE · PARTITE · DA VERIFICARE.
+   Apre una finestra che spiega ogni cosa della sezione, con esempi veri (stessi colori della pagina). */
+(function () {
+  const ME = "legenda";
+  const $ = (id) => document.getElementById(id);
+  const LV = () => window.APP && window.APP.live;
+  const live = (s, txt) => (LV() ? LV().tag(s, txt) : '<span class="tag p">' + (txt || s) + "</span>");
+  const dots = (vs) => '<span class="ckd" style="margin:0">' + vs.map((v) => '<i class="' + v + '">' + { ok: "✓", no: "✗", mid: "≈", na: "–" }[v] + "</i>").join("") + "</span>";
+  const sq = (v, s) => '<span class="ck" style="display:inline;border:0;padding:0;margin:0;background:none"><span class="cks ' + v + '">' + s + "</span></span>";
+  const fg = (r, t) => '<span class="nw" style="display:inline-grid;border:0;padding:0;background:none"><span class="nwg"><i class="' + ({ V: "w", N: "p", P: "l" }[r]) + '">' + r + "</i><small>" + t + "</small></span></span>";
+  const row = (ex, txt) => '<div class="lgr"><div class="lge">' + ex + '</div><div class="lgt">' + txt + "</div></div>";
+  const sec = (id, title, body) => '<section class="lgs" id="lg-' + id + '"><h4>' + title + "</h4>" + body + "</section>";
+
+  function content() {
+    const toc = [["tab", "Tabella"], ["live", "Live"], ["safe", "Bollino SICURO"], ["ck", "I 7 controlli"], ["est", "Stima e quota minima"], ["card", "Scheda partita"], ["news", "Notizie"], ["tabs", "Altre schede"], ["prova", "Cosa dicono i numeri"]];
+    let h = '<nav class="lgtoc">' + toc.map(([id, t]) => '<button type="button" data-lgto="' + id + '">' + t + "</button>").join("") + "</nav>";
+
+    h += sec("tab", "LA TABELLA GIOCATE · una riga per ogni giocata",
+      row("<b>20:45</b>", "Ora di inizio, ora italiana. Con <b>notte</b> la partita è dopo mezzanotte, ma resta nel giorno prima.") +
+      row('<span style="color:#9aa3ae;font-size:15px">☆</span> <span style="color:#d4a017;font-size:15px">★</span>', "Stellina dei <b>Preferiti</b>: toccala per mettere da parte la partita con la tua giocata e seguirla nella sezione Preferiti.") +
+      row("<b>PT · FIN</b>", "Risultato del primo tempo e risultato finale (o attuale, se la partita è in corso).") +
+      row("<b>X2</b>", "La <b>giocata</b> consigliata. Accanto trovi il bollino SICURO e i 7 quadratini dei controlli (spiegati sotto).") +
+      row('<span class="tag conf w">ALTA</span> <span class="tag conf o">MEDIA</span> <span class="tag conf l">BASSA</span>', "<b>Fiducia</b> di Claude nel pronostico. Da adesso la fiducia alta si dà solo ai pronostici SICURI.") +
+      row("<b>78%</b>", "<b>PROB</b>: probabilità che la giocata esca, secondo Claude.") +
+      row('<b>1,85</b> · <span class="mut">min 1,28</span>', "<b>QUOTA</b>: la quota, se è stata segnata. Se non c'è, vedi la <b>quota minima</b>: sotto questa quota la giocata non conviene.") +
+      row('<span class="res w">✓ PRESO</span> <span class="res l">✗ PERSO</span> <span class="mut">da giocare</span>', "<b>ESITO</b> della giocata. Quello definitivo lo segna Claude quando gli chiedi di aggiornare i risultati.") +
+      row("<i>tocca la riga</i>", "Si apre il <b>motivo</b> del pronostico, la <b>lista dei controlli</b> completa e la <b>scheda partita</b>. Tocca ORA, CAMPIONATO, FIDUCIA o PROB in alto per ordinare."));
+
+    h += sec("live", "IL LIVE · durante la partita",
+      row('<span class="lvbar" style="margin:0;padding:3px 8px;display:inline-flex"><span class="dot on"></span><b>LIVE</b></span>', "Quando una partita è in corso la pagina legge il risultato da ESPN <b>ogni 30 secondi</b>, da sola.") +
+      row(live("W") + " " + live("L"), "<b>Colore pieno = deciso</b>: la giocata non può più cambiare.") +
+      row(live("w") + " " + live("l"), "<b>Colore chiaro = per ora</b>: in questo momento sta vincendo o perdendo, ma può ancora cambiare.") +
+      row(live("n"), "La giocata si decide più avanti (per esempio una giocata sul secondo tempo mentre si gioca il primo).") +
+      row('<span class="tag l">✗ NON HA SEGNATO</span> <span class="tag p">NON ANCORA</span>', "Per i <b>marcatori</b>: segnato (con il minuto), non ancora, oppure non ha segnato a fine partita. Gli autogol non contano."));
+
+    h += sec("safe", "IL BOLLINO SICURO",
+      row('<span class="tag safe">SICURO</span>', "Il pronostico ha superato la lista dei controlli. Serve <b>tutto</b> questo:<br>· statistiche ✓<br>· nessun ✗<br>· almeno 4 ✓<br>· al massimo un ≈<br>· stima combinata almeno 80%.") +
+      row('<span class="mut">nessun bollino</span>', "Il pronostico può uscire lo stesso, ma qualcosa non convince del tutto: apri la riga per vedere cosa.") +
+      row('<span class="mut">Storico</span>', "Nella sezione <b>Storico → PER BOLLINO</b> vedi quanti SICURI sono usciti davvero, a confronto con gli altri."));
+
+    h += sec("ck", "I 7 QUADRATINI · la lista dei controlli",
+      row(dots(["ok", "ok", "ok", "mid", "na", "ok", "na"]), "Uno per ogni controllo, sempre in questo ordine: statistiche, calcolo dei gol, quote, forma, scontri diretti, assenti e stanchezza, motivazioni. Passa sopra (o tocca la riga) per leggere la spiegazione.") +
+      row(sq("ok", "✓") + " " + sq("mid", "≈") + " " + sq("no", "✗") + " " + sq("na", "–"), "<b>✓</b> a favore · <b>≈</b> così così · <b>✗</b> contro · <b>–</b> manca il dato, oppure per quella giocata quel controllo non conta.") +
+      row("<b>1 · Statistiche</b>", "Quante volte è uscita la giocata: squadra di casa nelle partite in casa e ospite nelle partite fuori (ultime 15, o la stagione). ✓ da 70% in su, ✗ fino al 54%.") +
+      row("<b>2 · Calcolo dei gol</b>", "Dai gol fatti e subiti calcola i <b>gol attesi</b> di ogni squadra (anche nel primo tempo) e da lì la probabilità di ogni risultato. Le partite recenti contano di più.") +
+      row("<b>3 · Quote</b>", "Cosa ne pensa il bookmaker. Per 1, X, 2 e doppie confronta la sua probabilità con la nostra; per le giocate sui gol guarda se si aspetta una partita con tanti o pochi gol (linea Over/Under).") +
+      row("<b>4 · Forma</b>", "La giocata provata sulle ultime 5 partite in casa della squadra di casa e sulle ultime 5 fuori dell'ospite. ✓ da 8 su 10.") +
+      row("<b>5 · Scontri diretti</b>", "La giocata provata sui precedenti tra le due squadre (servono almeno 3). Per le giocate su primo o secondo tempo non conta: ESPN dà solo il risultato finale.") +
+      row("<b>6 · Assenti e stanchezza</b>", "Giorni di riposo e coppe vicine (possibile turnover). Gli <b>assenti</b> non sono controllati in automatico: guarda le formazioni ufficiali un'ora prima.") +
+      row("<b>7 · Motivazioni</b>", "La classifica: la squadra che deve fare risultato ha bisogno di punti? Conta solo per 1, X, 2 e doppie."));
+
+    h += sec("est", "STIMA COMBINATA, STORICO E QUOTA MINIMA · in fondo alla lista dei controlli",
+      row("<b>Stima combinata 84%</b>", "Il numero più affidabile: mette insieme bookmaker, calcolo, statistiche e media generale.<br>· Per 1, X, 2 e doppie pesa di più il <b>bookmaker</b> (il più preciso).<br>· Per le giocate sui gol pesa di più <b>quante volte esce in generale</b> quella giocata, perché le statistiche delle squadre la prevedono poco.") +
+      row('<span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA</span>', "La stima combinata e la probabilità scritta da Claude sono lontane 8 punti o più: fidati di più della stima combinata.") +
+      row("<b>Storico di questa giocata</b>", "Quante ne abbiamo prese finora con la stessa giocata. Con <b>almeno 10 casi</b> la stima si corregge da sola (se in passato eravamo troppo ottimisti, scende).") +
+      row("<b>Quota minima 1,28</b>", "Sotto questa quota non conviene giocarla, perché si vince troppo poco rispetto al rischio. È 100 diviso la stima (stima 80% → quota minima 1,25).") +
+      row('<span class="tag w">CONVIENE</span> <span class="tag l">NON CONVIENE</span>', "Confronto tra la quota del bookmaker (quando c'è) e la quota minima."));
+
+    h += sec("card", "LA SCHEDA PARTITA · tocca una partita in PARTITE, o apri “Scheda partita” in una riga",
+      row('<div class="pbar" style="width:120px;margin:0"><i class="a" style="flex:44"></i><i class="x" style="flex:27"></i><i class="b" style="flex:29"></i></div>', "<b>Probabilità del risultato</b> stimata da Claude: blu = vince la squadra di casa (1), grigio = pareggio (X), arancione = vince l'ospite (2).") +
+      row("<b>Pronostici consigliati</b>", "Le giocate con fiducia, probabilità, bollino e quadratini. Tocca per modificare.") +
+      row("<b>Analisi · Marcatori · Assenti</b>", "Il ragionamento di Claude, i marcatori consigliati con la loro probabilità e le notizie sugli assenti.") +
+      row("<b>Link</b>", "Formazioni ufficiali su Diretta.it (circa un'ora prima) e scheda della partita su ESPN."));
+
+    h += sec("news", "LE NOTIZIE DELLA PARTITA · dentro la scheda partita, da ESPN",
+      row("<b>Quote</b> 1 <b>1,48</b> <span class=\"mut\">64%</span>", "Quote del bookmaker. Tra parentesi la probabilità vera, cioè <b>senza il guadagno del bookmaker</b>.") +
+      row(fg("V", "C 2-0") + fg("N", "T 1-1") + fg("P", "C 0-1"), "<b>Forma</b>, ultime 5 partite (anche di coppa), dalla più vecchia alla più recente. V vinta, N pareggiata, P persa. <b>C</b> in casa, <b>T</b> in trasferta; prima i gol della squadra.") +
+      row("<b>Scontri diretti</b>", "Gli ultimi precedenti e quante ne ha vinte ciascuna squadra.") +
+      row("<b>Classifica e motivazioni</b>", "Posizione, punti e quanto manca alla zona alta (Champions o promozione) e alla salvezza.") +
+      row('<span class="tag o">POCO RIPOSO</span>', "La squadra ha giocato 3 giorni fa o meno.") +
+      row('<span class="tag o">COPPA TRA 3 GIORNI: POSSIBILE TURNOVER</span>', "Subito dopo ha una partita di coppa: potrebbe far riposare i titolari."));
+
+    h += sec("tabs", "LE ALTRE SCHEDE E LA COLONNA DEI FILTRI",
+      row("<b>PARTITE</b>", "Una riga per ogni partita del giorno (anche senza pronostici), con la stima 1-X-2, le giocate e il risultato.") +
+      row("<b>DA VERIFICARE</b>", "Pronostici e marcatori dei giorni passati senza esito: chiedi a Claude di aggiornare i risultati.") +
+      row("<b>Filtri</b>", "Giorno (calendario), campionati, tipo di giocata e fiducia. Sul telefono si aprono con il pulsante FILTRI."));
+
+    h += sec("prova", "COSA DICONO I NUMERI · prova su 720 partite già giocate (settembre-novembre 2026, 12 campionati)",
+      row("<b>1X · X2</b>", "Qui i dati funzionano davvero. 1X con il bookmaker all'80% o più: <b>presa 90 volte su 100</b>. Con bookmaker, calcolo e statistiche d'accordo: <b>93 su 100</b>. X2 con il bookmaker all'85% o più: 16 su 17.") +
+      row("<b>Giocate sui gol</b>", "Escono più o meno sempre con la stessa frequenza, anche quando le statistiche dicono 90%:<br>· Over 0,5 2T circa <b>81%</b><br>· Over 1,5 circa <b>78%</b><br>· Over 0,5 PT circa <b>73%</b><br>· Multigol 1-3 PT circa <b>69%</b><br>· 1 PT o Over 1,5 PT circa <b>57%</b><br>· Over 2,5 e Goal circa <b>55%</b>") +
+      row("<b>In pratica</b>", "Per un pronostico quasi certo cerca il bollino <b>SICURO</b>, meglio se su 1X o X2. Nessun pronostico è certo al 100%: anche al 90% si perde una volta su dieci, e in una multipla i rischi si sommano."));
+    return h;
+  }
+
+  function ov() {
+    let o = $("lg-ov");
+    if (!o) {
+      o = document.createElement("div"); o.className = "overlay"; o.id = "lg-ov"; o.hidden = true;
+      o.innerHTML = '<div class="sheet lgsheet" role="dialog" aria-modal="true" aria-label="Legenda"><h3>LEGENDA · COME SI LEGGE LA PAGINA PRONOSTICI<button type="button" class="lgx" data-lgclose aria-label="Chiudi">×</button></h3><div class="lgbody" id="lg-body"></div></div>';
+      document.body.appendChild(o);
+      o.addEventListener("click", (e) => {
+        if (e.target === o || e.target.closest("[data-lgclose]")) { o.hidden = true; return; }
+        const t = e.target.closest("[data-lgto]");
+        if (t) { const s = $("lg-" + t.dataset.lgto); if (s) s.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !o.hidden) o.hidden = true; });
+    }
+    return o;
+  }
+  function open() { const o = ov(); $("lg-body").innerHTML = content(); o.hidden = false; $("lg-body").scrollTop = 0; }
+  document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest('[data-act="legend"]'); if (b) { e.preventDefault(); open(); } });
+  window.APP = window.APP || {};
+  window.APP.legend = { open, ME };
 })();
 </script>
 <script>
