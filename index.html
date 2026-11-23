@@ -856,13 +856,41 @@ table.lgtab .l { text-align: left; }
   .scd table.cmp { font-size: 11px; }
   .scd table.cmp th, .scd table.cmp td { padding: 3px 4px; }
 }
+/* CLASSIFICHE (23/11): sezione con le classifiche di tutti i campionati */
+table.ctab th[data-act="csort"] { cursor: pointer; user-select: none; }
+table.ctab th[data-act="csort"]:hover { color: var(--acc); }
+table.ctab td.cpos { width: 30px; font-weight: 700; color: var(--ink); padding-left: 10px; }
+table.ctab td, table.ctab th { white-space: nowrap; }
+.cf { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 4px; font-size: 9.5px; font-weight: 800; font-style: normal; margin-right: 2px; }
+.cf.V { background: #15803d; color: #fff; } .cf.N { background: #e5e7eb; color: #374151; } .cf.P { background: #c81e1e; color: #fff; }
+.cfm { white-space: nowrap; }
+.czl { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 9px 12px 11px; border-top: 1px solid var(--line2); font-size: 11px; color: var(--muted); }
+.czl span { display: inline-flex; align-items: center; gap: 6px; }
+.czl i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.cgn { padding: 8px 12px 0; font-size: 10px; font-weight: 700; letter-spacing: .07em; color: var(--muted); }
+.cnx { font-size: 11.5px; }
+.cdet { display: grid; gap: 8px; padding: 4px 2px 6px; white-space: normal; }
+.cdg { display: grid; gap: 4px; }
+.cdl { display: grid; grid-template-columns: 110px 1fr; gap: 8px; font-size: 12px; align-items: baseline; }
+.cdl .cbk { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); }
+.cdh { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); margin-top: 4px; }
+table.cdt { border-collapse: collapse; font-size: 12px; width: auto !important; min-width: 0 !important; }
+table.cdt td { padding: 3px 10px 3px 0; border-bottom: 1px solid var(--line2); white-space: nowrap; }
+table.cdt td.l { min-width: 130px; }
+@media (max-width: 760px) {
+  table.ctab .xm { display: none; }
+  table.ctab td, table.ctab th { padding-left: 5px; padding-right: 5px; }
+  .cdl { grid-template-columns: 1fr; gap: 1px; }
+  table.cdt { font-size: 11px; }
+  table.cdt td.l { min-width: 0; white-space: normal; }
+}
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
 </head>
 <body>
 <div class="shell">
-<nav class="rail" role="tablist" aria-label="Sezioni"><span class="logo" title="Wincere Gold"></span><button type="button" role="tab" data-app="idee" aria-selected="false" title="analisi delle partite e marcatori consigliati"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Pronostici</span></button><button type="button" role="tab" data-app="stats" aria-selected="false" title="come vanno le squadre nel primo tempo, in casa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg><span>Statistiche</span></button><button type="button" role="tab" data-app="storico" aria-selected="false" title="tutti gli esiti dei pronostici e dei marcatori"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 8v4l3 2"></path></svg><span>Storico</span></button><button type="button" role="tab" data-app="pref" aria-selected="false" title="le partite che hai messo da parte con la stellina, con la tua giocata in tempo reale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.15 1 5.85L12 16.9l-5.25 2.8 1-5.85L3.5 9.7l5.9-.9z"></path></svg><span>Preferiti</span></button></nav>
+<nav class="rail" role="tablist" aria-label="Sezioni"><span class="logo" title="Wincere Gold"></span><button type="button" role="tab" data-app="idee" aria-selected="false" title="analisi delle partite e marcatori consigliati"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Pronostici</span></button><button type="button" role="tab" data-app="stats" aria-selected="false" title="come vanno le squadre nel primo tempo, in casa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg><span>Statistiche</span></button><button type="button" role="tab" data-app="classi" aria-selected="false" title="le classifiche complete di tutti i campionati"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg><span>Classifiche</span></button><button type="button" role="tab" data-app="storico" aria-selected="false" title="tutti gli esiti dei pronostici e dei marcatori"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 8v4l3 2"></path></svg><span>Storico</span></button><button type="button" role="tab" data-app="pref" aria-selected="false" title="le partite che hai messo da parte con la stellina, con la tua giocata in tempo reale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.15 1 5.85L12 16.9l-5.25 2.8 1-5.85L3.5 9.7l5.9-.9z"></path></svg><span>Preferiti</span></button></nav>
 <div id="app"></div>
 </div>
 <template id="tpl-idee">
@@ -900,6 +928,25 @@ table.lgtab .l { text-align: left; }
     </header>
     <div class="banner" id="banner" hidden></div>
     <div id="s-body" class="body"></div>
+  </div>
+</div>
+</template>
+
+<template id="tpl-classi">
+<div class="lay">
+  <aside class="side" id="side" aria-label="Filtri"></aside>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>Classifiche <small id="tb-left"></small></h1>
+        <div class="sub num" id="tb-right"></div>
+      </div>
+      <div class="hr">
+        <section class="kpis" id="kpis" aria-label="Numeri principali"></section>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <div id="c-body" class="body"></div>
   </div>
 </div>
 </template>
@@ -2403,13 +2450,14 @@ function fileDB() {
 
   // ---------- avvio ----------
   window.APP.apps[ME] = { render, close() {} };
-  window.APP.stats = { cal: () => (S.data ? S.data.cal : null), names: MKL, ids: () => MK.map((m) => m[0]), sample: () => S.sample, myMin, minN };
+  window.APP.stats = { raw: () => S.data, err: () => S.err, cal: () => (S.data ? S.data.cal : null), names: MKL, ids: () => MK.map((m) => m[0]), sample: () => S.sample, myMin, minN };
   (async function start() {
     try {
       const r = await fetch("stats.json", { cache: "no-store" });
       if (!r.ok) throw new Error(String(r.status));
       S.data = await r.json(); index();
     } catch (e) { S.err = "Statistiche non disponibili: chiedi a Claude di aggiornarle."; }
+    document.dispatchEvent(new Event("gold-stats"));  // per la sezione Classifiche
     render();
     let db = null; try { db = await window.APP.use("db"); } catch (e) { db = null; }
     if (!db) { S.ready = true; render(); return; }
@@ -2991,6 +3039,49 @@ function fileDB() {
     return h;
   }
 
+  // ---------- LEGENDA DI CLASSIFICHE (dal 23/11/2026) ----------
+  function contentClassi() {
+    const toc = [["cgen", "Generale"], ["czone", "Zone e colori"], ["caltre", "Le altre classifiche"], ["cgol", "Gol"], ["cfil", "Filtri"], ["csq", "Una squadra"], ["cfonti", "Da dove vengono"]];
+    const f = (k) => '<i class="cf ' + k + '">' + k + "</i>";
+    let h = '<nav class="lgtoc">' + toc.map(([id, t]) => '<button type="button" data-lgto="' + id + '">' + t + "</button>").join("") + "</nav>";
+    h += sec("cgen", "LA CLASSIFICA GENERALE",
+      row("<b># · SQUADRA</b>", "Posizione e squadra. Tocca una squadra per vedere i suoi numeri e le ultime partite.") +
+      row("<b>PG · V · N · P</b>", "Partite giocate, vinte, pareggiate, perse.") +
+      row("<b>GF · GS · DR</b>", "Gol fatti, gol subiti, differenza reti.") +
+      row("<b>PUNTI · MEDIA</b>", "Punti in classifica e punti a partita (utile quando le squadre hanno giocato un numero diverso di partite).") +
+      row('<span class="cfm">' + f("V") + f("N") + f("P") + f("V") + f("V") + "</span>", "<b>Forma</b>: le ultime 5 partite, dalla più vecchia (a sinistra) alla più recente. V vinta, N pareggiata, P persa. Passa sopra (o tocca) per data e risultato.") +
+      row('<span class="nx in">C</span> <span class="nx out">F</span>', "<b>Prossima</b> partita: in casa (C) o fuori (F), avversaria e giorno.") +
+      row('<span class="tag l">−3</span>', "Punti di penalità, quando ci sono.") +
+      row("<b>Ordinare</b>", "Tocca il nome di una colonna per ordinare la classifica con quella; toccala di nuovo per invertire l'ordine."));
+    h += sec("czone", "ZONE E COLORI · solo nella classifica generale della stagione",
+      row('<span class="czl" style="margin:0;padding:0;border:0"><span><i style="background:#81D6AC"></i>Champions / Promozione</span></span>', "La striscia colorata accanto alla posizione dice in che zona è la squadra adesso. Sotto la classifica c'è la spiegazione dei colori di quel campionato.") +
+      row("<b>Le zone</b>", "Champions League, Europa League, Conference League (e i loro preliminari), playoff per le coppe, promozione, playoff promozione, girone per il titolo, playout salvezza, retrocessione. Le decide il regolamento di ogni campionato e le dà ESPN."));
+    h += sec("caltre", "LE ALTRE CLASSIFICHE",
+      row("<b>IN CASA · IN TRASFERTA</b>", "La classifica contando solo le partite giocate in casa, oppure solo quelle fuori.") +
+      row("<b>PRIMO TEMPO</b>", "La classifica se tutte le partite fossero finite all'intervallo: chi parte forte la prima mezz'ora sta in alto. Utile per 1 PT e Multigol PT.") +
+      row("<b>SECONDO TEMPO</b>", "La classifica contando solo i gol del secondo tempo: chi rimonta o chi cala nel finale."));
+    h += sec("cgol", "LA SCHEDA GOL",
+      row("<b>GOL FATTI · GOL SUBITI</b>", "Media a partita.") +
+      row("<b>OVER 1,5 · OVER 2,5</b>", "In quante partite della squadra ci sono stati almeno 2 / almeno 3 gol in tutto.") +
+      row("<b>GOAL</b>", "In quante partite hanno segnato tutte e due le squadre.") +
+      row("<b>PORTA INVIOLATA · SENZA SEGNARE</b>", "In quante partite la squadra non ha subito gol / non ha segnato.") +
+      row("<b>OVER 0,5 PT · GOL NEL PT</b>", "In quante partite c'è stato almeno un gol nel primo tempo, e quanti gol nel primo tempo a partita (fatti più subiti).") +
+      row('<b style="color:var(--up)">verde</b> · <span class="mut">grigio</span>', "Verde = almeno 70%, grigio = sotto il 30%."));
+    h += sec("cfil", "LA COLONNA DEI FILTRI · sul telefono si apre con FILTRI",
+      row("<b>PERIODO</b>", "Stagione intera, oppure solo le <b>ultime 10</b> o <b>ultime 5</b> partite di ogni squadra: dice chi è in forma adesso. Con le ultime partite la classifica generale è calcolata da noi (senza zone).") +
+      row("<b>PARTITE</b>", "Solo nella scheda GOL: tutte le partite, solo in casa o solo fuori.") +
+      row("<b>CAMPIONATO</b>", "Uno solo per volta, oppure <b>Tutti</b> per vederli uno sotto l'altro. La pagina si ricorda l'ultima scelta."));
+    h += sec("csq", "TOCCA UNA SQUADRA",
+      row("<b>In casa · In trasferta · Primo tempo</b>", "Partite, vinte-pari-perse, gol e punti della squadra in casa, fuori e all'intervallo.") +
+      row("<b>Prossima</b>", "La prossima partita di campionato (nei prossimi 10 giorni).") +
+      row("<b>Ultime 10 partite</b>", "Dalla più recente: data, in casa (C) o fuori (F), avversaria, primo tempo, finale e V/N/P."));
+    h += sec("cfonti", "DA DOVE VENGONO I DATI",
+      row("<b>Classifica generale</b>", "È quella <b>ufficiale di ESPN</b>, con zone e penalità. ESPN la aggiorna subito dopo le partite, quindi può contare già le partite di oggi.") +
+      row("<b>Tutte le altre</b>", "Calcolate da noi con i risultati di football-data.co.uk (Brasile, Austria, Danimarca ed Eerste Divisie da ESPN): arrivano fino al giorno dell'ultimo aggiornamento. In pochi casi ESPN non dà i minuti dei gol e quella partita manca.") +
+      row("<b>Aggiornare</b>", "Si aggiornano insieme alle statistiche: chiedi a Claude di aggiornarle."));
+    return h;
+  }
+
   function ov() {
     let o = $("lg-ov");
     if (!o) {
@@ -3007,9 +3098,9 @@ function fileDB() {
     return o;
   }
   function open(kind) {
-    const o = ov(), st = kind === "stats";
-    $("lg-title").textContent = "LEGENDA · COME SI LEGGE LA PAGINA " + (st ? "STATISTICHE" : "PRONOSTICI");
-    $("lg-body").innerHTML = st ? contentStats() : content(); o.hidden = false; $("lg-body").scrollTop = 0;
+    const o = ov(), st = kind === "stats", cl = kind === "classi";
+    $("lg-title").textContent = "LEGENDA · COME SI LEGGE LA PAGINA " + (st ? "STATISTICHE" : cl ? "CLASSIFICHE" : "PRONOSTICI");
+    $("lg-body").innerHTML = st ? contentStats() : cl ? contentClassi() : content(); o.hidden = false; $("lg-body").scrollTop = 0;
   }
   document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest('[data-act="legend"]'); if (b) { e.preventDefault(); open(b.dataset.lg); } });
   window.APP = window.APP || {};
@@ -3220,7 +3311,199 @@ function fileDB() {
 <script>
 (function () {
   "use strict";
-  const names = ["idee", "stats", "storico", "pref"], alias = { pronostici: "idee", statistiche: "stats", preferiti: "pref" }, box = document.getElementById("app");
+  const ME = "classi", on = () => window.APP.active === ME, KEY = "gold.cl";
+  // CLASSIFICHE (dal 23/11/2026): classifiche complete dei 23 campionati.
+  //  Dati da stats.json (lo carica stats.js e lo passa con window.APP.stats.raw()):
+  //   leagues[].tab = classifica ufficiale ESPN { at, notes: [[zona, colore]], grp: [{ name, rows: [[squadra, pos, pg, v, n, p, gf, gs, punti, zona, penalità]] }] }
+  //   leagues[].g   = partite della stagione [data, casa, ospite, PT casa, PT ospite, finale casa, finale ospite] (casa/ospite = posizione in teams)
+  //  Le classifiche in casa, in trasferta, del primo e del secondo tempo, le ultime 5/10 e i numeri dei gol si calcolano qui dalle partite.
+  const S = { data: null, league: "I1", tab: "gen", per: 0, side: "all", sort: null, dir: 1, open: new Set() };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || "{}"); ["league", "tab", "per", "side"].forEach((k) => { if (s[k] !== undefined) S[k] = s[k]; }); } catch (e) { /* niente */ }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ league: S.league, tab: S.tab, per: S.per, side: S.side })); } catch (e) { /* niente */ } };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const U = () => window.APP.ui;
+  const dm = (iso) => String(iso || "").slice(8, 10) + "/" + String(iso || "").slice(5, 7);
+  const pc = (a, b) => (b ? Math.round((100 * a) / b) + "%" : "—");
+  const avg = (a, b) => (b ? (a / b).toFixed(2).replace(".", ",") : "—");
+  const sgn = (x) => (x > 0 ? "+" + x : String(x));
+  const TABS = [["gen", "GENERALE"], ["home", "IN CASA"], ["away", "IN TRASFERTA"], ["pt", "PRIMO TEMPO"], ["st", "SECONDO TEMPO"], ["gol", "GOL"]];
+  const TABN = { gen: "classifica generale", home: "classifica in casa", away: "classifica in trasferta", pt: "classifica del primo tempo", st: "classifica del secondo tempo", gol: "i numeri dei gol" };
+
+  // ---------- calcoli ----------
+  // tutte le partite di una squadra viste da lei: { d, home, opp, gf, gs, hf, hs (PT), ff, fs (finale) }
+  function teamGames(L) {
+    const out = L.teams.map(() => []);
+    for (const g of L.g || []) {
+      const [d, h, a, hh, ha, fh, fa] = g;
+      out[h].push({ d, home: true, opp: a, hf: hh, hs: ha, ff: fh, fs: fa });
+      out[a].push({ d, home: false, opp: h, hf: ha, hs: hh, ff: fa, fs: fh });
+    }
+    return out;
+  }
+  // gol della partita secondo la classifica scelta: finale, primo tempo, secondo tempo
+  const goalsOf = (x, kind) => (kind === "pt" ? [x.hf, x.hs] : kind === "st" ? [x.ff - x.hf, x.fs - x.hs] : [x.ff, x.fs]);
+  const res = (a, b) => (a > b ? "V" : a < b ? "P" : "N");
+  // classifica calcolata dalle partite
+  function computed(L, kind, per, side) {
+    const TG = teamGames(L);
+    return L.teams.map((t, i) => {
+      let gs = TG[i].filter((x) => (kind === "home" ? x.home : kind === "away" ? !x.home : kind === "gol" ? (side === "all" ? true : side === "home" ? x.home : !x.home) : true));
+      if (per) gs = gs.slice(-per);
+      const r = { i, name: t.t, pg: gs.length, v: 0, n: 0, p: 0, gf: 0, gs: 0, form: [], games: gs,
+        o15: 0, o25: 0, gg: 0, cs: 0, fts: 0, o05pt: 0, gpt: 0 };
+      gs.forEach((x) => {
+        const [a, b] = goalsOf(x, kind === "gol" ? "gen" : kind), k = res(a, b);
+        r.gf += a; r.gs += b; r[k === "V" ? "v" : k === "N" ? "n" : "p"]++;
+        r.form.push({ k, x, a, b });
+        const tot = x.ff + x.fs;
+        r.o15 += tot >= 2; r.o25 += tot >= 3; r.gg += x.ff > 0 && x.fs > 0; r.cs += x.fs === 0; r.fts += x.ff === 0; r.o05pt += x.hf + x.hs >= 1; r.gpt += x.hf + x.hs;
+      });
+      r.pts = r.v * 3 + r.n; r.dr = r.gf - r.gs;
+      return r;
+    });
+  }
+  const byTable = (a, b) => b.pts - a.pts || b.dr - a.dr || b.gf - a.gf || a.name.localeCompare(b.name);
+  // classifica generale: quella ufficiale ESPN (con penalità e zone) se c'è e se si guarda la stagione intera
+  function table(L) {
+    const kind = S.tab, rows = computed(L, kind, S.per, S.side);
+    if (kind === "gol") { rows.sort((a, b) => b.o25 / (b.pg || 1) - a.o25 / (a.pg || 1) || a.name.localeCompare(b.name)).forEach((r, k) => { r.pos = k + 1; }); return { rows, off: false }; }
+    if (kind === "gen" && !S.per && L.tab && L.tab.grp && L.tab.grp.length) {
+      const groups = L.tab.grp.map((g) => ({ name: g.name, rows: g.rows.map((x) => {
+        const c = typeof x[0] === "number" ? rows[x[0]] : null;
+        return { i: c ? c.i : -1, name: c ? c.name : String(x[0]), pos: x[1], pg: x[2], v: x[3], n: x[4], p: x[5], gf: x[6], gs: x[7], dr: x[6] - x[7], pts: x[8], zone: x[9], ded: x[10], form: c ? c.form : [], games: c ? c.games : [] };
+      }) }));
+      return { groups, off: true };
+    }
+    rows.sort(byTable).forEach((r, k) => { r.pos = k + 1; });
+    return { rows, off: false };
+  }
+  // prossima partita di una squadra (calendario ESPN di stats.json)
+  function nextOf(L, name) {
+    for (const e of S.data.next || []) if (e[0] === L.code && (e[3] === name || e[4] === name)) return { date: e[1], time: e[2], home: e[3] === name, opp: e[3] === name ? e[4] : e[3] };
+    return null;
+  }
+  const wd = new Intl.DateTimeFormat("it-IT", { weekday: "short" });
+  const whenOf = (n) => wd.format(new Date(n.date + "T12:00:00")).replace(".", "") + " " + dm(n.date) + (n.time ? " " + n.time : "");
+
+  // ---------- pezzi di pagina ----------
+  const fdot = (f) => '<i class="cf ' + f.k + '" title="' + esc(dm(f.x.d) + " · " + (f.x.home ? "in casa" : "fuori") + " · " + f.a + "-" + f.b) + '">' + f.k + "</i>";
+  const formCell = (r) => '<td class="l cfm">' + (r.form.length ? r.form.slice(-5).map(fdot).join("") : '<span class="mut">—</span>') + "</td>";
+  const nextCell = (L, r) => { const n = nextOf(L, r.name); return '<td class="l xm cnx">' + (n ? '<span class="nx ' + (n.home ? "in" : "out") + '">' + (n.home ? "C" : "F") + "</span> " + esc(n.opp) + ' <span class="mut num">' + esc(whenOf(n)) + "</span>" : '<span class="mut">—</span>') + "</td>"; };
+  const TH = (k, label, cls, tip) => '<th class="' + (cls || "") + (S.sort === k ? " on" : "") + '" data-act="csort" data-k="' + k + '"' + (tip ? ' title="' + esc(tip) + '"' : "") + ">" + label + (S.sort === k ? (S.dir > 0 ? " ▴" : " ▾") : "") + "</th>";
+  function sorted(rows) {
+    if (!S.sort) return rows;
+    const val = (r) => { const k = S.sort; return k === "name" ? r.name : k === "media" ? (r.pg ? r.pts / r.pg : 0) : ["o15", "o25", "gg", "cs", "fts", "o05pt"].includes(k) ? (r.pg ? r[k] / r.pg : 0) : k === "gfm" ? (r.pg ? r.gf / r.pg : 0) : k === "gsm" ? (r.pg ? r.gs / r.pg : 0) : k === "gptm" ? (r.pg ? r.gpt / r.pg : 0) : r[k]; };
+    return rows.slice().sort((a, b) => { const x = val(a), y = val(b); return (typeof x === "string" ? x.localeCompare(y) : x - y) * S.dir || a.pos - b.pos; });
+  }
+  function detail(L, r) {
+    if (r.i < 0) return '<div class="hint">Squadra non presente nei nostri dati.</div>';
+    const all = computed(L, "gen", 0, "all")[r.i], home = computed(L, "home", 0, "all")[r.i], away = computed(L, "away", 0, "all")[r.i], pt = computed(L, "pt", 0, "all")[r.i];
+    const line = (lab, x) => '<div class="cdl"><span class="cbk">' + lab + '</span><span class="num">' + x.pg + " partite · " + x.v + "V " + x.n + "N " + x.p + "P · gol " + x.gf + "-" + x.gs + " · <b>" + x.pts + " punti</b> (" + avg(x.pts, x.pg) + " a partita)</span></div>";
+    const n = nextOf(L, r.name);
+    let h = '<div class="cdet"><div class="cdg">' + line("IN CASA", home) + line("IN TRASFERTA", away) + line("PRIMO TEMPO", pt) +
+      '<div class="cdl"><span class="cbk">PROSSIMA</span><span>' + (n ? (n.home ? "in casa con " : "fuori, a ") + "<b>" + esc(n.opp) + "</b> · " + esc(whenOf(n)) : '<span class="mut">nessuna nei prossimi 10 giorni</span>') + "</span></div></div>";
+    const last = all.games.slice(-10).reverse();
+    h += '<div class="cdh">ULTIME ' + last.length + ' PARTITE <span class="mut">(dalla più recente)</span></div><table class="cdt"><tbody>' + last.map((x) => {
+      const k = res(x.ff, x.fs);
+      return '<tr><td class="num mut">' + dm(x.d) + '</td><td><span class="nx ' + (x.home ? "in" : "out") + '">' + (x.home ? "C" : "F") + "</span></td><td class=\"l\">" + esc(L.teams[x.opp].t) + '</td><td class="num mut">PT ' + x.hf + "-" + x.hs + '</td><td class="num"><b>' + x.ff + "-" + x.fs + '</b></td><td><i class="cf ' + k + '">' + k + "</i></td></tr>";
+    }).join("") + "</tbody></table></div>";
+    return h;
+  }
+  function standingTable(L, rows, zones, ncols) {
+    const kind = S.tab;
+    let h = '<div class="scroll"><table class="stab ctab"><thead><tr>' + TH("pos", "#", "l") + TH("name", "SQUADRA", "l") + TH("pg", "PG", "", "partite giocate") + TH("v", "V", "xm", "vinte") + TH("n", "N", "xm", "pareggiate") + TH("p", "P", "xm", "perse") +
+      TH("gf", "GF", "xm", "gol fatti") + TH("gs", "GS", "xm", "gol subiti") + TH("dr", "DR", "", "differenza reti") + TH("pts", "PUNTI", "") + TH("media", "MEDIA", "xm", "punti a partita") +
+      '<th class="l">FORMA</th>' + (kind === "gen" || kind === "home" || kind === "away" ? '<th class="l xm">PROSSIMA</th>' : "") + "</tr></thead><tbody>";
+    sorted(rows).forEach((r) => {
+      const k = L.code + "|" + r.i, open = S.open.has(k), z = zones && r.zone >= 0 ? L.tab.notes[r.zone] : null;
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="copen" data-k="' + esc(k) + '"><td class="l num cpos"' + (z ? ' style="box-shadow: inset 4px 0 0 ' + esc(z[1]) + '" title="' + esc(z[0]) + '"' : "") + ">" + r.pos + '</td><td class="l"><b>' + esc(r.name) + "</b>" + (r.ded ? ' <span class="tag l" title="punti di penalità">−' + Math.abs(r.ded) + "</span>" : "") + "</td>" +
+        '<td class="num">' + r.pg + '</td><td class="num xm">' + r.v + '</td><td class="num xm">' + r.n + '</td><td class="num xm">' + r.p + '</td><td class="num xm">' + r.gf + '</td><td class="num xm">' + r.gs + '</td><td class="num">' + sgn(r.dr) +
+        '</td><td class="num"><b>' + r.pts + '</b></td><td class="num xm">' + avg(r.pts, r.pg) + "</td>" + formCell(r) + (kind === "gen" || kind === "home" || kind === "away" ? nextCell(L, r) : "") + "</tr>";
+      if (open) h += '<tr class="det"><td colspan="' + ncols + '">' + detail(L, r) + "</td></tr>";
+    });
+    h += "</tbody></table></div>";
+    if (zones && L.tab.notes.length) h += '<div class="czl">' + L.tab.notes.map((n) => '<span><i style="background:' + esc(n[1]) + '"></i>' + esc(n[0]) + "</span>").join("") + "</div>";
+    return h;
+  }
+  function golTable(L, rows) {
+    let h = '<div class="scroll"><table class="stab ctab"><thead><tr><th class="l">#</th>' + TH("name", "SQUADRA", "l") + TH("pg", "PG", "", "partite giocate") + TH("gfm", "GOL FATTI", "", "media a partita") + TH("gsm", "GOL SUBITI", "", "media a partita") +
+      TH("o15", "OVER 1,5", "xm") + TH("o25", "OVER 2,5") + TH("gg", "GOAL", "", "segnano tutte e due") + TH("cs", "PORTA INVIOLATA", "xm", "non subisce gol") + TH("fts", "SENZA SEGNARE", "xm", "non segna") +
+      TH("o05pt", "OVER 0,5 PT", "xm", "almeno un gol nel primo tempo") + TH("gptm", "GOL NEL PT", "xm", "gol nel primo tempo a partita (fatti + subiti)") + "</tr></thead><tbody>";
+    const col = (v, n) => { const p = n ? v / n : null; return '<td class="num ' + (p === null ? "mut" : p >= 0.7 ? "up" : p < 0.3 ? "mut" : "") + '">' + pc(v, n) + "</td>"; };
+    sorted(rows).forEach((r, k) => {
+      const kk = L.code + "|" + r.i, open = S.open.has(kk);
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="copen" data-k="' + esc(kk) + '"><td class="l num mut">' + (k + 1) + '</td><td class="l"><b>' + esc(r.name) + '</b></td><td class="num">' + r.pg + '</td><td class="num">' + avg(r.gf, r.pg) + '</td><td class="num">' + avg(r.gs, r.pg) + "</td>" +
+        col(r.o15, r.pg).replace('<td class="num', '<td class="num xm') + col(r.o25, r.pg) + col(r.gg, r.pg) + col(r.cs, r.pg).replace('<td class="num', '<td class="num xm') + col(r.fts, r.pg).replace('<td class="num', '<td class="num xm') +
+        col(r.o05pt, r.pg).replace('<td class="num', '<td class="num xm') + '<td class="num xm">' + avg(r.gpt, r.pg) + "</td></tr>";
+      if (open) h += '<tr class="det"><td colspan="12">' + detail(L, r) + "</td></tr>";
+    });
+    return h + "</tbody></table></div>";
+  }
+  function leaguePanel(L) {
+    const t = table(L), kind = S.tab, per = S.per ? " · ultime " + S.per + " partite di ogni squadra" : "";
+    const right = kind === "gen" && t.off ? "classifica ufficiale ESPN del " + dm(L.tab.at) : "partite fino al " + dm(L.last) + per + (kind === "gol" && S.side !== "all" ? " · " + (S.side === "home" ? "solo in casa" : "solo fuori") : "");
+    let h = '<div class="panel"><div class="ph"><span>' + U().flag(L.name) + " " + esc(L.name) + '</span><span class="r">' + esc(right) + "</span></div>";
+    if (kind === "gol") h += golTable(L, t.rows);
+    else if (t.groups) t.groups.forEach((g) => { if (t.groups.length > 1) h += '<div class="cgn">' + esc(g.name) + "</div>"; h += standingTable(L, g.rows, true, 13); });
+    else h += standingTable(L, t.rows, false, kind === "gen" || kind === "home" || kind === "away" ? 13 : 12);
+    return h + "</div>";
+  }
+  function sideHtml(Ls) {
+    const u = U();
+    let h = u.group("PERIODO", u.pills("cper", [["0", "Stagione"], ["10", "Ultime 10"], ["5", "Ultime 5"]], (v) => Number(v) === S.per));
+    if (S.tab === "gol") h += u.group("PARTITE", u.pills("cside", [["all", "Tutte"], ["home", "In casa"], ["away", "Fuori"]], (v) => v === S.side));
+    const list = Ls.slice().sort((a, b) => u.compOrder(a.name, b.name));
+    let last = null, rows = '<button type="button" class="lrow rad' + (S.league === "ALL" ? " on" : "") + '" data-act="cleague" data-c="ALL"><span class="ck"></span><span class="ln">Tutti (uno sotto l\'altro)</span></button>';
+    list.forEach((L) => { const k = u.country(L.name); if (k !== last) { rows += '<div class="lnat">' + esc((u.NAT[k] || "").toUpperCase()) + "</div>"; last = k; }
+      rows += '<button type="button" class="lrow rad' + (S.league === L.code ? " on" : "") + '" data-act="cleague" data-c="' + esc(L.code) + '"><span class="ck"></span>' + u.flag(L.name) + '<span class="ln">' + esc(u.tc(L.name)) + '</span><span class="lc num">' + L.teams.length + "</span></button>"; });
+    h += u.group('CAMPIONATO <span class="mut">· squadre</span>', '<div class="lgl">' + rows + "</div>");
+    const cur = Ls.find((L) => L.code === S.league);
+    return u.side(h, (cur ? cur.name : "tutti i campionati") + " · " + TABN[S.tab]);
+  }
+  function render() {
+    if (!on()) return;
+    const raw = window.APP.stats && window.APP.stats.raw ? window.APP.stats.raw() : null;
+    S.data = raw;
+    if (!raw) { $("c-body").innerHTML = '<div class="panel"><div class="empty">' + (window.APP.stats && window.APP.stats.err && window.APP.stats.err() ? "Classifiche non disponibili: chiedi a Claude di aggiornare le statistiche." : "CARICAMENTO…") + "</div></div>"; return; }
+    const Ls = raw.leagues || [];
+    if (S.league !== "ALL" && !Ls.some((L) => L.code === S.league)) S.league = Ls.length ? Ls[0].code : "ALL";
+    const shown = S.league === "ALL" ? Ls.slice().sort((a, b) => U().compOrder(a.name, b.name)) : Ls.filter((L) => L.code === S.league);
+    const cur = shown.length === 1 ? shown[0] : null;
+    $("tb-left").textContent = "· " + (cur ? cur.name.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase()) + " · " : "") + TABN[S.tab];
+    const at = Ls.map((L) => L.tab && L.tab.at).filter(Boolean).sort().pop();
+    $("tb-right").textContent = "Classifiche ufficiali ESPN" + (at ? " del " + dm(at) : "") + " · le altre calcolate dalle partite fino al " + dm(raw.last) + " · " + Ls.length + " campionati";
+    const nT = shown.reduce((a, L) => a + L.teams.length, 0), nG = shown.reduce((a, L) => a + (L.g || []).length, 0);
+    const k = (l, v, n) => '<div class="k"><span class="l">' + l + '</span><span class="v num">' + v + "</span>" + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+    let lead = "";
+    if (cur && cur.tab && cur.tab.grp && cur.tab.grp[0]) { const r = cur.tab.grp[0].rows[0]; lead = typeof r[0] === "number" ? cur.teams[r[0]].t : String(r[0]); }
+    $("kpis").innerHTML = k("CAMPIONATI", String(shown.length)) + k("SQUADRE", String(nT)) + k("PARTITE", String(nG), "giocate") + (lead ? k("IN TESTA", esc(lead), "") : "");
+    $("side").innerHTML = sideHtml(Ls);
+    const tabs = '<div class="tabrow"><nav class="tabs" role="tablist">' + TABS.map(([t, l]) => '<button class="tab" role="tab" type="button" data-act="ctab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + "</button>").join("") +
+      '</nav><button type="button" class="legbtn" data-act="legend" data-lg="classi" title="Legenda: come si legge questa pagina" aria-label="Legenda">?</button></div>';
+    $("c-body").innerHTML = tabs + shown.map(leaguePanel).join("");
+  }
+
+  // ---------- eventi ----------
+  document.addEventListener("click", (ev) => {
+    if (!on()) return;
+    const b = ev.target.closest("[data-act]"); if (!b || !b.closest("#c-body, #side")) return;
+    const a = b.dataset.act;
+    if (a === "ctab") { S.tab = b.dataset.tab; S.sort = null; save(); render(); }
+    else if (a === "cper") { S.per = Number(b.dataset.c) || 0; save(); render(); }
+    else if (a === "cside") { S.side = b.dataset.c; save(); render(); }
+    else if (a === "cleague") { S.league = b.dataset.c; S.open.clear(); save(); render(); }
+    else if (a === "csort") { const k = b.dataset.k; if (S.sort === k) S.dir = -S.dir; else { S.sort = k; S.dir = ["pos", "name", "gs", "gsm", "p", "fts"].includes(k) ? 1 : -1; } render(); }
+    else if (a === "copen") { const k = b.dataset.k; if (S.open.has(k)) S.open.delete(k); else S.open.add(k); render(); }
+  });
+  document.addEventListener("gold-stats", () => render());
+  window.APP.apps[ME] = { render, close() {} };
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const names = ["idee", "stats", "classi", "storico", "pref"], alias = { pronostici: "idee", statistiche: "stats", classifiche: "classi", preferiti: "pref" }, box = document.getElementById("app");
   function pick() {
     const h0 = location.hash.replace("#", ""), h = alias[h0] || h0;
     if (names.includes(h)) return h;
