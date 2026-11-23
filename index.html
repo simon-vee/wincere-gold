@@ -1519,7 +1519,7 @@ function fileDB() {
         "</span>" + (hasProb(x.prob) && Math.abs(Number(x.prob) - c.est) >= 8 ? ' <span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA (' + Math.round(Number(x.prob)) + "%)</span>" : "") +
         (c.hist && c.hist.n ? '<div style="font-size:11.5px;margin-top:3px"><b>Storico di questa giocata:</b> ' + c.hist.w + " su " + c.hist.n + " prese (" + Math.round(100 * c.hist.w / c.hist.n) + "%)" + (hasProb(c.hist.p) ? ", stima media " + c.hist.p + "%" : "") +
           (c.adj ? ' → stima corretta di <b>' + (c.adj > 0 ? "+" : "") + c.adj + "</b> punti" + (c.parts && hasProb(c.parts.raw) ? " (era " + c.parts.raw + "%)" : "") : c.hist.n < 10 ? ' <span class="mut">· nessuna correzione: servono almeno 10 casi</span>' : "") + "</div>" : "") +
-        '<div class="mut" style="font-size:11px;margin-top:2px">Per 1, X, 2 e doppie pesa di più il bookmaker. Per le giocate sui gol pesa di più quante volte la giocata esce in generale, perché le statistiche delle squadre la prevedono poco (prova su 720 partite).</div></div>';
+        '<div class="mut" style="font-size:11px;margin-top:2px">Per 1, X, 2 e doppie pesa di più il bookmaker. Per le giocate sui gol pesa di più quante volte la giocata esce in generale, perché le statistiche delle squadre la prevedono poco (prova su 1.430 partite).</div></div>';
     }
     if (Number(c.qmin) > 1) {
       const qb = Number(c.qbook) > 1 ? Number(c.qbook) : Number(x.odds) > 1 ? Number(x.odds) : 0, by = Number(c.qbook) > 1 ? c.qby || "bookmaker" : "quota segnata";
@@ -2763,9 +2763,9 @@ function fileDB() {
       row("⏳", "Prima di giocare guarda le formazioni ufficiali, circa un'ora prima: gli assenti non sono controllati in automatico.") +
       row("⚠", "Gioca solo soldi che puoi permetterti di perdere e non inseguire le perdite. Nessun pronostico è certo."));
 
-    h += sec("prova", "COSA DICONO I NUMERI · prova su 720 partite già giocate (settembre-novembre 2026, 12 campionati)",
-      row("<b>1X · X2</b>", "Qui i dati funzionano davvero. 1X con il bookmaker all'80% o più: <b>presa 90 volte su 100</b>. Con bookmaker, calcolo e statistiche d'accordo: <b>93 su 100</b>. X2 con il bookmaker all'85% o più: 16 su 17.") +
-      row("<b>Giocate sui gol</b>", "Escono più o meno sempre con la stessa frequenza, anche quando le statistiche dicono 90%:<br>· Over 0,5 2T circa <b>81%</b><br>· Over 1,5 circa <b>78%</b><br>· Over 0,5 PT circa <b>73%</b><br>· Multigol 1-3 PT circa <b>69%</b><br>· 1 PT o Over 1,5 PT circa <b>57%</b><br>· Over 2,5 e Goal circa <b>55%</b>") +
+    h += sec("prova", "COSA DICONO I NUMERI · prova su 1.430 partite già giocate (settembre-novembre 2026, 23 campionati)",
+      row("<b>1X · X2</b>", "Qui i dati funzionano davvero. 1X con il bookmaker all'80% o più: <b>presa 89 volte su 100</b>. Con bookmaker, calcolo e statistiche d'accordo: <b>90 su 100</b>. X2 con bookmaker, calcolo e statistiche d'accordo: 35 su 39. Attenzione: quando il bookmaker è così sicuro la quota è bassa, guarda sempre la quota che serve.") +
+      row("<b>Giocate sui gol</b>", "Escono più o meno sempre con la stessa frequenza, anche quando le statistiche dicono 90%:<br>· Over 0,5 2T circa <b>81%</b><br>· Over 1,5 circa <b>79%</b><br>· Over 0,5 PT circa <b>73%</b><br>· Multigol 1-3 PT circa <b>69%</b><br>· 1 PT o Over 1,5 PT circa <b>58%</b><br>· Over 2,5 e Goal circa <b>55%</b>") +
       row("<b>In pratica</b>", "Per un pronostico quasi certo cerca il bollino <b>SICURO</b>, meglio se su 1X o X2. Nessun pronostico è certo al 100%: anche al 90% si perde una volta su dieci, e in una multipla i rischi si sommano."));
     return h;
   }
