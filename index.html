@@ -916,15 +916,28 @@ function fileDB() {
     br: '<rect width="3" height="2" fill="#009c3b"/><polygon points="1.5,.18 2.75,1 1.5,1.82 .25,1" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".42" fill="#002776"/>',
     eu: '<rect width="3" height="2" fill="#003399"/>' + stars.map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r=".08" fill="#ffcc00"/>').join(""),
     wd: '<rect width="3" height="2" fill="#dbe7f7"/><circle cx="1.5" cy="1" r=".7" fill="none" stroke="#2453d4" stroke-width=".12"/><path d="M.8 1h1.4M1.5 .3c-.45.4-.45 1 0 1.4M1.5 .3c.45.4.45 1 0 1.4" fill="none" stroke="#2453d4" stroke-width=".1"/>',
+    sc: '<rect width="3" height="2" fill="#005eb8"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".32"/>',
+    be: '<rect width="1" height="2" fill="#000"/><rect x="1" width="1" height="2" fill="#fdda24"/><rect x="2" width="1" height="2" fill="#ef3340"/>',
+    tr: '<rect width="3" height="2" fill="#e30a17"/><circle cx="1.25" cy="1" r=".5" fill="#fff"/><circle cx="1.38" cy="1" r=".4" fill="#e30a17"/><circle cx="1.98" cy="1" r=".16" fill="#fff"/>',
+    gr: '<rect width="3" height="2" fill="#0d5eaf"/><rect y=".222" width="3" height=".222" fill="#fff"/><rect y=".667" width="3" height=".222" fill="#fff"/><rect y="1.111" width="3" height=".222" fill="#fff"/><rect y="1.556" width="3" height=".222" fill="#fff"/><rect width="1.111" height="1.111" fill="#0d5eaf"/><rect x=".444" width=".222" height="1.111" fill="#fff"/><rect y=".444" width="1.111" height=".222" fill="#fff"/>',
+    at: '<rect width="3" height="2" fill="#ed2939"/><rect y=".667" width="3" height=".667" fill="#fff"/>',
+    dk: '<rect width="3" height="2" fill="#c8102e"/><rect x=".9" width=".3" height="2" fill="#fff"/><rect y=".85" width="3" height=".3" fill="#fff"/>',
     xx: '<rect width="3" height="2" fill="#e5e7eb"/>'
   };
-  const NAT = { it: "Italia", en: "Inghilterra", es: "Spagna", de: "Germania", fr: "Francia", nl: "Olanda", pt: "Portogallo", br: "Brasile", eu: "Coppe europee", wd: "Nazionali", xx: "Altro" };
-  const ORDER = ["it", "en", "es", "de", "fr", "nl", "pt", "eu", "wd", "br", "xx"];
+  const NAT = { it: "Italia", en: "Inghilterra", es: "Spagna", de: "Germania", fr: "Francia", nl: "Olanda", pt: "Portogallo", sc: "Scozia", be: "Belgio", tr: "Turchia", gr: "Grecia", at: "Austria", dk: "Danimarca", br: "Brasile", eu: "Coppe europee", wd: "Nazionali", xx: "Altro" };
+  const ORDER = ["it", "en", "es", "de", "fr", "nl", "pt", "sc", "be", "tr", "gr", "at", "dk", "eu", "wd", "br", "xx"];
   // nazione del campionato, dal nome in italiano (SERIE A, CHAMPIONSHIP, LIGUE 2, BRASILE SERIE A…)
   function country(comp) {
     const c = plain(comp);
     if (!c) return "xx";
     if (/BRASIL/.test(c)) return "br";
+    // campionati aggiunti il 23/11/2026: prima di Inghilterra (PREMIERSHIP, CHAMPIONSHIP) e Germania (BUNDESLIGA)
+    if (/SCOZ/.test(c)) return "sc";
+    if (/AUSTRIA/.test(c)) return "at";
+    if (/BELG/.test(c)) return "be";
+    if (/TURC|SUPER LIG/.test(c)) return "tr";
+    if (/GREC/.test(c)) return "gr";
+    if (/DANES|DANIMARCA/.test(c)) return "dk";
     if (/CHAMPIONSHIP|PREMIER|LEAGUE ONE|LEAGUE TWO|FA CUP|CARABAO|EFL|INGHILTERRA/.test(c)) return "en";
     if (/CHAMPIONS|EUROPA LEAGUE|CONFERENCE|NATIONS LEAGUE|EUROPEI|UEFA|SUPERCOPPA EUROPEA/.test(c)) return "eu";
     if (/MONDIAL|AMICHEVOL|QUALIFICAZ|NAZIONAL/.test(c)) return "wd";
@@ -1130,7 +1143,9 @@ function fileDB() {
   const SLUG = { "SERIE A": "ita.1", "SERIE B": "ita.2", "COPPA ITALIA": "ita.coppa_italia", "PREMIER LEAGUE": "eng.1", "CHAMPIONSHIP": "eng.2", "LEAGUE ONE": "eng.3", "FA CUP": "eng.fa", "COPPA DI LEGA": "eng.league_cup",
     "LIGA": "esp.1", "SEGUNDA DIVISION": "esp.2", "COPPA DEL RE": "esp.copa_del_rey", "BUNDESLIGA": "ger.1", "2. BUNDESLIGA": "ger.2", "COPPA DI GERMANIA": "ger.dfb_pokal", "LIGUE 1": "fra.1", "LIGUE 2": "fra.2",
     "COPPA DI FRANCIA": "fra.coupe_de_france", "EREDIVISIE": "ned.1", "PRIMEIRA LIGA": "por.1", "BRASILE SERIE A": "bra.1", "CHAMPIONS LEAGUE": "uefa.champions", "EUROPA LEAGUE": "uefa.europa", "CONFERENCE LEAGUE": "uefa.europa.conf",
-    "CHAMPIONS LEAGUE FEMMINILE": "uefa.wchampions", "NATIONS LEAGUE": "uefa.nations", "QUALIFICAZIONI MONDIALI": "fifa.worldq.uefa", "QUALIFICAZIONI EUROPEI": "uefa.euroq", "AMICHEVOLI": "fifa.friendly", "SUPERCOPPA ITALIANA": "ita.super_cup" };
+    "CHAMPIONS LEAGUE FEMMINILE": "uefa.wchampions", "NATIONS LEAGUE": "uefa.nations", "QUALIFICAZIONI MONDIALI": "fifa.worldq.uefa", "QUALIFICAZIONI EUROPEI": "uefa.euroq", "AMICHEVOLI": "fifa.friendly", "SUPERCOPPA ITALIANA": "ita.super_cup",
+    "LEAGUE TWO": "eng.4", "PREMIERSHIP SCOZZESE": "sco.1", "CHAMPIONSHIP SCOZZESE": "sco.2", "PRO LEAGUE BELGA": "bel.1", "SUPER LIG TURCA": "tur.1", "SUPER LEAGUE GRECA": "gre.1",
+    "BUNDESLIGA AUSTRIACA": "aut.1", "SUPERLIGA DANESE": "den.1", "EERSTE DIVISIE": "ned.2" };
   const SP = { "Ø": "O", "ø": "o", "Æ": "AE", "æ": "ae", "ß": "SS", "Ł": "L", "ł": "l", "ı": "i", "Œ": "OE", "œ": "oe", "Đ": "D", "đ": "d" };
   const plain = (s) => String(s || "").replace(/[ØøÆæßŁłıŒœĐđ]/g, (c) => SP[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
   const ROME = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
