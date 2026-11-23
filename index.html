@@ -1433,7 +1433,7 @@ function fileDB() {
   // ★ PREFERITI: la stellina nella cella ORA (vedi strumenti/preferiti.js)
   const favStar = (date, time, comp, home, away, fx, sugg) => (window.APP.fav ? window.APP.fav.star({ date, time, comp, home, away, links: fx && fx.links }, sugg) : "");
   // LISTA DEI CONTROLLI: calcolata da strumenti/controlli.py (campo chk dei pronostici)
-  const CKN = { stat: "Statistiche", odds: "Quote", form: "Forma", h2h: "Scontri diretti", rest: "Assenti e stanchezza", mot: "Motivazioni" };
+  const CKN = { stat: "Statistiche", calc: "Calcolo dei gol", odds: "Quote", form: "Forma", h2h: "Scontri diretti", rest: "Assenti e stanchezza", mot: "Motivazioni" };
   const CKS = { ok: "✓", no: "✗", mid: "≈", na: "–" };
   const ckItems = (x) => (x && x.chk && Array.isArray(x.chk.items) ? x.chk.items : []);
   const safeTag = (x) => (x && x.chk && x.chk.safe ? ' <span class="tag safe" title="supera la lista dei controlli">SICURO</span>' : "");
@@ -1442,8 +1442,14 @@ function fileDB() {
     const L = ckItems(x); if (!L.length) return "";
     const c = x.chk, ok = L.filter((i) => i.v === "ok").length;
     let h = '<div class="ck"><div class="ckh">LISTA DEI CONTROLLI ' + (c.safe ? '<span class="tag safe">SICURO</span>' : '<span class="tag p">' + ok + " ✓ SU " + L.length + "</span>") +
-      '<span class="mut">· SICURO = statistiche ✓, nessun ✗, almeno 4 ✓ e al massimo un ≈ · ✓ a favore · ≈ così così · ✗ contro · – manca il dato o non conta' + (c.at ? " · calcolata il " + esc(c.at) : "") + "</span></div>";
+      '<span class="mut">· SICURO = statistiche ✓, nessun ✗, almeno 4 ✓, al massimo un ≈ e stima combinata almeno 80% · ✓ a favore · ≈ così così · ✗ contro · – manca il dato o non conta' + (c.at ? " · calcolata il " + esc(c.at) : "") + "</span></div>";
     h += L.map((i) => '<div class="ckr"><span class="cks ' + esc(i.v) + '">' + (CKS[i.v] || "–") + '</span><span class="ckn">' + esc(CKN[i.k] || i.k) + '</span><span class="ckt">' + esc(i.t) + "</span></div>").join("");
+    if (hasProb(c.est)) {
+      const P = c.parts || {}, nm = { book: "bookmaker", calc: "calcolo", stat: "statistiche", base: "media generale" };
+      h += '<div class="ckq"><b>Stima combinata ' + Math.round(c.est) + '%</b> <span class="mut">· ' + ["book", "calc", "stat", "base"].filter((k) => hasProb(P[k])).map((k) => nm[k] + " " + Math.round(P[k]) + "%").join(" · ") +
+        "</span>" + (hasProb(x.prob) && Math.abs(Number(x.prob) - c.est) >= 8 ? ' <span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA (' + Math.round(Number(x.prob)) + "%)</span>" : "") +
+        '<div class="mut" style="font-size:11px;margin-top:2px">Per 1, X, 2 e doppie pesa di più il bookmaker. Per le giocate sui gol pesa di più quante volte la giocata esce in generale, perché le statistiche delle squadre la prevedono poco (prova su 720 partite).</div></div>';
+    }
     if (Number(c.qmin) > 1) {
       const qb = Number(c.qbook) > 1 ? Number(c.qbook) : Number(x.odds) > 1 ? Number(x.odds) : 0, by = Number(c.qbook) > 1 ? c.qby || "bookmaker" : "quota segnata";
       h += '<div class="ckq"><b>Quota minima ' + n2(c.qmin) + "</b> <span class=\"mut\">· sotto questa quota non conviene giocarla</span>" +
