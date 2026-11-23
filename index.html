@@ -624,6 +624,39 @@ table.cmp tr.grh td { background: #f7f8fa; color: #374151; font-size: 9.5px; fon
 .lay table.stab tr.lvrow .lv { white-space: normal; line-height: 1.2; }
 table.stab th.c, table.stab td.c { text-align: center; }
 table.stab td.evx .lv { font-size: 10px; }
+
+/* PREFERITI (23/11/2026): stellina accanto alle partite e sezione ★ PREFERITI */
+.favst { border: 0; background: none; padding: 0 5px 0 0; margin: 0; font-size: 15px; line-height: 1; color: #b9c0cc; cursor: pointer; vertical-align: -1px; font-family: system-ui, sans-serif; }
+.favst:hover { color: #e09a00; }
+.favst.on { color: #f0a500; }
+.favsheet { max-width: 560px; }
+.favm { display: grid; gap: 2px; }
+.favm b { font-size: 14px; }
+.favm .mut { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
+.favsel { display: flex; flex-wrap: wrap; gap: 5px; min-height: 26px; align-items: center; }
+.favb { display: inline-flex; align-items: center; gap: 4px; background: var(--acc); color: #fff; border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 11.5px; font-weight: 700; }
+.favb button { border: 0; background: rgba(255, 255, 255, .22); color: #fff; width: 18px; height: 18px; border-radius: 50%; padding: 0; font-size: 13px; line-height: 18px; cursor: pointer; }
+.favg { display: grid; gap: 5px; }
+.favg .lab { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); }
+.favadd { display: flex; gap: 6px; }
+.favadd input { flex: 1; }
+.favhint { font-size: 10.5px; line-height: 1.4; }
+.favwarn { font-size: 11px; color: #9a5b13; background: #fdf3e7; border-radius: 6px; padding: 6px 8px; }
+.favbtns { display: flex; gap: 6px; margin-left: auto; }
+.favtip { font-size: 11.5px; line-height: 1.5; margin: 0; }
+table.gt.fav tr.favday td { background: #f3f4f6; font-size: 10px; font-weight: 700; letter-spacing: .07em; color: #374151; padding: 6px 10px; }
+table.gt.fav tr.row { cursor: default; }
+table.gt.fav tr.favin td:first-child { box-shadow: inset 3px 0 0 #dc2626; }
+table.gt.fav td.ch .chipsm { display: flex; flex-wrap: wrap; gap: 4px; white-space: normal; }
+@media (max-width: 760px) {
+  table.gt.fav tr.favday, table.gt.fav tr.favday td { display: block; }
+  table.gt.fav td.ed { grid-area: es; }
+  table.gt.fav tr.favin { box-shadow: inset 3px 0 0 #dc2626; }
+  /* 4 sezioni nella barra in alto: icona sopra e scritta sotto, così entrano anche sui telefoni stretti */
+  .shell .rail button { grid-auto-flow: row; gap: 2px; font-size: 10px; padding: 5px 2px; min-width: 0; }
+  .shell .rail svg { width: 16px; height: 16px; }
+  .favsheet { max-height: calc(100% - 4px); }
+}
 .lgh { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: #374151; margin: 4px 0 1px 4px; }
 
 @media (max-width: 760px) {
@@ -685,7 +718,7 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
 </head>
 <body>
 <div class="shell">
-<nav class="rail" role="tablist" aria-label="Sezioni"><span class="logo" title="Wincere Gold"></span><button type="button" role="tab" data-app="idee" aria-selected="false" title="analisi delle partite e marcatori consigliati"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Pronostici</span></button><button type="button" role="tab" data-app="stats" aria-selected="false" title="come vanno le squadre nel primo tempo, in casa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg><span>Statistiche</span></button><button type="button" role="tab" data-app="storico" aria-selected="false" title="tutti gli esiti dei pronostici e dei marcatori"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 8v4l3 2"></path></svg><span>Storico</span></button></nav>
+<nav class="rail" role="tablist" aria-label="Sezioni"><span class="logo" title="Wincere Gold"></span><button type="button" role="tab" data-app="idee" aria-selected="false" title="analisi delle partite e marcatori consigliati"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Pronostici</span></button><button type="button" role="tab" data-app="stats" aria-selected="false" title="come vanno le squadre nel primo tempo, in casa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg><span>Statistiche</span></button><button type="button" role="tab" data-app="storico" aria-selected="false" title="tutti gli esiti dei pronostici e dei marcatori"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 8v4l3 2"></path></svg><span>Storico</span></button><button type="button" role="tab" data-app="pref" aria-selected="false" title="le partite che hai messo da parte con la stellina, con la tua giocata in tempo reale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.15 1 5.85L12 16.9l-5.25 2.8 1-5.85L3.5 9.7l5.9-.9z"></path></svg><span>Preferiti</span></button></nav>
 <div id="app"></div>
 </div>
 <template id="tpl-idee">
@@ -742,6 +775,25 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
     </header>
     <div class="banner" id="banner" hidden></div>
     <div id="h-body" class="body"></div>
+  </div>
+</div>
+</template>
+
+<template id="tpl-pref">
+<div class="lay">
+  <aside class="side" id="side" aria-label="Filtri"></aside>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>Preferiti <small id="tb-left"></small></h1>
+        <div class="sub num" id="tb-right"></div>
+      </div>
+      <div class="hr">
+        <section class="kpis" id="kpis" aria-label="Numeri principali"></section>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <div id="p-body" class="body"></div>
   </div>
 </div>
 </template>
@@ -1011,13 +1063,14 @@ function fileDB() {
   // ---------- quali partite servono ----------
   // un solo timer alla volta: schedule() cancella sempre quello vecchio
   function schedule(ms) { clearTimeout(S.timer); S.timer = setTimeout(tick, ms); }
-  function need(items) {
+  // anyDay: anche i giorni passati (per i PREFERITI); i giorni futuri non servono mai
+  function need(items, anyDay) {
     const now = romeOf(new Date()), today = vdayOf(now.date, now.time);
     let added = false;
     for (const it of items || []) {
       if (!it || !it.date) continue;
       const vd = vdayOf(it.date, it.time || "");
-      if (vd !== today && vd !== addDays(today, -1)) continue;
+      if (vd > today || (!anyDay && vd !== today && vd !== addDays(today, -1))) continue;
       const slug = slugOf(it.comp);
       if (!slug) continue;
       const bk = slug + "|" + vd.replace(/-/g, "");
@@ -1055,7 +1108,7 @@ function fileDB() {
       if (S.again) schedule(50); else if (keep) schedule(POLL);
     }
   }
-  function redraw() { const a = window.APP.active, app = a && window.APP.apps[a]; if (app && (a === "idee" || a === "stats") && !document.querySelector("#overlay:not([hidden])")) app.render(); }
+  function redraw() { const a = window.APP.active, app = a && window.APP.apps[a]; if (app && (a === "idee" || a === "stats" || a === "pref") && !document.querySelector("#overlay:not([hidden])")) app.render(); }
   document.addEventListener("visibilitychange", () => { if (!document.hidden && S.want.size) tick(); });
 
   // ---------- lettura di una partita ESPN ----------
@@ -1151,7 +1204,9 @@ function fileDB() {
     return '<div class="lvbar"><span class="dot' + (n ? " on" : "") + '"></span><b>LIVE</b> · ' + (n ? n + (n === 1 ? " partita in corso" : " partite in corso") : "nessuna partita in corso") +
       " · aggiornato alle " + S.at.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + (n ? " · si aggiorna da solo ogni 30 secondi" : "") + "</div>";
   };
-  window.APP.live = { need, get, market, scorer, tag, scoreTxt, htTxt, clockTag, bar, TXT };
+  // la pagina sa controllare questa giocata? (prova con una partita finta appena iniziata)
+  const ok = (text) => market(text, { state: "in", h: 0, a: 0, hh: 0, ha: 0, ht: false, goals: [] }) !== null;
+  window.APP.live = { need, get, market, ok, scorer, tag, scoreTxt, htTxt, clockTag, bar, TXT };
 })();
 </script>
 <script>
@@ -1343,6 +1398,8 @@ function fileDB() {
   }
   const liveBar = () => (window.APP.live ? window.APP.live.bar() : "");
   const th = (v, l, cls) => '<th class="' + (cls || "") + '">' + (v ? '<button type="button" class="thb' + (S.sort === v ? " on" : "") + '" data-act="psort" data-v="' + v + '">' + l + (S.sort === v ? " ▾" : "") + "</button>" : l) + "</th>";
+  // ★ PREFERITI: la stellina nella cella ORA (vedi strumenti/preferiti.js)
+  const favStar = (date, time, comp, home, away, fx, sugg) => (window.APP.fav ? window.APP.fav.star({ date, time, comp, home, away, links: fx && fx.links }, sugg) : "");
   function tabPlays(C, D, G, day) {
     if (!G.all.length) return '<div class="panel"><div class="empty">' + (S.ready.picks && S.ready.ideas ? "Nessuna giocata per questo giorno. Chiedi a Claude i pronostici del giorno, oppure aggiungili con + PRONOSTICO." : "CARICAMENTO…") + "</div></div>";
     if (!G.list.length) return '<div class="panel"><div class="empty">Nessuna giocata con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
@@ -1351,7 +1408,7 @@ function fileDB() {
     for (const o of G.list) {
       const open = S.rows.has(o.rid), x = o.x, night = x.date !== day, L = liveOf(x.date, x.time, o.comp, o.home, o.away, o.c && o.c.fx);
       h += '<tr class="row' + (open ? " sel" : "") + '" data-act="prow" data-id="' + esc(o.rid) + '" aria-expanded="' + open + '">' +
-        '<td class="tm">' + esc(x.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + "</td>" +
+        '<td class="tm">' + favStar(x.date, x.time, o.comp, o.home, o.away, o.c && o.c.fx, o.t === "p" ? [x.market] : (o.c ? o.c.picks.map((p) => p.market) : [])) + esc(x.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + "</td>" +
         '<td class="cp"><span class="cpi">' + U.flag(o.comp) + esc(U.tc(o.comp)) + "</span></td>" +
         '<td class="tn h">' + esc(o.home) + '<span class="vs"> – ' + esc(o.away) + '</span></td><td class="tn a">' + esc(o.away) + "</td>" +
         scoreCells(o.r, L) +
@@ -1387,7 +1444,7 @@ function fileDB() {
       const chips = [].concat(c.picks.map((p) => ({ t: "p", l: p.market, h: p.hit })), c.ideas.map((i) => ({ t: "i", l: i.player, h: i.hit })))
         .map((y) => { const s = lvs(y); return s ? LV.tag(s, y.l + (s === "W" ? " ✓" : s === "L" ? " ✗" : s === "w" ? " · per ora ✓" : s === "l" ? " · per ora ✗" : "")) : '<span class="res ' + (y.h === true ? "w" : y.h === false ? "l" : "p") + '">' + esc(y.l) + (y.h === true ? " ✓" : y.h === false ? " ✗" : "") + "</span>"; }).join("");
       h += '<tr class="row' + (open ? " sel" : "") + '" data-act="pmrow" data-id="' + esc(c.k) + '" aria-expanded="' + open + '">' +
-        '<td class="tm">' + esc(c.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + '</td><td class="cp"><span class="cpi">' + U.flag(c.comp) + esc(U.tc(c.comp)) + "</span></td>" +
+        '<td class="tm">' + favStar(c.date, c.time, c.comp, home, away, c.fx, c.picks.map((p) => p.market)) + esc(c.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + '</td><td class="cp"><span class="cpi">' + U.flag(c.comp) + esc(U.tc(c.comp)) + "</span></td>" +
         '<td class="tn h">' + esc(home) + '<span class="vs"> – ' + esc(away) + '</span></td><td class="tn a">' + esc(away) + "</td>" +
         '<td class="px">' + (hasProb(f.p1) ? '<span class="p1x2 num"><span>1 <b>' + Math.round(f.p1) + "%</b></span><span>X <b>" + Math.round(Number(f.px) || 0) + "%</b></span><span>2 <b>" + Math.round(Number(f.p2) || 0) + "%</b></span></span>" : '<span class="mut">—</span>') + "</td>" +
         '<td class="ch"><span class="chipsm">' + (chips || '<span class="mut">nessuna</span>') + "</span></td>" +
@@ -1814,6 +1871,8 @@ function fileDB() {
   // la partita come la cerca il live: se Claude l'ha caricata nel calendario, uso il suo link ESPN (abbinamento sicuro)
   const liveItem = (x) => { const fx = x.f.links ? x.f : S.fixtures.find((f) => f.date === x.f.date && x.H && x.A && find(f.home) === x.H && find(f.away) === x.A); return { date: x.f.date, time: x.f.time, comp: x.comp, home: x.f.home, away: x.f.away, links: fx && fx.links }; };
   const liveOf = (x) => (window.APP.live ? window.APP.live.get(liveItem(x)) : null);
+  // ★ PREFERITI: la stellina accanto alla partita; giocate suggerite = quelle della tabella (ids delle giocate)
+  const favStar = (x, ids) => (window.APP.fav ? window.APP.fav.star(liveItem(x), ids.map((id) => LVM[id])) : "");
   function tabDay(M, m, day) {
     if (window.APP.live) window.APP.live.need(M.map(liveItem));
     if (!M.length) return '<div class="panel"><div class="empty">' + (S.ready ? "Nessuna partita dei 12 campionati in questo giorno. Scegli un altro giorno qui sopra, oppure chiedi a Claude di aggiornare le statistiche." : "CARICAMENTO…") + "</div></div>";
@@ -1827,7 +1886,7 @@ function fileDB() {
     list.forEach((x, i) => {
       const open = S.open.has(x.k), night = x.f.date !== day, L = liveOf(x), live = !!L && L.state !== "pre";
       const sc = live ? ' <span class="lvs num">' + LV.scoreTxt(L) + ' <span class="mut">(' + LV.htTxt(L) + ")</span></span>" + LV.clockTag(L) : "";
-      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + "</b>" + sc + '<span class="m">' + FL(x.comp) + esc([x.f.time ? x.f.time + (night ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ")) + "</span></td>" +
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt">' + favStar(x, [m[0]]) + '<b>' + esc(x.f.home) + " – " + esc(x.f.away) + "</b>" + sc + '<span class="m">' + FL(x.comp) + esc([x.f.time ? x.f.time + (night ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ")) + "</span></td>" +
         MK.map((mm) => { const e = x.E[mm[0]];
           return '<td class="num ' + cls(e.v, mm[0]) + (mm[0] === m[0] ? " on" : "") + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>"; }).join("") + "</tr>";
       if (live) h += lvRow(L, m);
@@ -1883,7 +1942,7 @@ function fileDB() {
       const open = S.open.has(x.k), few = (x.E.cb.hn && x.E.cb.hn < minN()) || (x.E.cb.an && x.E.cb.an < minN()), z = x.E.o05.v === null ? null : 1 - x.E.o05.v;
       const close = x.diff !== null && x.diff < 0.04;
       const why = !x.best ? "" : close ? "quasi uguali: scegli la quota più alta" : x.best === "m13" ? "copre anche lo 0-1 (gol solo dell'ospite)" : "copre anche i primi tempi con 4 o più gol";
-      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt">' + favStar(x, (x.best ? [x.best] : ["m13", "cb"])) + '<b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
         '<td class="l mt">' + (x.best ? '<span class="pick ' + (close ? "eq" : "") + '">' + nm[x.best] + "</span>" : "—") + '<span class="m">' + esc(why) + "</span></td>" +
         bar(x.E.m13.v, x.best === "m13") + bar(x.E.cb.v, x.best === "cb") +
         '<td class="num ' + (z !== null && z >= 0.25 ? "warn" : "mut") + '">' + (z === null ? "—" : P(z)) + "</td></tr>";
@@ -1938,7 +1997,7 @@ function fileDB() {
     shown.forEach((x, i) => {
       const e = x.E[m[0]], open = S.open.has(x.k), a = awayNP(blk(x.A, "a")), few = (e.hn && e.hn < minN()) || (e.an && e.an < minN());
       const pc = (v, num, n, id) => (v === null || v === undefined ? '<td class="num mut">—</td>' : '<td class="num ' + cls(v, id) + '">' + P(v) + ' <span class="mut">' + num + "/" + n + "</span></td>");
-      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt"><b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt">' + favStar(x, [m[0]]) + '<b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
         pc(e.hr, e.hx, e.hn, m[0]) + pc(e.ar, e.ax, e.an, m[0]) + (re ? "" : a ? pc(a.np, a.npx, a.n) + pc(a.con, a.conx, a.n) : '<td class="num mut">—</td><td class="num mut">—</td>') +
         '<td class="num on ' + cls(e.v, m[0]) + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>" + evRes(x, m) + "</tr>";
       if (open) h += '<tr class="det"><td colspan="' + MI + '">' + detail(x) + "</td></tr>";
@@ -2236,9 +2295,200 @@ function fileDB() {
 })();
 </script>
 <script>
+// ★ PREFERITI (dal 23/11/2026): partite messe da parte con la stellina e la giocata fatta dall'utente.
+// Si salvano solo nel browser (localStorage "gold.fav"): il sito è solo da guardare, quindi niente archivio comune.
+// window.APP.fav.star(partita, giocate suggerite) = la stellina da mettere nelle righe di Pronostici e Statistiche.
 (function () {
   "use strict";
-  const names = ["idee", "stats", "storico"], alias = { pronostici: "idee", statistiche: "stats" }, box = document.getElementById("app");
+  const ME = "pref", on = () => window.APP.active === ME, KEY = "gold.fav";
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const plain = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
+  const romeFmt = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+  const nowRome = () => { const s = romeFmt.format(new Date()); return { date: s.slice(0, 10), time: s.slice(11, 16) }; };
+  const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  // le partite prima delle 06:00 stanno nel giorno prima ("notte"), come nel resto della pagina
+  const vdayOf = (date, time) => (time && time < "06:00" ? addDays(date, -1) : date);
+  const today = () => { const n = nowRome(); return vdayOf(n.date, n.time); };
+  const wd = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+  const dayLab = (d) => { const t = today(); return (d === t ? "OGGI · " : d === addDays(t, 1) ? "DOMANI · " : d === addDays(t, -1) ? "IERI · " : "") + wd.format(new Date(d + "T12:00:00Z")); };
+
+  // ---------- archivio nel browser ----------
+  let cache = null;
+  function load() {
+    if (cache) return cache;
+    try { const a = JSON.parse(localStorage.getItem(KEY) || "[]"); cache = Array.isArray(a) ? a.filter((x) => x && x.date && x.home && x.away) : []; } catch (e) { cache = []; }
+    return cache;
+  }
+  function save(list) {
+    cache = list;
+    try { localStorage.setItem(KEY, JSON.stringify(list)); return true; } catch (e) { toast("Non riesco a salvare: il browser non lo permette (navigazione privata?)"); return false; }
+  }
+  const sameTeam = (a, b) => { const x = plain(a), y = plain(b); return x === y || (x.length > 3 && y.length > 3 && (x.includes(y) || y.includes(x))); };
+  const findFav = (m) => load().find((f) => f.date === m.date && sameTeam(f.home, m.home) && sameTeam(f.away, m.away));
+  // della partita teniamo solo quello che serve al live (il link ESPN con l'id rende l'abbinamento sicuro)
+  const slim = (m) => ({ date: m.date, time: m.time || "", comp: m.comp || "", home: m.home, away: m.away,
+    links: (Array.isArray(m.links) ? m.links : []).filter((l) => l && /gameId\/\d+/.test(l.u || "")).map((l) => ({ t: l.t, u: l.u })) });
+
+  // ---------- la stellina ----------
+  function star(m, sugg) {
+    if (!m || !m.date || !m.home || !m.away) return "";
+    const f = findFav(m), s = (sugg || []).filter(Boolean);
+    return '<button type="button" class="favst' + (f ? " on" : "") + '" data-fav="' + esc(JSON.stringify({ m: slim(m), s })) + '" title="' +
+      (f ? "Nei preferiti" + (f.bets.length ? " · " + esc(f.bets.join(" · ")) : "") + ": tocca per cambiare la tua giocata o toglierla" : "Metti nei preferiti") + '" aria-label="' + (f ? "Nei preferiti" : "Metti nei preferiti") + '">' + (f ? "★" : "☆") + "</button>";
+  }
+  // la stellina sta dentro righe che si aprono quando le tocchi: la fermo prima che arrivi alla riga
+  document.addEventListener("click", (ev) => {
+    const b = ev.target.closest && ev.target.closest("[data-fav]"); if (!b) return;
+    ev.preventDefault(); ev.stopImmediatePropagation();
+    let d = null; try { d = JSON.parse(b.dataset.fav); } catch (e) { return; }
+    openSheet(d.m, d.s || []);
+  }, true);
+
+  // ---------- finestra: scegli la tua giocata ----------
+  const OPT = [
+    ["PRIMO TEMPO", ["1 PT o Over 1,5 PT", "1 PT", "X PT", "2 PT", "Over 0,5 PT", "Over 1,5 PT", "Under 1,5 PT", "Multigol 0-2 PT", "Multigol 1-3 PT", "Multigol 1-4 PT", "Casa segna PT", "Ospite segna PT", "Goal PT"]],
+    ["SECONDO TEMPO E COMBO", ["Over 0,5 2T", "Over 1,5 2T", "Over 0,5 PT + Over 0,5 2T"]],
+    ["PARTITA INTERA", ["1", "X", "2", "1X", "X2", "12", "Over 1,5", "Over 2,5", "Over 3,5", "Under 2,5", "Under 3,5", "Goal", "No Goal", "Multigol 1-3", "Multigol 2-4", "Casa segna", "Ospite segna"]],
+    ["RISULTATI ESATTI", ["Esatti 0-0 / 1-1", "Esatti 1-0 / 2-0 / 2-1", "Esatti 0-1 / 0-2 / 1-2"]],
+  ];
+  const ALL = new Set(OPT.flatMap((g) => g[1]).map(plain));
+  let SH = null;
+  function ov() {
+    let o = $("fav-ov");
+    if (!o) {
+      o = document.createElement("div"); o.className = "overlay"; o.id = "fav-ov"; o.hidden = true;
+      o.innerHTML = '<div class="sheet favsheet" id="fav-sheet" role="dialog" aria-modal="true" aria-label="Preferiti"></div>';
+      document.body.appendChild(o);
+      o.addEventListener("click", sheetClick);
+      o.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); else if (e.key === "Enter" && e.target.id === "fav-txt") { e.preventDefault(); addTxt(); } });
+    }
+    return o;
+  }
+  function openSheet(m, sugg) {
+    const f = findFav(m);
+    SH = { m: f ? Object.assign({}, f, { links: f.links && f.links.length ? f.links : m.links }) : m, had: !!f, bets: f ? f.bets.slice() : [], sugg: (sugg || []).filter((s, i, a) => s && a.indexOf(s) === i), warn: "" };
+    const o = ov(); paint(); o.hidden = false;
+    const t = $("fav-txt"); if (t && window.matchMedia && !window.matchMedia("(max-width: 760px)").matches) t.focus();
+  }
+  function closeSheet() { const o = $("fav-ov"); if (o) o.hidden = true; SH = null; }
+  const chip = (t) => '<button type="button" class="pchip' + (SH.bets.some((b) => plain(b) === plain(t)) ? " on" : "") + '" data-favb="' + esc(t) + '">' + esc(t) + "</button>";
+  function paint() {
+    const m = SH.m, U = window.APP.ui, extra = SH.bets.filter((b) => !ALL.has(plain(b)) && !SH.sugg.some((s) => plain(s) === plain(b)));
+    $("fav-sheet").innerHTML = "<h3>★ " + (SH.had ? "NEI PREFERITI" : "METTI NEI PREFERITI") + "</h3>" +
+      '<div class="favm"><b>' + esc(m.home) + " – " + esc(m.away) + '</b><span class="mut">' + (U ? U.flag(m.comp) : "") + esc([U ? U.tc(m.comp) : m.comp, dayLab(vdayOf(m.date, m.time)).toLowerCase(), m.time].filter(Boolean).join(" · ")) + "</span></div>" +
+      '<div class="field"><span class="lab">LA TUA GIOCATA · puoi sceglierne più di una</span><div class="favsel">' +
+      (SH.bets.length ? SH.bets.map((b) => '<span class="favb">' + esc(b) + '<button type="button" data-favdel="' + esc(b) + '" aria-label="Togli ' + esc(b) + '">×</button></span>').join("") : '<span class="mut">nessuna scelta: segui solo il risultato</span>') + "</div></div>" +
+      (SH.sugg.length ? '<div class="favg"><div class="lab">CONSIGLIATE QUI</div><div class="chips">' + SH.sugg.map(chip).join("") + "</div></div>" : "") +
+      (extra.length ? '<div class="favg"><div class="lab">SCRITTE DA TE</div><div class="chips">' + extra.map(chip).join("") + "</div></div>" : "") +
+      OPT.map((g) => '<div class="favg"><div class="lab">' + g[0] + '</div><div class="chips">' + g[1].map(chip).join("") + "</div></div>").join("") +
+      '<div class="field"><label for="fav-txt">OPPURE SCRIVILA TU</label><div class="favadd"><input id="fav-txt" autocomplete="off" placeholder="es. 1X + Over 1,5"><button type="button" class="btn" data-favact="add">AGGIUNGI</button></div>' +
+      '<div class="mut favhint">Puoi unire più giocate: con " + " devono riuscire tutte (es. 1X + Over 1,5), con " o " ne basta una (es. 1 PT o Over 1,5 PT).</div>' + (SH.warn ? '<div class="favwarn">' + esc(SH.warn) + "</div>" : "") + "</div>" +
+      '<div class="foot">' + (SH.had ? '<button type="button" class="btn down" data-favact="del">TOGLI DAI PREFERITI</button>' : "<span></span>") +
+      '<span class="favbtns"><button type="button" class="btn" data-favact="cancel">ANNULLA</button><button type="button" class="btn primary" data-favact="save">★ SALVA</button></span></div>';
+  }
+  function addTxt() {
+    const i = $("fav-txt"), t = i ? i.value.replace(/\s+/g, " ").trim() : ""; if (!t) return;
+    const LV = window.APP.live;
+    if (!SH.bets.some((b) => plain(b) === plain(t))) SH.bets.push(t);
+    SH.warn = LV && LV.ok && !LV.ok(t) ? "La pagina non sa controllare da sola \"" + t + "\": la salvo lo stesso, ma vedrai solo il risultato della partita." : "";
+    paint(); const n = $("fav-txt"); if (n) n.focus();
+  }
+  function sheetClick(e) {
+    if (e.target === $("fav-ov")) { closeSheet(); return; }
+    const b = e.target.closest("[data-favb]"), d = e.target.closest("[data-favdel]"), a = e.target.closest("[data-favact]");
+    if (b) { const t = b.dataset.favb, i = SH.bets.findIndex((x) => plain(x) === plain(t)); if (i >= 0) SH.bets.splice(i, 1); else SH.bets.push(t); SH.warn = ""; paint(); }
+    else if (d) { SH.bets = SH.bets.filter((x) => x !== d.dataset.favdel); paint(); }
+    else if (a) {
+      const v = a.dataset.favact;
+      if (v === "add") addTxt();
+      else if (v === "cancel") closeSheet();
+      else if (v === "save") {
+        const t = $("fav-txt"); if (t && t.value.trim() && !SH.bets.some((x) => plain(x) === plain(t.value))) SH.bets.push(t.value.replace(/\s+/g, " ").trim());
+        const list = load().filter((f) => !(f.date === SH.m.date && sameTeam(f.home, SH.m.home) && sameTeam(f.away, SH.m.away)));
+        const old = findFav(SH.m);
+        list.push(Object.assign(slim(SH.m), { bets: SH.bets.slice(), added: old ? old.added : Date.now() }));
+        if (save(list)) toast(SH.had ? "Preferito aggiornato ★" : "Messo nei preferiti ★ · lo trovi nella sezione PREFERITI");
+        closeSheet(); refresh();
+      } else if (v === "del") {
+        save(load().filter((f) => !(f.date === SH.m.date && sameTeam(f.home, SH.m.home) && sameTeam(f.away, SH.m.away))));
+        toast("Tolto dai preferiti"); closeSheet(); refresh();
+      }
+    }
+  }
+  let toastT = null;
+  function toast(msg) { const t = $("toast"); if (!t) return; t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200); }
+  // ridisegna la sezione aperta, così la stellina cambia subito
+  function refresh() { const a = window.APP.active, app = a && window.APP.apps[a]; if (app) app.render(); }
+  window.addEventListener("storage", (e) => { if (e.key === KEY) { cache = null; refresh(); } });
+
+  // ---------- la sezione PREFERITI ----------
+  const S = { show: "all" };
+  const item = (f) => ({ date: f.date, time: f.time, comp: f.comp, home: f.home, away: f.away, links: f.links });
+  const k = (l, v, c, n) => '<div class="k"><span class="l">' + l + '</span><span class="v num ' + (c || "") + '">' + v + "</span>" + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+  function stateOf(f, L, t) {
+    if (L && L.state !== "pre") return L.state;
+    const vd = vdayOf(f.date, f.time);
+    if (vd > t || (L && L.state === "pre")) return "pre";
+    const n = nowRome();
+    return vd === t && (!f.time || f.date + f.time > n.date + n.time) ? "pre" : "?";
+  }
+  function render() {
+    if (!on()) return;
+    const LV = window.APP.live, U = window.APP.ui, t = today(), list = load().slice();
+    if (LV) LV.need(list.map(item), true);
+    const rows = list.map((f) => { const L = LV ? LV.get(item(f)) : null, st = stateOf(f, L, t); return { f, L, st, vd: vdayOf(f.date, f.time), bs: f.bets.map((b) => ({ b, s: L && L.state !== "pre" && LV ? LV.market(b, L) : null })) }; });
+    const cnt = (st) => rows.filter((r) => r.st === st).length, bets = rows.flatMap((r) => r.bs), won = bets.filter((x) => x.s === "W").length, lost = bets.filter((x) => x.s === "L").length;
+    $("tb-left").textContent = list.length ? "· " + list.length + (list.length === 1 ? " partita" : " partite") : "";
+    $("tb-right").textContent = "salvati su questo dispositivo";
+    $("kpis").innerHTML = k("IN CORSO", String(cnt("in")), cnt("in") ? "down" : "", "partite") + k("DA GIOCARE", String(cnt("pre")), "", "partite") +
+      k("GIOCATE PRESE", String(won), won ? "up" : "", (won + lost ? "su " + (won + lost) + " decise" : "nessuna decisa")) + k("PERSE", String(lost), "", bets.length ? bets.length + " giocate in tutto" : "");
+    const SHOW = [["all", "Tutte", rows.length], ["in", "In corso", cnt("in")], ["pre", "Da giocare", cnt("pre")], ["post", "Finite", cnt("post")]];
+    $("side").innerHTML = U.side(U.group("MOSTRA", U.pills("fshow", SHOW.map((x) => [x[0], x[1] + ' <span class="mut num">' + x[2] + "</span>"]), (v) => S.show === v)) +
+      U.group("COME FUNZIONA", '<p class="mut favtip">Tocca la stellina <b class="favst on" style="cursor:default">★</b> accanto a una partita in Pronostici o in Statistiche e scegli la tua giocata. Qui vedi come sta andando, in tempo reale.<br><br>I preferiti restano solo su questo dispositivo e in questo browser.</p>') +
+      (cnt("post") ? U.group("PULIZIA", '<button type="button" class="btn small" data-act="fclear">TOGLI LE PARTITE FINITE</button>') : ""), SHOW.find((x) => x[0] === S.show)[1].toLowerCase());
+    if (!rows.length) { $("p-body").innerHTML = '<div class="panel"><div class="empty">Nessuna partita nei preferiti.<br>Tocca la stellina ☆ accanto a una partita in <b>Pronostici</b> o in <b>Statistiche</b>, poi scegli la giocata che hai fatto: qui vedrai in tempo reale se la stai prendendo.</div></div>'; return; }
+    const shown = rows.filter((r) => S.show === "all" || r.st === S.show || (S.show === "post" && r.st === "?"));
+    // prima oggi e i prossimi giorni, poi le partite dei giorni passati (le più recenti in alto)
+    const fut = shown.filter((r) => r.vd >= t).sort((a, b) => (a.vd + (a.f.time < "06:00" ? "1" : "0") + a.f.time).localeCompare(b.vd + (b.f.time < "06:00" ? "1" : "0") + b.f.time));
+    const past = shown.filter((r) => r.vd < t).sort((a, b) => b.vd.localeCompare(a.vd) || a.f.time.localeCompare(b.f.time));
+    let h = rows.some((r) => r.st === "in") && LV ? LV.bar() : "";
+    if (!shown.length) { $("p-body").innerHTML = h + '<div class="panel"><div class="empty">Nessuna partita in questo gruppo. <button type="button" class="linkbtn" data-act="fshow" data-c="all">Mostra tutte</button></div></div>'; return; }
+    h += '<div class="gtw"><table class="gt fav"><thead><tr><th>ORA</th><th>CAMPIONATO</th><th>CASA</th><th>OSPITE</th><th class="c">PT</th><th class="c">FIN</th><th>LA TUA GIOCATA</th><th></th></tr></thead><tbody>';
+    let day = null;
+    for (const r of fut.concat(past)) {
+      if (r.vd !== day) { day = r.vd; h += '<tr class="favday"><td colspan="8">' + esc(dayLab(day).toUpperCase()) + "</td></tr>"; }
+      const f = r.f, L = r.L, live = L && L.state !== "pre", night = f.date !== r.vd;
+      const chips = r.bs.length ? r.bs.map((x) => (x.s ? LV.tag(x.s, x.b + (x.s === "W" ? " ✓" : x.s === "L" ? " ✗" : x.s === "w" ? " · per ora ✓" : x.s === "l" ? " · per ora ✗" : " · in corso")) :
+        '<span class="res p"' + (live ? ' title="la pagina non sa controllare questa giocata da sola"' : "") + ">" + esc(x.b) + (live ? " ?" : "") + "</span>")).join("") : '<span class="mut">nessuna giocata</span>';
+      const fin = live ? esc(LV.scoreTxt(L)) + LV.clockTag(L) : r.st === "pre" ? '<span class="mut">da giocare</span>' : '<span class="mut" title="risultato non trovato">—</span>';
+      h += '<tr class="row' + (r.st === "in" ? " favin" : "") + '"><td class="tm">' + star(f, []) + esc(f.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + '</td><td class="cp"><span class="cpi">' + U.flag(f.comp) + esc(U.tc(f.comp)) + "</span></td>" +
+        '<td class="tn h">' + esc(f.home) + '<span class="vs"> – ' + esc(f.away) + '</span></td><td class="tn a">' + esc(f.away) + "</td>" +
+        '<td class="c ht">' + (live ? esc(LV.htTxt(L)) : "") + '</td><td class="c ft">' + fin + "</td>" +
+        '<td class="ch"><span class="chipsm">' + chips + '</span></td><td class="r ed"><button type="button" class="btn small" data-fav="' + esc(JSON.stringify({ m: slim(f), s: [] })) + '">MODIFICA</button></td></tr>';
+    }
+    $("p-body").innerHTML = h + '</tbody></table></div><div class="note">Durante la partita la pagina si aggiorna da sola ogni 30 secondi. ' + LV.tag("W") + " e " + LV.tag("L") + " = deciso · " + LV.tag("w") + " e " + LV.tag("l") + " = com'è adesso, può ancora cambiare · " + LV.tag("n") + " = si decide più avanti · grigio = partita non ancora iniziata.</div>";
+  }
+  document.addEventListener("click", (ev) => {
+    if (!on()) return;
+    const b = ev.target.closest("[data-act]"); if (!b || !b.closest("#p-body, #side")) return;
+    const a = b.dataset.act;
+    if (a === "fshow") { S.show = b.dataset.c || "all"; render(); }
+    else if (a === "fclear") {
+      const t = today(), LV = window.APP.live, keep = load().filter((f) => { const L = LV ? LV.get(item(f)) : null; return stateOf(f, L, t) !== "post"; });
+      const n = load().length - keep.length;
+      if (n && window.confirm("Tolgo dai preferiti " + n + (n === 1 ? " partita finita?" : " partite finite?"))) { save(keep); render(); }
+    }
+  });
+
+  window.APP.fav = { star, open: openSheet };
+  window.APP.apps[ME] = { render, close() { closeSheet(); } };
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const names = ["idee", "stats", "storico", "pref"], alias = { pronostici: "idee", statistiche: "stats", preferiti: "pref" }, box = document.getElementById("app");
   function pick() {
     const h0 = location.hash.replace("#", ""), h = alias[h0] || h0;
     if (names.includes(h)) return h;
