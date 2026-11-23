@@ -1448,6 +1448,8 @@ function fileDB() {
       const P = c.parts || {}, nm = { book: "bookmaker", calc: "calcolo", stat: "statistiche", base: "media generale" };
       h += '<div class="ckq"><b>Stima combinata ' + Math.round(c.est) + '%</b> <span class="mut">· ' + ["book", "calc", "stat", "base"].filter((k) => hasProb(P[k])).map((k) => nm[k] + " " + Math.round(P[k]) + "%").join(" · ") +
         "</span>" + (hasProb(x.prob) && Math.abs(Number(x.prob) - c.est) >= 8 ? ' <span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA (' + Math.round(Number(x.prob)) + "%)</span>" : "") +
+        (c.hist && c.hist.n ? '<div style="font-size:11.5px;margin-top:3px"><b>Storico di questa giocata:</b> ' + c.hist.w + " su " + c.hist.n + " prese (" + Math.round(100 * c.hist.w / c.hist.n) + "%)" + (hasProb(c.hist.p) ? ", stima media " + c.hist.p + "%" : "") +
+          (c.adj ? ' → stima corretta di <b>' + (c.adj > 0 ? "+" : "") + c.adj + "</b> punti" + (c.parts && hasProb(c.parts.raw) ? " (era " + c.parts.raw + "%)" : "") : c.hist.n < 10 ? ' <span class="mut">· nessuna correzione: servono almeno 10 casi</span>' : "") + "</div>" : "") +
         '<div class="mut" style="font-size:11px;margin-top:2px">Per 1, X, 2 e doppie pesa di più il bookmaker. Per le giocate sui gol pesa di più quante volte la giocata esce in generale, perché le statistiche delle squadre la prevedono poco (prova su 720 partite).</div></div>';
     }
     if (Number(c.qmin) > 1) {
@@ -2310,16 +2312,20 @@ function fileDB() {
       (any ? '<div><button type="button" class="btn small" data-act="hreset">TOGLI I FILTRI</button></div>' : "");
     return U.side(html, (S.period === "all" ? "tutto lo storico" : "ultimi " + S.period + " giorni") + (any ? " · filtri attivi" : ""));
   }
-  const GROUPS = [["kind", "PER GIOCATA"], ["conf", "PER FIDUCIA"], ["comp", "PER CAMPIONATO"], ["day", "PER GIORNO"]];
+  const GROUPS = [["kind", "PER GIOCATA"], ["conf", "PER FIDUCIA"], ["safe", "PER BOLLINO"], ["comp", "PER CAMPIONATO"], ["day", "PER GIORNO"]];
+  // PER BOLLINO (dal 23/11): i pronostici con la lista dei controlli, SICURI o no, e quelli di prima
+  const SAFE = ["SICURO", "NON SICURO", "SENZA LISTA DEI CONTROLLI", SC];
+  const safeOf = (o) => (o.t === "i" ? SC : !o.chk ? "SENZA LISTA DEI CONTROLLI" : o.chk.safe ? "SICURO" : "NON SICURO");
   function summary(F) {
-    const keyOf = { conf: (o) => o.conf || "", kind: (o) => o.kind, comp: (o) => o.comp || "—", day: (o) => o.vday }[S.group];
+    const keyOf = { conf: (o) => o.conf || "", kind: (o) => o.kind, safe: safeOf, comp: (o) => o.comp || "—", day: (o) => o.vday }[S.group];
     const m = new Map(); F.forEach((o) => { const kk = keyOf(o); if (!m.has(kk)) m.set(kk, []); m.get(kk).push(o); });
     const rows = Array.from(m.entries()).map(([kk, l]) => ({ kk, p: agg(l.filter(isP)), i: agg(l.filter(isI)) }));
     const tot = (r) => r.p.n + r.i.n;
     if (S.group === "conf") rows.sort((a, b) => (CONF.indexOf(a.kk) + 9) % 9 - (CONF.indexOf(b.kk) + 9) % 9);
     else if (S.group === "day") rows.sort((a, b) => b.kk.localeCompare(a.kk));
+    else if (S.group === "safe") rows.sort((a, b) => SAFE.indexOf(a.kk) - SAFE.indexOf(b.kk));
     else rows.sort((a, b) => (a.kk === SC) - (b.kk === SC) || tot(b) - tot(a) || a.kk.localeCompare(b.kk));
-    const label = (kk) => (S.group === "conf" ? "FIDUCIA " + (confTxt[kk] || "—") : S.group === "day" ? longDay.format(toDate(kk)) : S.group === "comp" ? U.flag(kk) + " " + esc(U.tc(kk)) : esc(kk));
+    const label = (kk) => (S.group === "safe" && kk === "SICURO" ? '<span class="tag safe">SICURO</span>' : S.group === "conf" ? "FIDUCIA " + (confTxt[kk] || "—") : S.group === "day" ? longDay.format(toDate(kk)) : S.group === "comp" ? U.flag(kk) + " " + esc(U.tc(kk)) : esc(kk));
     const cnt = (x) => (!x.n ? '<td class="mut">—</td>' : '<td class="num"><b>' + x.ok + "</b> su " + x.known + (x.wait ? ' <span class="mut">+' + x.wait + " in attesa</span>" : "") + "</td>");
     const rt = (x, hi, lo) => (!x.known ? '<td class="mut">' + (x.n ? "—" : "") + "</td>" : '<td class="num ' + rateCls(x, hi, lo) + '"><span class="pv">' + pct(x.rate) + '</span><span class="sb"><i style="width:' + (x.rate * 100).toFixed(1) + '%"></i></span></td>');
     const est = (x) => '<td class="num mut">' + (x.nProb ? pct(x.avgProb) : "") + "</td>";
