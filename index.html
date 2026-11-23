@@ -712,6 +712,23 @@ table.stab tr.lvrow td { background: #fafbfc; border-top: 0; padding-top: 0; pad
 table.stab tr.lvrow.in td.lvh { box-shadow: inset 3px 0 0 #dc2626; }
 table.stab tr.lvrow td.lvh { text-align: left; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; color: var(--muted); }
 table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
+/* NOTIZIE DELLA PARTITA (passo 1, 23/11) */
+.nw { display: grid; gap: 9px; border: 1px solid var(--line2); border-radius: 8px; padding: 9px 10px; background: #fafbfc; }
+.nw .nwb { display: grid; gap: 4px; min-width: 0; }
+.nw .nwh { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); }
+.nw .nwr { display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; font-size: 12px; min-width: 0; }
+.nw .nwt { font-weight: 700; min-width: 120px; font-size: 11.5px; }
+.nw .nwf { display: inline-flex; gap: 3px; }
+.nw .nwg { display: inline-grid; justify-items: center; gap: 1px; min-width: 30px; }
+.nw .nwg i { font-style: normal; font-weight: 700; font-size: 10.5px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 5px; }
+.nw .nwg i.w { background: #e6f5eb; color: var(--up); } .nw .nwg i.l { background: #fcebeb; color: var(--down); } .nw .nwg i.p { background: #eef0f3; color: var(--muted); }
+.nw .nwg small { font-size: 9.5px; color: var(--muted); white-space: nowrap; }
+.nw .nwq { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12px; }
+.nw .nwq b { font-weight: 700; }
+.nw .nwl { font-size: 11.5px; line-height: 1.5; }
+.nw .nwl div { display: flex; gap: 8px; }
+.nw .nwl .num { color: var(--muted); min-width: 74px; }
+.nw .nws { font-size: 10px; color: var(--muted); }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1428,7 +1445,7 @@ function fileDB() {
       if (x.hit === null && x.vday <= today) h += '<button type="button" class="btn small up" data-act="' + col + '-hit" data-v="1" data-id="' + esc(x.id) + '">✓ ' + (o.t === "p" ? "PRESO" : "SEGNATO") + '</button><button type="button" class="btn small down" data-act="' + col + '-hit" data-v="0" data-id="' + esc(x.id) + '">✗ ' + (o.t === "p" ? "PERSO" : "NO") + "</button>";
     }
     h += "</div>";
-    if (o.c) h += det(o.kk + "|card", "SCHEDA PARTITA · ANALISI, ASSENTI, FORMAZIONI E ROSE", card(o.c, day));
+    if (o.c) h += det(o.kk + "|card", "SCHEDA PARTITA · NOTIZIE, ANALISI, ASSENTI, FORMAZIONI E ROSE", card(o.c, day));
     return h + "</div>";
   }
   // PARTITE: una riga per partita del giorno (anche senza pronostici); tocca per la scheda completa
@@ -1451,7 +1468,7 @@ function fileDB() {
         scoreCells(r, L) + "</tr>";
       if (open) h += '<tr class="gx"><td colspan="8"><div class="gxin">' + card(c, day) + "</div></td></tr>";
     }
-    return h + '</tbody></table></div><div class="note">Tocca una partita per la scheda completa: probabilità, analisi, assenti, formazioni, rose e link.</div>';
+    return h + '</tbody></table></div><div class="note">Tocca una partita per la scheda completa: probabilità, quote, forma, scontri diretti, classifica, riposo, analisi, assenti, formazioni, rose e link.</div>';
   }
   // colonna dei filtri
   function sideHtml(C, D, G, day) {
@@ -1496,11 +1513,62 @@ function fileDB() {
     };
     return '<div class="sect"><div class="st">ROSE</div><div class="hint">Rosa completa della squadra, non i convocati: i titolari li trovi nel link delle formazioni ufficiali, circa un\'ora prima.</div><div class="roster">' + teams.map(col).join("") + "</div></div>";
   }
+  // NOTIZIE DELLA PARTITA: raccolte da ESPN con strumenti/notizie.py (campo news delle partite)
+  function newsSect(f, home, away, comp) {
+    const n = f.news; if (!n || typeof n !== "object") return "";
+    const T = { h: home, a: away }, R = { V: "w", N: "p", P: "l" }, gg = (x) => (Number(x) === 1 ? "1 giorno" : x + " giorni");
+    const q = (v) => (Number(v) > 1 ? n2(v) : "–"), pc = (v) => (hasProb(v) ? ' <span class="mut">' + Math.round(Number(v)) + "%</span>" : "");
+    const blk = (t, body) => '<div class="nwb"><div class="nwh">' + t + "</div>" + body + "</div>";
+    let h = "";
+    const o = n.odds;
+    if (o && (o.q1 || o.qo)) {
+      const ou = String(o.ou || "").replace(".", ",");
+      h += blk('QUOTE DEI BOOKMAKER <span class="mut">· ' + esc(o.by || "") + " · tra parentesi la probabilità senza il guadagno del bookmaker</span>",
+        '<div class="nwq num">' + (o.q1 ? "<span>1 <b>" + q(o.q1) + "</b>" + pc(o.p1) + "</span><span>X <b>" + q(o.qx) + "</b>" + pc(o.px) + "</span><span>2 <b>" + q(o.q2) + "</b>" + pc(o.p2) + "</span>" : "") +
+        (o.qo && ou ? "<span>Over " + esc(ou) + " <b>" + q(o.qo) + "</b>" + pc(o.po) + "</span><span>Under " + esc(ou) + " <b>" + q(o.qu) + "</b>" + pc(o.pu) + "</span>" : "") + "</div>");
+    }
+    const fo = n.form || {};
+    const frow = (s) => {
+      const L = Array.isArray(fo[s]) ? fo[s] : []; if (!L.length) return "";
+      const gf = L.reduce((a, x) => a + (Number(x.gf) || 0), 0), gs = L.reduce((a, x) => a + (Number(x.gs) || 0), 0);
+      return '<div class="nwr"><span class="nwt">' + esc(T[s]) + '</span><span class="nwf">' +
+        L.map((x) => '<span class="nwg" title="' + esc(x.d + " · " + (x.v === "C" ? "in casa" : "in trasferta") + " contro " + x.o + " · " + x.c) + '"><i class="' + (R[x.r] || "p") + '">' + esc(x.r) + "</i><small>" + esc(x.v + " " + x.gf + "-" + x.gs) + "</small></span>").join("") +
+        '</span><span class="mut num">gol fatti ' + gf + " · subiti " + gs + "</span></div>";
+    };
+    if (frow("h") || frow("a")) h += blk('FORMA · ULTIME 5 <span class="mut">· dalla più vecchia alla più recente · C = in casa, T = in trasferta, prima i gol della squadra</span>', frow("h") + frow("a"));
+    const hh = Array.isArray(n.h2h) ? n.h2h : [];
+    if (hh.length) {
+      let w1 = 0, w2 = 0, x = 0;
+      hh.forEach((g) => {
+        const [a, b] = String(g.s).split("-").map(Number);
+        if (a === b) x++; else { const win = key(a > b ? g.h : g.a); if (win === key(home)) w1++; else if (win === key(away)) w2++; }
+      });
+      h += blk('SCONTRI DIRETTI <span class="mut">· ' + esc(home) + " " + w1 + " vinte · " + x + " pari · " + esc(away) + " " + w2 + " vinte</span>",
+        '<div class="nwl">' + hh.map((g) => '<div><span class="num">' + esc(g.d) + "</span><span>" + esc(g.h) + ' <b class="num">' + esc(g.s) + "</b> " + esc(g.a) + "</span></div>").join("") + "</div>");
+    }
+    const tb = n.table || {};
+    if (tb.h || tb.a) h += blk("CLASSIFICA E MOTIVAZIONI", '<div class="nwl">' + ["h", "a"].filter((s) => tb[s]).map((s) => "<div><span><b>" + esc(T[s]) + "</b> " + tb[s].pos + "° · " + tb[s].pts + " punti in " + tb[s].g + " partite — " + esc(tb[s].txt || "") + "</span></div>").join("") + "</div>");
+    const rs = n.rest || {};
+    if (rs.h || rs.a) {
+      const same = (c) => plain(c) === plain(comp || "");
+      const line = (s) => {
+        const r = rs[s]; if (!r) return "";
+        const tags = (r.prev && Number(r.gp) <= 3 ? ' <span class="tag o">POCO RIPOSO</span>' : "") +
+          (r.next && !same(r.nextC) && Number(r.gn) <= 4 ? ' <span class="tag o">' + esc(String(r.nextC).toUpperCase()) + " TRA " + gg(r.gn).toUpperCase() + ": POSSIBILE TURNOVER</span>" : "");
+        return "<div><span><b>" + esc(T[s]) + "</b> " + (r.prev ? "ultima partita " + esc(r.prev) + " (" + esc(r.prevC || "") + "), " + gg(r.gp) + " fa" : "") +
+          (r.next ? " · dopo questa: " + esc(r.next) + " (" + esc(r.nextC || "") + "), tra " + gg(r.gn) : "") + tags + "</span></div>";
+      };
+      h += blk('RIPOSO E PROSSIMI IMPEGNI <span class="mut">· contano anche le coppe</span>', '<div class="nwl">' + line("h") + line("a") + "</div>");
+    }
+    if (!h) return "";
+    return '<div class="sect"><div class="st">NOTIZIE DELLA PARTITA <span class="mut">· da ESPN' + (n.at ? ", prese il " + esc(n.at) : "") + '</span></div><div class="nw">' + h + "</div></div>";
+  }
   function card(c, day) {
     const f = c.fx || {}, night = c.date !== day, [home, away] = teamsOf(c);
     let h = '<article class="mcard"><div class="mh"><span>' + (c.time ? '<span class="tm num">' + esc(c.time) + "</span>" : "") + "<b>" + esc(c.comp || "") + "</b>" + (night ? ' <span class="tag o">NOTTE · ' + dm(c.date) + "</span>" : "") + "</span>" +
       "<span>" + esc([f.venue, f.tv].filter(Boolean).join(" · ")) + "</span></div><h4>" + esc(home + (away ? " – " + away : "")) + "</h4>" + (f.table ? '<div class="tbl">' + esc(f.table) + "</div>" : "");
     if (hasProb(f.p1)) h += probBar(f, home, away);
+    h += newsSect(f, home, away, c.comp);
     if (c.picks.length) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div>' + c.picks.map(pickRow).join("") + "</div>";
     else if (hasProb(f.p1) || f.analysis) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div><p class="mut">Nessuno: partita troppo incerta, meglio evitarla.</p></div>';
     if (f.analysis) h += sect("ANALISI", f.analysis);
