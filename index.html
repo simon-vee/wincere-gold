@@ -729,6 +729,21 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
 .nw .nwl div { display: flex; gap: 8px; }
 .nw .nwl .num { color: var(--muted); min-width: 74px; }
 .nw .nws { font-size: 10px; color: var(--muted); }
+/* LISTA DEI CONTROLLI (passo 2, 23/11) */
+.ckd { display: inline-flex; gap: 2px; vertical-align: middle; margin-left: 6px; }
+.ckd i, .ck .cks { font-style: normal; font-weight: 700; font-size: 10px; width: 15px; height: 15px; display: inline-grid; place-items: center; border-radius: 4px; }
+.ckd i.ok, .ck .cks.ok { background: #e6f5eb; color: var(--up); }
+.ckd i.no, .ck .cks.no { background: #fcebeb; color: var(--down); }
+.ckd i.mid, .ck .cks.mid { background: #fdf2e1; color: var(--amber); }
+.ckd i.na, .ck .cks.na { background: #eef0f3; color: #9aa3ae; }
+.tag.safe { background: #15803d; color: #fff; letter-spacing: .04em; }
+.ck { display: grid; gap: 5px; border: 1px solid var(--line2); border-radius: 8px; padding: 9px 10px; background: #fafbfc; margin-top: 8px; }
+.ck .ckh { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ck .ckh .mut { font-weight: 500; letter-spacing: 0; }
+.ck .ckr { display: grid; grid-template-columns: 15px 150px 1fr; gap: 8px; align-items: start; font-size: 12px; line-height: 1.45; }
+.ck .ckr .ckn { font-weight: 700; font-size: 11px; }
+.ck .ckq { font-size: 12px; border-top: 1px solid var(--line2); padding-top: 6px; margin-top: 2px; }
+@media (max-width: 760px) { .ck .ckr { grid-template-columns: 15px 1fr; } .ck .ckr .ckt { grid-column: 2; } }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1417,6 +1432,25 @@ function fileDB() {
   const th = (v, l, cls) => '<th class="' + (cls || "") + '">' + (v ? '<button type="button" class="thb' + (S.sort === v ? " on" : "") + '" data-act="psort" data-v="' + v + '">' + l + (S.sort === v ? " ▾" : "") + "</button>" : l) + "</th>";
   // ★ PREFERITI: la stellina nella cella ORA (vedi strumenti/preferiti.js)
   const favStar = (date, time, comp, home, away, fx, sugg) => (window.APP.fav ? window.APP.fav.star({ date, time, comp, home, away, links: fx && fx.links }, sugg) : "");
+  // LISTA DEI CONTROLLI: calcolata da strumenti/controlli.py (campo chk dei pronostici)
+  const CKN = { stat: "Statistiche", odds: "Quote", form: "Forma", h2h: "Scontri diretti", rest: "Assenti e stanchezza", mot: "Motivazioni" };
+  const CKS = { ok: "✓", no: "✗", mid: "≈", na: "–" };
+  const ckItems = (x) => (x && x.chk && Array.isArray(x.chk.items) ? x.chk.items : []);
+  const safeTag = (x) => (x && x.chk && x.chk.safe ? ' <span class="tag safe" title="supera la lista dei controlli">SICURO</span>' : "");
+  const ckDots = (x) => { const L = ckItems(x); return L.length ? '<span class="ckd" title="lista dei controlli">' + L.map((i) => '<i class="' + esc(i.v) + '" title="' + esc((CKN[i.k] || i.k) + ": " + i.t) + '">' + (CKS[i.v] || "–") + "</i>").join("") + "</span>" : ""; };
+  function ckList(x) {
+    const L = ckItems(x); if (!L.length) return "";
+    const c = x.chk, ok = L.filter((i) => i.v === "ok").length;
+    let h = '<div class="ck"><div class="ckh">LISTA DEI CONTROLLI ' + (c.safe ? '<span class="tag safe">SICURO</span>' : '<span class="tag p">' + ok + " ✓ SU " + L.length + "</span>") +
+      '<span class="mut">· SICURO = statistiche ✓, nessun ✗, almeno 4 ✓ e al massimo un ≈ · ✓ a favore · ≈ così così · ✗ contro · – manca il dato o non conta' + (c.at ? " · calcolata il " + esc(c.at) : "") + "</span></div>";
+    h += L.map((i) => '<div class="ckr"><span class="cks ' + esc(i.v) + '">' + (CKS[i.v] || "–") + '</span><span class="ckn">' + esc(CKN[i.k] || i.k) + '</span><span class="ckt">' + esc(i.t) + "</span></div>").join("");
+    if (Number(c.qmin) > 1) {
+      const qb = Number(c.qbook) > 1 ? Number(c.qbook) : Number(x.odds) > 1 ? Number(x.odds) : 0, by = Number(c.qbook) > 1 ? c.qby || "bookmaker" : "quota segnata";
+      h += '<div class="ckq"><b>Quota minima ' + n2(c.qmin) + "</b> <span class=\"mut\">· sotto questa quota non conviene giocarla</span>" +
+        (qb ? " · " + esc(by) + " <b>" + n2(qb) + "</b> " + (qb >= c.qmin ? '<span class="tag w">CONVIENE</span>' : '<span class="tag l">NON CONVIENE</span>') : "") + "</div>";
+    }
+    return h + "</div>";
+  }
   function tabPlays(C, D, G, day) {
     if (!G.all.length) return '<div class="panel"><div class="empty">' + (S.ready.picks && S.ready.ideas ? "Nessuna giocata per questo giorno. Chiedi a Claude i pronostici del giorno, oppure aggiungili con + PRONOSTICO." : "CARICAMENTO…") + "</div></div>";
     if (!G.list.length) return '<div class="panel"><div class="empty">Nessuna giocata con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
@@ -1429,16 +1463,16 @@ function fileDB() {
         '<td class="cp"><span class="cpi">' + U.flag(o.comp) + esc(U.tc(o.comp)) + "</span></td>" +
         '<td class="tn h">' + esc(o.home) + '<span class="vs"> – ' + esc(o.away) + '</span></td><td class="tn a">' + esc(o.away) + "</td>" +
         scoreCells(o.r, L) +
-        '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(x.player) : esc(x.market)) + "</td>" +
+        '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(x.player) : esc(x.market) + safeTag(x) + ckDots(x)) + "</td>" +
         '<td class="cf">' + confLow(x.conf) + '</td><td class="r pr"><b>' + (hasProb(x.prob) ? Math.round(Number(x.prob)) + "%" : "—") + "</b></td>" +
-        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : "") + '</td><td class="r es">' + resCell(o, C.today, L) + "</td></tr>";
+        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : x.chk && Number(x.chk.qmin) > 1 ? '<span title="quota minima: sotto questa non conviene">min ' + n2(x.chk.qmin) + "</span>" : "") + '</td><td class="r es">' + resCell(o, C.today, L) + "</td></tr>";
       if (open) h += '<tr class="gx"><td colspan="11">' + expand(o, day, C.today) + "</td></tr>";
     }
     return h + '</tbody></table></div><div class="note">Una riga per ogni giocata. Tocca una riga per leggere il motivo e aprire la scheda della partita. Tocca ORA, CAMPIONATO, FIDUCIA o PROB per ordinare.</div>';
   }
   function expand(o, day, today) {
     const x = o.x, ok = S.db && S.canWrite, col = o.t === "p" ? "p" : "i";
-    let h = '<div class="gxin">' + (x.why ? '<div class="why">' + esc(x.why) + "</div>" : '<div class="why mut">Nessun motivo scritto.</div>') +
+    let h = '<div class="gxin">' + (x.why ? '<div class="why">' + esc(x.why) + "</div>" : '<div class="why mut">Nessun motivo scritto.</div>') + (o.t === "p" ? ckList(x) : "") +
       '<div class="gxb"><span class="pt">' + confTag(x.conf) + pp(x.prob) + (Number(x.odds) > 1 ? '<span class="mut num">@ ' + n2(x.odds) + "</span>" : "") + "</span>";
     if (ok) {
       h += '<button type="button" class="btn small" data-act="edit-' + (o.t === "p" ? "pick" : "idea") + '" data-id="' + esc(x.id) + '">MODIFICA</button>';
@@ -1499,7 +1533,7 @@ function fileDB() {
     return '<div class="sect"><div class="st">PROBABILITÀ DEL RISULTATO <span class="mut">· stima di Claude</span></div><div class="pbar" aria-hidden="true"><i class="a" style="flex:' + a + '"></i><i class="x" style="flex:' + x + '"></i><i class="b" style="flex:' + b + '"></i></div>' +
       '<div class="plg num"><span><i class="dot a"></i>1 · ' + esc(home) + " <b>" + Math.round(a) + '%</b></span><span><i class="dot x"></i>X · pareggio <b>' + Math.round(x) + '%</b></span><span><i class="dot b"></i>2 · ' + esc(away) + " <b>" + Math.round(b) + "%</b></span></div></div>";
   }
-  const pickRow = (p) => '<button type="button" class="prow" data-act="edit-pick" data-id="' + esc(p.id) + '"><span class="pt"><span class="mk">' + esc(p.market) + "</span>" + confTag(p.conf) + pp(p.prob) +
+  const pickRow = (p) => '<button type="button" class="prow" data-act="edit-pick" data-id="' + esc(p.id) + '"><span class="pt"><span class="mk">' + esc(p.market) + "</span>" + safeTag(p) + confTag(p.conf) + pp(p.prob) + ckDots(p) +
     (Number(p.odds) > 1 ? '<span class="mut num">@ ' + n2(p.odds) + "</span>" : "") + hitTag(p.hit, "PRESO", "PERSO") + "</span>" + (p.why ? '<span class="why">' + esc(p.why) + "</span>" : "") + "</button>";
   const pname = (p) => (p.n ? p.n + " " : "") + p.s;
   function roster(home, away) {
