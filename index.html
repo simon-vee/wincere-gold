@@ -781,7 +781,7 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
 .calx { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .cadv { display: grid; gap: 0; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden; }
 .cadv .car { display: grid; grid-template-columns: 64px 1fr 48px 150px; gap: 8px; align-items: center; padding: 5px 9px; font-size: 12px; border-top: 1px solid var(--line2); }
-.cadv .car:first-child { border-top: 0; background: #f3fbf5; }
+.cadv .car:first-child { border-top: 0; }
 .cadv .car > .cv { justify-self: start; }
 .cbar { border: 1px solid #c9d6f5; background: #f6f8fe; border-radius: var(--r); padding: 8px 12px; margin: 0 0 8px; display: grid; gap: 6px; }
 .cbr { display: grid; grid-template-columns: 78px 1fr; gap: 8px; align-items: center; font-size: 12px; }
@@ -793,6 +793,8 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
   .cadv .car { grid-template-columns: 60px 1fr 40px; }
   .cadv .car > :last-child { grid-column: 2 / -1; }
 }
+.cplay { font-size: 12.5px; padding: 7px 10px; border-radius: 8px; background: #e6f5eb; border: 1px solid rgba(21,128,61,.25); margin-bottom: 6px; }
+.cplay.no { background: #fdf2e1; border-color: #f5c98b; }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1506,8 +1508,9 @@ function fileDB() {
     }
     if (Number(c.qmin) > 1) {
       const qb = Number(c.qbook) > 1 ? Number(c.qbook) : Number(x.odds) > 1 ? Number(x.odds) : 0, by = Number(c.qbook) > 1 ? c.qby || "bookmaker" : "quota segnata";
-      h += '<div class="ckq"><b>Quota minima ' + n2(c.qmin) + "</b> <span class=\"mut\">· sotto questa quota non conviene giocarla</span>" +
-        (qb ? " · " + esc(by) + " <b>" + n2(qb) + "</b> " + (qb >= c.qmin ? '<span class="tag w">CONVIENE</span>' : '<span class="tag l">NON CONVIENE</span>') : "") + "</div>";
+      const qe = !qb && Number(c.qest) > 1 ? Number(c.qest) : 0, nd = (CS() && CS().needOf(x)) || Number(c.qmin), qq = qb || qe;
+      h += '<div class="ckq"><b>Serve quota ' + n2(nd) + "</b> <span class=\"mut\">· quota minima " + n2(c.qmin) + " (100 diviso la stima) + 3% di margine, e almeno la tua quota minima</span>" +
+        (qq ? " · " + (qb ? esc(by) + " <b>" + n2(qb) + "</b>" : "quota probabile <b>~" + n2(qe) + "</b>") + " " + (qq >= nd ? '<span class="tag w">CONVIENE</span>' : '<span class="tag l">NON CONVIENE</span>') : "") + "</div>";
     }
     return h + "</div>";
   }
@@ -1525,7 +1528,7 @@ function fileDB() {
         scoreCells(o.r, L) +
         '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(x.player) : esc(x.market) + safeTag(x) + ckDots(x) + consTag(x)) + "</td>" +
         '<td class="cf">' + confLow(x.conf) + '</td><td class="r pr"><b>' + (hasProb(x.prob) ? Math.round(Number(x.prob)) + "%" : "—") + "</b></td>" +
-        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : x.chk && Number(x.chk.qmin) > 1 ? '<span title="quota minima: sotto questa non conviene">min ' + n2(x.chk.qmin) + "</span>" : "") + '</td><td class="r es">' + resCell(o, C.today, L) + "</td></tr>";
+        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : x.chk && Number(x.chk.qmin) > 1 ? '<span title="quota che serve: sotto questa non conviene">serve ' + n2((CS() && CS().needOf(x)) || x.chk.qmin) + "</span>" : "") + '</td><td class="r es">' + resCell(o, C.today, L) + "</td></tr>";
       if (open) h += '<tr class="gx"><td colspan="11">' + expand(o, day, C.today) + "</td></tr>";
     }
     return h + '</tbody></table></div><div class="note">Una riga per ogni giocata. Tocca una riga per leggere il motivo e aprire la scheda della partita. Tocca ORA, CAMPIONATO, FIDUCIA o PROB per ordinare.</div>';
@@ -2677,7 +2680,7 @@ function fileDB() {
       row("<b>X2</b>", "La <b>giocata</b> consigliata. Accanto trovi il bollino SICURO e i 7 quadratini dei controlli (spiegati sotto).") +
       row('<span class="tag conf w">ALTA</span> <span class="tag conf o">MEDIA</span> <span class="tag conf l">BASSA</span>', "<b>Fiducia</b> di Claude nel pronostico. Da adesso la fiducia alta si dà solo ai pronostici SICURI.") +
       row("<b>78%</b>", "<b>PROB</b>: probabilità che la giocata esca, secondo Claude.") +
-      row('<b>1,85</b> · <span class="mut">min 1,28</span>', "<b>QUOTA</b>: la quota, se è stata segnata. Se non c'è, vedi la <b>quota minima</b>: sotto questa quota la giocata non conviene.") +
+      row('<b>1,85</b> · <span class="mut">serve 1,28</span>', "<b>QUOTA</b>: la quota, se è stata segnata. Se non c'è, vedi la <b>quota che serve</b>: sotto questa quota la giocata non conviene.") +
       row('<span class="res w">✓ PRESO</span> <span class="res l">✗ PERSO</span> <span class="mut">da giocare</span>', "<b>ESITO</b> della giocata. Quello definitivo lo segna Claude quando gli chiedi di aggiornare i risultati.") +
       row("<i>tocca la riga</i>", "Si apre il <b>motivo</b> del pronostico, la <b>lista dei controlli</b> completa e la <b>scheda partita</b>. Tocca ORA, CAMPIONATO, FIDUCIA o PROB in alto per ordinare."));
 
@@ -2708,7 +2711,7 @@ function fileDB() {
       row("<b>Stima combinata 84%</b>", "Il numero più affidabile: mette insieme bookmaker, calcolo, statistiche e media generale.<br>· Per 1, X, 2 e doppie pesa di più il <b>bookmaker</b> (il più preciso).<br>· Per le giocate sui gol pesa di più <b>quante volte esce in generale</b> quella giocata, perché le statistiche delle squadre la prevedono poco.") +
       row('<span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA</span>', "La stima combinata e la probabilità scritta da Claude sono lontane 8 punti o più: fidati di più della stima combinata.") +
       row("<b>Storico di questa giocata</b>", "Quante ne abbiamo prese finora con la stessa giocata. Con <b>almeno 10 casi</b> la stima si corregge da sola (se in passato eravamo troppo ottimisti, scende).") +
-      row("<b>Quota minima 1,28</b>", "Sotto questa quota non conviene giocarla, perché si vince troppo poco rispetto al rischio. È 100 diviso la stima (stima 80% → quota minima 1,25).") +
+      row("<b>Serve quota 1,29</b>", "Sotto questa quota non conviene giocarla, perché si vince troppo poco rispetto al rischio. È 100 diviso la stima (stima 80% → 1,25), più un margine del 3%, e mai meno della tua quota minima.") +
       row('<span class="tag w">CONVIENE</span> <span class="tag l">NON CONVIENE</span>', "Confronto tra la quota del bookmaker (quando c'è) e la quota minima."));
 
     h += sec("card", "LA SCHEDA PARTITA · tocca una partita in PARTITE, o apri “Scheda partita” in una riga",
@@ -2731,15 +2734,17 @@ function fileDB() {
       row("<b>Filtri</b>", "Giorno (calendario), campionati, tipo di giocata e fiducia. Sul telefono si aprono con il pulsante FILTRI."));
 
     h += sec("cons", "IL CONSIGLIO · se giocare, cosa, come e quanto puntare",
-      row('<span class="cv cv-go">GIOCA</span>', "Ha il bollino SICURO e la quota conviene (o non l'hai ancora scritta: allora gioca solo se è almeno la quota minima).") +
-      row('<span class="cv cv-small">GIOCA PICCOLO</span>', "Stima almeno 70% e nessun ✗, ma non è SICURO: solo da sola (singola) e con una puntata piccola.") +
-      row('<span class="cv cv-no">NON GIOCARE</span>', "C'è un ✗, oppure la stima è sotto il 70%, oppure la quota è sotto la quota minima. Il motivo è scritto accanto.") +
+      row('<span class="cv cv-go">GIOCA</span>', "Ha il bollino SICURO e la quota conviene.") +
+      row('<span class="cv cv-small">GIOCA PICCOLO</span>', "Stima almeno 70%, nessun ✗ e la quota conviene, ma non è SICURO: solo da sola (singola) e con una puntata piccola.") +
+      row('<span class="cv cv-no">NON GIOCARE</span>', "C'è un ✗, oppure la stima è troppo bassa, oppure la <b>quota è troppo bassa</b>. Il motivo è scritto accanto.") +
       row('<span class="cv cv-go sm">GIOCA</span> <span class="cv cv-small sm">PICCOLO</span> <span class="cv cv-no sm">NO</span>', "La versione piccola del verdetto, accanto alla giocata nella tabella. Sparisce quando la partita è iniziata.") +
-      row("<b>CASSA</b>", "In cima a GIOCATE scrivi i soldi che dedichi alle scommesse (per esempio 100 €). Restano solo su quel telefono o computer.") +
-      row("<b>QUOTA</b>", "Nella riga aperta scrivi la quota che ti dà il tuo bookmaker: la pagina ricalcola subito se conviene e quanto puntare.") +
+      row("<b>serve 1,23</b>", "La quota che serve perché la giocata convenga: la quota minima (100 diviso la stima) più un margine di sicurezza del 3%, e mai meno della <b>tua quota minima</b>. Sotto questa quota, alla lunga, si perde.") +
+      row("<b>quota ~1,12</b>", "Con la <b>~</b> è la <b>quota probabile</b>: il bookmaker su ESPN dà solo 1X2 e Over/Under, quindi per le altre giocate la quota è ricavata dalle sue. Esempio: l'Over 0,5 2T esce spesso ma si paga circa 1,12-1,15, sotto la quota che serve: NON GIOCARE.") +
+      row("<b>QUOTA</b>", "Nella riga aperta scrivi la quota vera del tuo bookmaker: la pagina ricalcola subito verdetto e puntata. La tua quota vale più di quella probabile.") +
+      row('<span class="tag w">DA GIOCARE</span>', "Per ogni partita sono provate 13 giocate: DA GIOCARE è la più probabile tra quelle che <b>convengono</b> alla loro quota. Se nessuna conviene la pagina scrive <b>salta la partita</b>.") +
+      row("<b>CASSA · QUOTA MINIMA TUA</b>", "In cima a GIOCATE scrivi i soldi che dedichi alle scommesse e la quota più bassa che sei disposto a giocare (di partenza 1,20). Restano solo su quel telefono o computer.") +
       row("<b>QUANTO</b>", "La puntata è più alta quando la giocata è più sicura e la quota è più alta (un metodo prudente, un quarto del metodo di Kelly). Mai più del <b>5%</b> della cassa per un GIOCA, del <b>2%</b> per un GIOCA PICCOLO. Se le puntate del giorno superano il <b>10%</b> della cassa si riducono da sole.") +
-      row("<b>MULTIPLA</b>", "Con almeno 2 GIOCA nello stesso giorno vedi la doppia con i due più sicuri e tutti i SICURI insieme, con la probabilità vera (si moltiplicano: 84% × 83% = 70%) e la quota minima. Meglio le singole, al massimo una doppia.") +
-      row("<b>ALTERNATIVE · COSA GIOCARE</b>", "Per ogni partita sono provate 13 giocate. <span class=\"tag c\">PIÙ SICURA</span> è quella con la stima più alta; <span class=\"tag w\">CONVIENE DI PIÙ</span> quella con il guadagno atteso migliore rispetto alla quota del bookmaker (solo quando il bookmaker la quota).") +
+      row("<b>MULTIPLA</b>", "Con almeno 2 GIOCA nello stesso giorno vedi la doppia con i due più sicuri e tutti i GIOCA insieme, con la probabilità vera (si moltiplicano: 84% × 83% = 70%) e la quota che serve. Unire giocate a quota bassa non le fa convenire: meglio le singole, al massimo una doppia.") +
       row("⏳", "Prima di giocare guarda le formazioni ufficiali, circa un'ora prima: gli assenti non sono controllati in automatico.") +
       row("⚠", "Gioca solo soldi che puoi permetterti di perdere e non inseguire le perdite. Nessun pronostico è certo."));
 
@@ -2774,11 +2779,14 @@ function fileDB() {
 <script>
 /* IL CONSIGLIO di Pronostici (dal 23/11/2026): se giocare, cosa, come e quanto puntare.
    Usa la lista dei controlli (picks.chk) e le giocate provate per ogni partita (fixtures.adv, da controlli.py).
-   Cassa e quote scritte dall'utente restano solo nel browser (localStorage "gold.cassa").
+   Cassa, quota minima personale e quote scritte dall'utente restano solo nel browser (localStorage "gold.cassa").
+   Quota: quella scritta dall'utente, se no quella vera del bookmaker (1X2, Over/Under), se no la QUOTA PROBABILE
+   ricavata dalle quote del bookmaker (controlli.py, margine 8%).
+   Conviene solo se la quota è almeno: quota minima (100/stima) + 3% di margine, e almeno la quota minima personale (di partenza 1,20).
    Puntata: un quarto del metodo di Kelly, al massimo 5% della cassa (GIOCA) o 2% (GIOCA PICCOLO); limite del giorno 10%. */
 (function () {
   const ME = "consiglio", KEY = "gold.cassa";
-  const MAX_GO = 0.05, MAX_SMALL = 0.02, MAX_DAY = 0.10;
+  const MAX_GO = 0.05, MAX_SMALL = 0.02, MAX_DAY = 0.10, EDGE = 1.03, MY_MIN = 1.20;
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const nf = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const q2 = (n) => nf.format(Math.round(Number(n) * 100) / 100);
@@ -2793,20 +2801,32 @@ function fileDB() {
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st())); } catch (e) { /* niente */ } }
   const cassa = () => (Number(st().cassa) > 0 ? Number(st().cassa) : 0);
+  const myMin = () => (Number(st().qmu) > 1 ? Number(st().qmu) : MY_MIN);
   const userQ = (k) => (Number(st().q[k]) > 1 ? Number(st().q[k]) : 0);
 
   // dati comuni di un pronostico (picks) o di una giocata provata (fixtures.adv)
   function fromPick(x) {
     const c = x.chk || {};
-    return { key: "p:" + x.id, m: x.market, est: Number.isFinite(Number(c.est)) && c.est !== null ? Number(c.est) : null, safe: !!c.safe, no: Number(c.no) || 0,
+    return { key: "p:" + x.id, m: x.market, est: c.est !== null && c.est !== undefined && Number.isFinite(Number(c.est)) ? Number(c.est) : null, safe: !!c.safe, no: Number(c.no) || 0,
       qmin: Number(c.qmin) || 0, qb: Number(c.qbook) > 1 ? Number(c.qbook) : Number(x.odds) > 1 ? Number(x.odds) : 0, qby: Number(c.qbook) > 1 ? c.qby || "bookmaker" : "quota segnata",
-      date: x.date, time: x.time };
+      qe: Number(c.qest) > 1 ? Number(c.qest) : 0, date: x.date, time: x.time };
   }
   function fromCand(fx, a) {
     return { key: "f:" + fx.id + "|" + a.m, m: a.m, est: Number(a.est), safe: !!a.safe, no: (a.v || "").split("x").length - 1, qmin: Number(a.qmin) || 0,
-      qb: Number(a.q) > 1 ? Number(a.q) : 0, qby: "bookmaker", date: fx.date, time: fx.time };
+      qb: Number(a.q) > 1 ? Number(a.q) : 0, qby: "bookmaker", qe: Number(a.qe) > 1 ? Number(a.qe) : 0, date: fx.date, time: fx.time };
   }
-  const quoteOf = (o) => userQ(o.key) || o.qb || 0;
+  // la quota da usare e da dove viene: "tua", "book" (vera del bookmaker), "stima" (quota probabile)
+  function quote(o) {
+    const u = userQ(o.key);
+    if (u) return { q: u, src: "tua" };
+    if (o.qb) return { q: o.qb, src: "book" };
+    if (o.qe) return { q: o.qe, src: "stima" };
+    return { q: 0, src: "" };
+  }
+  const quoteOf = (o) => quote(o).q;
+  // quota che serve davvero: minima della stima + 3%, e almeno la tua quota minima personale
+  const need = (o) => Math.max(o.qmin ? Math.ceil(o.qmin * EDGE * 100) / 100 : 0, myMin());
+  const qtxt = (Q) => (Q.src === "stima" ? "quota probabile ~" + q2(Q.q) : Q.src === "tua" ? "la tua quota " + q2(Q.q) : "quota del bookmaker " + q2(Q.q));
   function started(o) {
     if (!o.date || !o.time) return false;
     const t = new Date(o.date + "T" + o.time + ":00");
@@ -2815,13 +2835,14 @@ function fileDB() {
 
   // VERDETTO: go = GIOCA, small = GIOCA PICCOLO, no = NON GIOCARE, na = nessun consiglio
   function verdict(o) {
-    const q = quoteOf(o);
+    const Q = quote(o), q = Q.q, n = need(o), tail = Q.src === "stima" ? " (è una stima: scrivi la tua quota per essere precisi)" : "";
     if (o.est === null) return { k: "na", t: "NESSUN CONSIGLIO", why: "Per questo pronostico non c'è la lista dei controlli." };
     if (o.no > 0) return { k: "no", t: "NON GIOCARE", why: "Almeno un controllo è contro (✗)." };
     if (o.est < 65) return { k: "no", t: "NON GIOCARE", why: "La stima combinata è troppo bassa (" + o.est + "%)." };
-    if (q && o.qmin && q < o.qmin) return { k: "no", t: "NON GIOCARE", why: "La quota " + q2(q) + " è sotto la quota minima " + q2(o.qmin) + ": si vince troppo poco per il rischio." };
-    if (o.safe) return { k: "go", t: "GIOCA", why: "Ha il bollino SICURO" + (q ? " e la quota conviene." : ": gioca solo se la quota è almeno " + q2(o.qmin) + ".") };
-    if (o.est >= 70) return { k: "small", t: "GIOCA PICCOLO", why: "Stima " + o.est + "% e nessun ✗, ma non è SICURO: puntata piccola" + (q ? "." : ", e solo con quota almeno " + q2(o.qmin) + ".") };
+    if (q && q < myMin()) return { k: "no", t: "NON GIOCARE", why: "Quota troppo bassa per te: " + qtxt(Q) + ", sotto la tua quota minima " + q2(myMin()) + "." + tail, low: true };
+    if (q && q < n) return { k: "no", t: "NON GIOCARE", why: "Quota troppo bassa: " + qtxt(Q) + ", ne serve almeno " + q2(n) + ". Alla lunga si perde." + tail, low: true };
+    if (o.safe) return { k: "go", t: "GIOCA", why: "Ha il bollino SICURO" + (q ? " e la quota conviene (" + qtxt(Q) + ")." + tail : ": gioca solo se la quota è almeno " + q2(n) + ".") };
+    if (o.est >= 70) return { k: "small", t: "GIOCA PICCOLO", why: "Stima " + o.est + "% e nessun ✗, ma non è SICURO: puntata piccola" + (q ? " (" + qtxt(Q) + ")." + tail : ", e solo con quota almeno " + q2(n) + ".") };
     return { k: "no", t: "NON GIOCARE", why: "Stima " + o.est + "%: per giocare serve almeno il 70%." };
   }
   // PUNTATA: un quarto di Kelly, con i tetti
@@ -2837,6 +2858,13 @@ function fileDB() {
     return { eur: e, pct: e / C, f, cut: k < 1 };
   }
   const vtag = (v, small) => '<span class="cv cv-' + v.k + (small ? " sm" : "") + '">' + (small ? { go: "GIOCA", small: "PICCOLO", no: "NO", na: "—" }[v.k] : v.t) + "</span>";
+  // DA GIOCARE: la più probabile tra le giocate provate che convengono
+  function play(fx) {
+    const a = fx && fx.adv; if (!a || !Array.isArray(a.c)) return null;
+    const L = a.c.slice().sort((x, y) => y.est - x.est);
+    for (const c of L) { const o = fromCand(fx, c), v = verdict(o); if (v.k === "go" || v.k === "small") return { c, o, v }; }
+    return null;
+  }
 
   // piccola etichetta per la tabella GIOCATE
   function tag(x) {
@@ -2845,83 +2873,91 @@ function fileDB() {
     if (started(o) || x.hit === true || x.hit === false) return "";
     return " " + vtag(verdict(o), true);
   }
+  // quota che serve, da mostrare (GIOCATE e lista dei controlli)
+  const needOf = (x) => (x && x.chk && Number(x.chk.qmin) > 1 ? need(fromPick(x)) : 0);
 
   // riquadro completo (riga aperta di GIOCATE)
   function box(x, fx) {
     if (!x || !x.chk) return "";
-    const o = fromPick(x), v = verdict(o), q = quoteOf(o), s = stake(o, v), C = cassa();
+    const o = fromPick(x), v = verdict(o), Q = quote(o), q = Q.q, s = stake(o, v), C = cassa(), n = need(o);
     let h = '<div class="cbox"><div class="cbh">IL CONSIGLIO ' + vtag(v) + '<span class="cbw">' + esc(v.why) + "</span></div>";
     if (started(o) || x.hit === true || x.hit === false) h += '<div class="cbl mut">La partita è già iniziata: il consiglio valeva prima del calcio d\'inizio.</div>';
     h += '<div class="cbl"><span class="cbk">COSA</span><span><b>' + esc(o.m) + "</b> · stima combinata " + o.est + "%</span></div>";
-    h += '<div class="cbl"><span class="cbk">QUOTA</span><span><input class="cq" type="number" inputmode="decimal" step="0.01" min="1.01" placeholder="la tua quota" data-cq="' + esc(o.key) + '" value="' + (userQ(o.key) ? userQ(o.key) : "") + '"> ' +
-      '<span class="mut">scrivi la quota del tuo bookmaker · minima <b>' + q2(o.qmin) + "</b>" + (o.qb ? " · " + esc(o.qby) + " " + q2(o.qb) : "") + "</span></span></div>";
+    h += '<div class="cbl"><span class="cbk">QUOTA</span><span><input class="cq" type="number" inputmode="decimal" step="0.01" min="1.01" placeholder="es. 1,30" data-cq="' + esc(o.key) + '" value="' + (userQ(o.key) ? userQ(o.key) : "") + '"> ' +
+      '<span class="mut">scrivi la quota del tuo bookmaker · serve almeno <b>' + q2(n) + "</b>" + (o.qb ? " · " + esc(o.qby) + " " + q2(o.qb) : o.qe ? " · quota probabile ~" + q2(o.qe) : "") + "</span></span></div>";
     let how = "";
-    if (v.k === "go") how = "Da sola (singola) è la scelta più sicura. Al massimo in doppia con un altro SICURO (vedi MULTIPLA DEL GIORNO).";
+    if (v.k === "go") how = "Da sola (singola) è la scelta più sicura. Al massimo in doppia con un altro GIOCA (vedi MULTIPLA in alto).";
     else if (v.k === "small") how = "Solo da sola (singola), con una puntata piccola. Non metterla in multipla.";
-    else if (v.k === "no") how = "Lasciala stare. Guarda sotto se c'è un'alternativa migliore per questa partita.";
+    else if (v.k === "no") {
+      const P = fx ? play(fx) : null;
+      how = P && P.c.m !== o.m ? "Lasciala stare. Per questa partita conviene di più <b>" + esc(P.c.m) + "</b> (stima " + P.c.est + "%, " + esc(qtxt(quote(P.o))) + ")." : "Lasciala stare." + (fx && fx.adv ? " Per questa partita nessuna giocata conviene: <b>salta la partita</b>." : "");
+    }
     if (how) h += '<div class="cbl"><span class="cbk">COME</span><span>' + how + "</span></div>";
     if (v.k === "go" || v.k === "small") {
       h += '<div class="cbl"><span class="cbk">QUANTO</span><span>' + (!C ? '<span class="mut">Scrivi la tua cassa in alto (CASSA) per sapere quanto puntare.</span>' : !q ? '<span class="mut">Scrivi la quota per sapere quanto puntare.</span>' :
-        "<b>" + eur(s.eur) + "</b> <span class=\"mut\">· " + (s.pct * 100).toFixed(1).replace(".", ",") + "% della cassa (" + eur(C) + ") · massimo " + (v.k === "go" ? "5" : "2") + "% per questa giocata" + (s.cut ? " · <b>ridotta</b> per restare nel 10% al giorno" : "") + " · se vinci incassi " + eur(s.eur * q) + "</span>") + "</span></div>";
+        "<b>" + eur(s.eur) + "</b> <span class=\"mut\">· " + (s.pct * 100).toFixed(1).replace(".", ",") + "% della cassa (" + eur(C) + ") · massimo " + (v.k === "go" ? "5" : "2") + "% per questa giocata" + (s.cut ? " · <b>ridotta</b> per restare nel 10% al giorno" : "") + " · se vinci incassi " + eur(s.eur * q) + (Q.src === "stima" ? " · calcolata con la quota probabile" : "") + "</span>") + "</span></div>";
       if (!started(o)) h += '<div class="cbl"><span class="cbk">⏳</span><span>Prima di giocare guarda le <b>formazioni ufficiali</b> (circa un\'ora prima): se manca un titolare importante, ripensaci.</span></div>';
     }
     if (fx) h += alts(fx, o.m);
     return h + "</div>";
   }
 
+  const candLine = (fx, c, P) => {
+    const o = fromCand(fx, c), v = verdict(o), Q = quote(o);
+    return { o, v, Q, lab: (P && P.c.m === c.m ? ' <span class="tag w">DA GIOCARE</span>' : "") + (c.safe ? ' <span class="tag safe">SICURO</span>' : "") };
+  };
   // le altre giocate provate per la partita
   function alts(fx, skip) {
     const a = fx.adv; if (!a || !Array.isArray(a.c) || !a.c.length) return "";
-    const L = a.c.filter((c) => c.m !== skip).slice(0, 5);
+    const P = play(fx), L = a.c.filter((c) => c.m !== skip).slice(0, 5);
     if (!L.length) return "";
     return '<div class="cbl"><span class="cbk">ALTERNATIVE</span><span class="calt">' + L.map((c) => {
-      const o = fromCand(fx, c), v = verdict(o);
-      return '<span class="calx">' + vtag(v, true) + " <b>" + esc(c.m) + "</b> " + c.est + "%" + (c.safe ? ' <span class="tag safe">SICURO</span>' : "") +
-        (c.m === a.safe ? ' <span class="tag c">PIÙ SICURA</span>' : "") + (c.m === a.val ? ' <span class="tag w">CONVIENE DI PIÙ</span>' : "") + ' <span class="mut">min ' + q2(c.qmin) + "</span></span>";
-    }).join("") + "</span></div>";
+      const r = candLine(fx, c, P);
+      return '<span class="calx">' + vtag(r.v, true) + " <b>" + esc(c.m) + "</b> " + c.est + "%" + r.lab + ' <span class="mut">' + (r.Q.q ? "quota " + (r.Q.src === "stima" ? "~" : "") + q2(r.Q.q) + " · " : "") + "serve " + q2(need(r.o)) + "</span></span>";
+    }).join("") + (P ? "" : '<span class="calx mut">Nessuna giocata conviene alle quote di oggi: <b>salta la partita</b>.</span>') + "</span></div>";
   }
 
   // sezione per la scheda partita: tutte le giocate provate
   function advSect(fx) {
     const a = fx && fx.adv; if (!a || !Array.isArray(a.c) || !a.c.length) return "";
-    const rows = a.c.slice(0, 8).map((c) => {
-      const o = fromCand(fx, c), v = verdict(o), q = quoteOf(o);
-      return '<div class="car">' + vtag(v, true) + '<span class="cam"><b>' + esc(c.m) + "</b>" + (c.safe ? ' <span class="tag safe">SICURO</span>' : "") + (c.m === a.safe ? ' <span class="tag c">PIÙ SICURA</span>' : "") + (c.m === a.val ? ' <span class="tag w">CONVIENE DI PIÙ</span>' : "") +
-        '</span><span class="num"><b>' + c.est + '%</b></span><span class="num mut">min ' + q2(c.qmin) + (q ? " · quota " + q2(q) : "") + "</span></div>";
+    const P = play(fx);
+    const rows = a.c.slice(0, 9).map((c) => {
+      const r = candLine(fx, c, P);
+      return '<div class="car">' + vtag(r.v, true) + '<span class="cam"><b>' + esc(c.m) + "</b>" + r.lab + '</span><span class="num"><b>' + c.est + '%</b></span><span class="num mut">' +
+        (r.Q.q ? "quota " + (r.Q.src === "stima" ? "~" : "") + q2(r.Q.q) + " · " : "") + "serve " + q2(need(r.o)) + "</span></div>";
     }).join("");
-    return '<div class="sect"><div class="st">COSA GIOCARE <span class="mut">· tutte le giocate provate per questa partita, dalla più sicura · stima combinata e quota minima</span></div><div class="cadv">' + rows + "</div></div>";
+    return '<div class="sect"><div class="st">COSA GIOCARE <span class="mut">· giocate provate, dalla più probabile · quota (~ = probabile, ricavata dalle quote del bookmaker) e quota che serve</span></div>' +
+      (P ? '<div class="cplay">👉 Da giocare: <b>' + esc(P.c.m) + "</b> · stima " + P.c.est + "% · " + esc(qtxt(quote(P.o))) + " " + vtag(P.v, true) + "</div>" : '<div class="cplay no">✋ Nessuna giocata conviene alle quote di oggi: <b>salta la partita</b>.</div>') +
+      '<div class="cadv">' + rows + "</div></div>";
   }
 
-  // barra in cima a GIOCATE: cassa, quanto puntare oggi, multipla del giorno
+  // barra in cima a GIOCATE: cassa, quota minima personale, quanto puntare oggi, multipla del giorno
   function bar(picks, day) {
-    const C = cassa();
+    const C = cassa(), lim = C * MAX_DAY;
     const open = (picks || []).filter((x) => x && x.chk && x.hit !== true && x.hit !== false && !started(fromPick(x)));
-    const lim = C * MAX_DAY;
     open.forEach((x) => { delete DAYF[x.date]; });
     let cut = false;
-    let plan = open.map((x) => { const o = fromPick(x), v = verdict(o); return { x, o, v, s: stake(o, v) }; });
-    let play = plan.filter((p) => p.v.k === "go" || p.v.k === "small");
-    let tot = play.reduce((a, p) => a + (p.s ? p.s.eur : 0), 0);
+    const mk = () => open.map((x) => { const o = fromPick(x), v = verdict(o); return { x, o, v, s: stake(o, v) }; });
+    let plan = mk(), play2 = plan.filter((p) => p.v.k === "go" || p.v.k === "small"), tot = play2.reduce((a, p) => a + (p.s ? p.s.eur : 0), 0);
     if (C && tot > lim) {  // troppe puntate: si riducono tutte nella stessa proporzione
       const f = lim / tot; open.forEach((x) => { DAYF[x.date] = f; }); cut = true;
-      plan = open.map((x) => { const o = fromPick(x), v = verdict(o); return { x, o, v, s: stake(o, v) }; });
-      play = plan.filter((p) => p.v.k === "go" || p.v.k === "small");
-      tot = play.reduce((a, p) => a + (p.s ? p.s.eur : 0), 0);
+      plan = mk(); play2 = plan.filter((p) => p.v.k === "go" || p.v.k === "small"); tot = play2.reduce((a, p) => a + (p.s ? p.s.eur : 0), 0);
     }
     let h = '<div class="cbar"><div class="cbr"><span class="cbk">CASSA</span><span><input class="cq cc" type="number" inputmode="decimal" step="1" min="1" placeholder="es. 100" data-cassa value="' + (C || "") + '"> € ' +
-      '<span class="mut">i soldi che dedichi alle scommesse · restano solo su questo dispositivo</span></span></div>';
+      '<span class="mut">i soldi che dedichi alle scommesse</span></span></div>' +
+      '<div class="cbr"><span class="cbk">QUOTA MINIMA TUA</span><span><input class="cq" type="number" inputmode="decimal" step="0.01" min="1.01" data-qmu value="' + myMin() + '"> ' +
+      '<span class="mut">sotto questa quota non ti consiglio niente · cassa e quote restano solo su questo dispositivo</span></span></div>';
     if (open.length) {
       h += '<div class="cbr"><span class="cbk">OGGI</span><span>' + plan.filter((p) => p.v.k === "go").length + ' <span class="cv cv-go sm">GIOCA</span> · ' + plan.filter((p) => p.v.k === "small").length + ' <span class="cv cv-small sm">PICCOLO</span> · ' +
         plan.filter((p) => p.v.k === "no").length + ' <span class="cv cv-no sm">NO</span>' + (C ? " · puntate consigliate <b>" + eur(tot) + "</b> su un massimo di " + eur(lim) + " al giorno (10%)" + (cut ? ' <span class="tag o">RIDOTTE PER RESTARE NEL 10%</span>' : "") : "") +
-        (play.some((p) => !quoteOf(p.o)) ? ' <span class="mut">· scrivi le quote per avere le puntate</span>' : "") + "</span></div>";
+        (plan.some((p) => p.v.low) ? ' <span class="mut">· alcune sono NO solo per la quota troppo bassa: apri la riga per vedere cosa conviene in quella partita</span>' : "") + "</span></div>";
     }
-    const safe = (picks || []).filter((x) => x && x.chk && x.chk.safe && x.hit !== true && x.hit !== false && !started(fromPick(x)))
-      .map((x) => fromPick(x)).filter((o) => verdict(o).k === "go").sort((a, b) => b.est - a.est);
-    if (safe.length >= 2) {
+    const go = plan.filter((p) => p.v.k === "go").map((p) => p.o).sort((a, b) => b.est - a.est);
+    if (go.length >= 2) {
       const pr = (L) => L.reduce((a, o) => a * o.est / 100, 1);
       const qq = (L) => (L.every((o) => quoteOf(o)) ? L.reduce((a, o) => a * quoteOf(o), 1) : 0);
-      const line = (L, lab) => { const p = pr(L), q = qq(L); return "<div>" + lab + ": <b>" + L.map((o) => esc(o.m)).join(" + ") + "</b> · probabilità vera <b>" + Math.round(p * 100) + "%</b> · quota minima " + q2(1 / p) + (q ? " · quota " + q2(q) + " " + (q >= 1 / p ? '<span class="tag w">CONVIENE</span>' : '<span class="tag l">NON CONVIENE</span>') : "") + "</div>"; };
-      h += '<div class="cbr"><span class="cbk">MULTIPLA</span><span class="cml">' + line(safe.slice(0, 2), "Doppia con i 2 più sicuri") + (safe.length > 2 ? line(safe, "Tutti i " + safe.length + " SICURI insieme") : "") +
+      const line = (L, lab) => { const p = pr(L), q = qq(L), nn = Math.ceil(EDGE * 100 / p) / 100; return "<div>" + lab + ": <b>" + L.map((o) => esc(o.m)).join(" + ") + "</b> · probabilità vera <b>" + Math.round(p * 100) + "%</b> · serve quota " + q2(nn) + (q ? " · quota " + q2(q) + " " + (q >= nn ? '<span class="tag w">CONVIENE</span>' : '<span class="tag l">NON CONVIENE</span>') : "") + "</div>"; };
+      h += '<div class="cbr"><span class="cbk">MULTIPLA</span><span class="cml">' + line(go.slice(0, 2), "Doppia con i 2 più sicuri") + (go.length > 2 ? line(go, "Tutti i " + go.length + " GIOCA insieme") : "") +
         '<div class="mut">Ogni giocata in più abbassa la probabilità. Meglio singole, o al massimo una doppia; in multipla punta come per una sola giocata piccola.</div></span></div>';
     }
     h += '<div class="cbr mut cbn"><span class="cbk">⚠</span><span>Gioca solo soldi che puoi permetterti di perdere. Non inseguire le perdite: se una giornata va male non aumentare le puntate. Nessun pronostico è certo.</span></div>';
@@ -2929,14 +2965,16 @@ function fileDB() {
   }
 
   function rerender() { const A = window.APP; if (A && A.apps && A.active && A.apps[A.active]) A.apps[A.active].render(); }
+  const num = (t) => Number(String(t.value).replace(",", "."));
   document.addEventListener("change", (e) => {
     const t = e.target; if (!t || !t.matches) return;
-    if (t.matches("[data-cassa]")) { const v = Number(String(t.value).replace(",", ".")); st().cassa = v > 0 ? v : null; save(); rerender(); }
-    else if (t.matches("[data-cq]")) { const v = Number(String(t.value).replace(",", ".")); if (v > 1) st().q[t.dataset.cq] = v; else delete st().q[t.dataset.cq]; save(); rerender(); }
+    if (t.matches("[data-cassa]")) { const v = num(t); st().cassa = v > 0 ? v : null; save(); rerender(); }
+    else if (t.matches("[data-qmu]")) { const v = num(t); st().qmu = v > 1 ? v : null; save(); rerender(); }
+    else if (t.matches("[data-cq]")) { const v = num(t); if (v > 1) st().q[t.dataset.cq] = v; else delete st().q[t.dataset.cq]; save(); rerender(); }
   });
   window.addEventListener("storage", (e) => { if (e.key === KEY) { MEM = null; rerender(); } });
   window.APP = window.APP || {};
-  window.APP.consiglio = { ME, tag, box, bar, advSect, verdict, stake, fromPick };
+  window.APP.consiglio = { ME, tag, box, bar, advSect, verdict, stake, fromPick, needOf, play };
 })();
 </script>
 <script>
