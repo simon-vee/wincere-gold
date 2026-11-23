@@ -795,6 +795,67 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
 }
 .cplay { font-size: 12.5px; padding: 7px 10px; border-radius: 8px; background: #e6f5eb; border: 1px solid rgba(21,128,61,.25); margin-bottom: 6px; }
 .cplay.no { background: #fdf2e1; border-color: #f5c98b; }
+/* STATISTICHE SISTEMATE (23/11): percentuale vera, quota, esiti corti, campionati per nazione, schede sul telefono */
+.vr { display: block; font-size: 9.5px; font-weight: 500; color: var(--muted); margin-top: 2px; white-space: nowrap; }
+td.up .vr { color: var(--muted); }
+.vq { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; white-space: nowrap; }
+.vq .tag { font-size: 9px; padding: 0 4px; }
+table.stab td.qc { text-align: left; white-space: nowrap; font-size: 11.5px; line-height: 1.5; }
+table.stab td.qc .tag { font-size: 9.5px; padding: 1px 5px; }
+table.stab th.qh { white-space: nowrap; }
+table.stab td.hid { color: #c4c9d2; }
+.lay table.stab td.mt .lvs, .scard .lvs { display: block; margin: 2px 0 0; white-space: nowrap; }
+.lay table.stab td.mt b { white-space: normal; }
+.lay table.stab tr.lvrow .lv, .scard .lv { white-space: nowrap; line-height: 1.3; font-size: 10px; padding: 2px 6px; min-width: 24px; text-align: center; }
+.lnat { font-size: 9px; font-weight: 700; letter-spacing: .08em; color: var(--muted); margin: 7px 0 1px 4px; }
+.lgl > .lnat:first-of-type { margin-top: 4px; }
+details.lno { margin-top: 6px; border-top: 1px solid var(--line2); padding-top: 4px; }
+details.lno > summary { cursor: pointer; font-size: 10px; font-weight: 700; letter-spacing: .07em; color: var(--muted); padding: 5px 4px; list-style: none; }
+details.lno > summary::before { content: "▸ "; }
+details.lno[open] > summary::before { content: "▾ "; }
+.sqm { font-size: 11px; line-height: 1.45; }
+.sqm b { font-size: 13px; color: var(--ink); }
+.sbk { margin-bottom: 6px; }
+.lgtw { overflow-x: auto; margin: 6px 0 4px; }
+table.lgtab { border-collapse: collapse; font-size: 11.5px; width: 100%; font-variant-numeric: tabular-nums; }
+table.lgtab th { font-size: 9px; letter-spacing: .06em; color: var(--muted); font-weight: 700; padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: right; }
+table.lgtab td { padding: 4px 6px; border-bottom: 1px solid var(--line2); text-align: right; white-space: nowrap; }
+table.lgtab .l { text-align: left; }
+/* la riga delle schede non deve allargare la pagina sul telefono (scorre di lato) */
+.lay > .wrap > * { min-width: 0; }
+.body { grid-template-columns: minmax(0, 1fr); }
+/* schede del telefono: nascoste sul computer */
+.scards { display: none; }
+@media (max-width: 760px) {
+  .panel .scroll.dsk { display: none; }
+  .scards { display: grid; }
+  .scard { border-top: 1px solid var(--line2); padding: 8px 10px 9px; }
+  .scard.sel { background: #f5f8ff; box-shadow: inset 3px 0 0 var(--acc); }
+  .sch { display: grid; grid-template-columns: 18px minmax(0, 1fr) 14px; gap: 6px; align-items: start; cursor: pointer; }
+  .sch .mt { min-width: 0; font-size: 12.5px; line-height: 1.35; }
+  .sch .mt .m { display: block; font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+  .sch .scn { font-size: 11px; padding-top: 1px; }
+  .sch .car { color: var(--muted); font-size: 11px; }
+  .scq { margin: 6px 0 0 24px; font-size: 11.5px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+  .scq .tag { font-size: 9.5px; padding: 1px 5px; }
+  .scg { margin: 5px 0 0 24px; display: grid; gap: 0; }
+  .scgh { font-size: 8.5px; font-weight: 700; letter-spacing: .08em; color: var(--muted); margin: 5px 0 1px; }
+  .scgh.mb, .scgh.mp { color: var(--acc); } .scgh.re { color: #9a5b13; }
+  .scr { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; font-size: 12px; padding: 3px 0; border-bottom: 1px dashed var(--line2); }
+  .scr.on { background: #f3f6ff; margin: 0 -4px; padding: 3px 4px; border-radius: 4px; }
+  .scr .scl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .scr .scp { text-align: right; white-space: nowrap; }
+  .scr .scp b { font-size: 12.5px; }
+  .scr .scp.up b { color: var(--up); } .scr .scp.mut b { color: var(--muted); }
+  .scr .scp .vr { display: inline; margin: 0 0 0 5px; }
+  .scr .sce { min-width: 44px; text-align: right; }
+  .scards, .scard, .scg { min-width: 0; }
+  .scg { grid-template-columns: minmax(0, 1fr); }
+  .scd { margin-top: 8px; overflow-x: auto; max-width: 100%; }
+  .scd .sdet { padding: 0; }
+  .scd table.cmp { font-size: 11px; }
+  .scd table.cmp th, .scd table.cmp td { padding: 3px 4px; }
+}
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1886,7 +1947,7 @@ function fileDB() {
   //   next = prossime partite di campionato (10 giorni, da ESPN): [[codice campionato, data, ora italiana, casa, ospite]]
   //  fixtures/* (sola lettura): altre partite caricate da Claude, con i nomi delle squadre in italiano.
   const S = { data: null, err: "", idx: new Map(), byCode: new Map(), next: new Map(), evs: [], fixtures: [], ready: false, tab: "partite", day: null, mk: "cb", league: "ALL", comp: "", sample: "l", open: new Set(),
-    onlyHome: false, rankAll: false, edays: new Set(), ecomps: new Set(), evAll: false, ovSide: "h", ovView: "rank", month: "" };
+    onlyHome: false, rankAll: false, edays: new Set(), ecomps: new Set(), evAll: false, ovSide: "h", ovView: "rank", month: "", thr: 0 };
   const ALL = "ALL", minN = () => (S.sample === "l" ? 8 : 5), RANK_TOP = 50, EV_TOP = 40;
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1912,7 +1973,6 @@ function fileDB() {
     ["sc", "CASA SEGNA NEL PT", "la squadra di casa segna almeno un gol nel primo tempo", (b) => b[6], (b) => b[0] - b[7]],
     ["o05", "OVER 0,5 PT", "almeno 1 gol nel primo tempo", (b) => b[8], (b) => b[8]],
     ["o15", "OVER 1,5 PT", "almeno 2 gol nel primo tempo", (b) => b[9], (b) => b[9]],
-    ["m02", "MULTIGOL 0-2 PT", "nel primo tempo si segnano da 0 a 2 gol in tutto (0-0, 1-0, 1-1, 2-0 vinte; 2-1 e 3-0 perse)", (b) => b[13] ?? 0, (b) => b[13] ?? 0],
     ["m13", "MULTIGOL 1-3 PT", "nel primo tempo si segnano da 1 a 3 gol in tutto (0-0 e 2-2 perse)", (b) => b[14] ?? 0, (b) => b[14] ?? 0],
     ["m14", "MULTIGOL 1-4 PT", "nel primo tempo si segnano da 1 a 4 gol in tutto (0-0 e 3-2 perse)", (b) => b[15] ?? 0, (b) => b[15] ?? 0],
     ["c2", "COMBO OVER 0,5 PT + OVER 0,5 2T", "almeno un gol nel primo tempo E almeno un gol nel secondo tempo (1-0 all'intervallo e 2-0 alla fine vinta; 0-0 all'intervallo persa; 1-0 all'intervallo e 1-0 alla fine persa)", (b) => b[22] ?? 0, (b) => b[22] ?? 0],
@@ -1925,12 +1985,12 @@ function fileDB() {
   ];
   const RE = new Set(["rx", "r1", "r2"]), RSG = { rx: ["0-0", "1-1"], r1: ["1-0", "2-0", "2-1"], r2: ["0-1", "0-2", "1-2"] };
   // gruppi delle giocate: MULTIBET PRIMO TEMPO (1 PT o Over 1,5 PT) ed ESITI PRIMO TEMPO (tutte le altre)
-  const GRP = [["mb", "MULTIBET PRIMO TEMPO", ["cb"]], ["es", "ESITI PRIMO TEMPO", ["w1", "sc", "o05", "o15", "m02", "m13", "m14"]], ["mp", "MULTIBET PARTITA", ["c2"]], ["st", "ESITI SECONDO TEMPO", ["s05"]], ["re", "RISULTATI ESATTI", ["rx", "r1", "r2"]]];
+  const GRP = [["mb", "MULTIBET PRIMO TEMPO", ["cb"]], ["es", "ESITI PRIMO TEMPO", ["w1", "sc", "o05", "o15", "m13", "m14"]], ["mp", "MULTIBET PARTITA", ["c2"]], ["st", "ESITI SECONDO TEMPO", ["s05"]], ["re", "RISULTATI ESATTI", ["rx", "r1", "r2"]]];
   const grpOf = (id) => (GRP.find((g) => g[2].includes(id)) || GRP[1])[0];
   // riga sopra le colonne delle giocate: before/after = quante colonne ci sono prima e dopo
   const grpHead = (before, after) => '<tr class="grp">' + (before ? '<th colspan="' + before + '"></th>' : "") + GRP.map((g) => '<th colspan="' + MK.filter((m) => grpOf(m[0]) === g[0]).length + '" class="g ' + g[0] + '">' + g[1] + "</th>").join("") + (after ? '<th colspan="' + after + '"></th>' : "") + "</tr>";
   // nome corto per le intestazioni delle tabelle
-  const SH = { cb: "1 PT O OV 1,5", w1: "1 PT", sc: "CASA SEGNA PT", o05: "OVER 0,5 PT", o15: "OVER 1,5 PT", m02: "MG 0-2 PT", m13: "MG 1-3 PT", m14: "MG 1-4 PT", c2: "COMBO PT+2T", s05: "OVER 0,5 2T", rx: "0-0 / 1-1", r1: "1-0 / 2-0 / 2-1", r2: "0-1 / 0-2 / 1-2" };
+  const SH = { cb: "1 PT O OV 1,5", w1: "1 PT", sc: "CASA SEGNA PT", o05: "OVER 0,5 PT", o15: "OVER 1,5 PT", m13: "MG 1-3 PT", m14: "MG 1-4 PT", c2: "COMBO PT+2T", s05: "OVER 0,5 2T", rx: "0-0 / 1-1", r1: "1-0 / 2-0 / 2-1", r2: "0-1 / 0-2 / 1-2" };
   const mkOf = (id) => MK.find((m) => m[0] === id) || MK[0];
   const blk = (team, side) => { if (!team) return null; const x = team[side] || {}; const b = x[S.sample]; return b && b[0] ? b : (x.s && x.s[0] ? x.s : null); };
   const rate = (num, n) => (n ? num / n : null);
@@ -1942,6 +2002,30 @@ function fileDB() {
   }
   const P = (x) => (x === null || x === undefined ? "—" : Math.round(x * 100) + "%");
   const cls = (x, id) => { const re = RE.has(id); return x === null || x === undefined ? "mut" : x >= (re ? 0.4 : 0.7) ? "up" : x < (re ? 0.2 : 0.4) ? "mut" : ""; };
+  // PERCENTUALE VERA (dal 23/11): quanto è uscita davvero in passato una giocata con statistiche simili (stats.json → cal, da web/stats/taratura.py)
+  const vera = (id, v) => {
+    const c = v === null || v === undefined || !S.data || !S.data.cal ? null : (S.data.cal[S.sample] || {})[id] || (S.data.cal.l || {})[id];
+    if (!c) return null;
+    const p = Math.min(Math.max(v, 0.03), 0.97);
+    return 1 / (1 + Math.exp(-(c[0] + c[1] * Math.log(p / (1 - p)))));
+  };
+  const vTxt = (id, v) => { const t = vera(id, v); return t === null ? "" : '<span class="vr" title="quante volte è uscita davvero in passato con statistiche simili">vera ' + P(t) + "</span>"; };
+  // QUOTA PROBABILE e CONVIENE (dal 23/11): quota stimata (dalle quote del bookmaker su ESPN, o dal nostro calcolo dei gol)
+  //  serve = 100 / percentuale vera + 3% di margine, mai meno della quota minima dell'utente (la stessa di Pronostici, salvata nel browser)
+  const EDGE = 1.03;
+  const myMin = () => { try { const q = Number(JSON.parse(localStorage.getItem("gold.cassa") || "{}").qmu); return q > 1 ? q : 1.2; } catch (e) { return 1.2; } };
+  const q2 = (q) => q.toFixed(2).replace(".", ",");
+  function quota(x, id) {
+    const q = x.Q && x.Q.q ? x.Q.q[id] : null, t = vera(id, x.E[id] ? x.E[id].v : null);
+    if (!q || t === null) return null;
+    const need = Math.max(Math.ceil((EDGE / t) * 100) / 100, myMin());
+    return { q, need, ok: q >= need, bk: !!x.Q.b };
+  }
+  const qTag = (Q, short) => (Q.ok ? '<span class="tag w">' + (short ? "SÌ" : "CONVIENE") + "</span>" : '<span class="tag l">' + (short ? "NO" : "NON CONVIENE") + "</span>");
+  const qTip = (Q) => (Q.bk ? "quota probabile, ricavata dalle quote 1X2 e Over/Under del bookmaker (ESPN)" : "quota probabile, ricavata dal nostro calcolo dei gol (il bookmaker su ESPN non ha quote per questa partita)") + " · serve almeno " + q2(Q.need);
+  const qCell = (x, id) => { const Q = quota(x, id); return Q ? '<td class="qc" title="' + esc(qTip(Q)) + '"><b class="num">~' + q2(Q.q) + '</b> <span class="mut num">serve ' + q2(Q.need) + "</span><br>" + qTag(Q) + "</td>" : '<td class="qc mut">—</td>'; };
+  // MOSTRA (soglia): sotto la soglia la percentuale non si vede. Non vale per i risultati esatti, che hanno percentuali basse per natura.
+  const below = (v, id) => S.thr > 0 && !RE.has(id) && (v === null || v === undefined || v * 100 < S.thr);
 
   // ---------- dati ----------
   function index() {
@@ -1956,7 +2040,7 @@ function fileDB() {
       const [code, date, time, home, away] = e;
       if (!date || date < today) continue;
       const H = S.byCode.get(code + "|" + home) || null, A = S.byCode.get(code + "|" + away) || null, L = (H || A || {}).L;
-      const x = { f: { date, time, home, away, comp: L ? L.name : code }, H, A, comp: L ? L.name : code };
+      const x = { f: { date, time, home, away, comp: L ? L.name : code }, H, A, comp: L ? L.name : code, Q: e[5] || null };
       S.evs.push(x);
       if (!S.next.has(code + "|" + home)) S.next.set(code + "|" + home, { home: true, x, opp: away });
       if (!S.next.has(code + "|" + away)) S.next.set(code + "|" + away, { home: false, x, opp: home });
@@ -1988,7 +2072,7 @@ function fileDB() {
   // LAYOUT C: i filtri (giorno, campione, ordine, campionati) stanno nella colonna a sinistra, le schede a destra
   const U = window.APP.ui, FL = (c) => U.flag(c) + " ";
   const TABN = { eventi: "migliori eventi dei prossimi giorni", scelta: "migliore scelta", classifiche: "classifiche in casa" };
-  const MKL = { cb: "1 PT o Over 1,5 PT", w1: "1 PT", sc: "Casa segna nel PT", o05: "Over 0,5 PT", o15: "Over 1,5 PT", m02: "Multigol 0-2 PT", m13: "Multigol 1-3 PT", m14: "Multigol 1-4 PT", c2: "Combo Over 0,5 PT + Over 0,5 2T", s05: "Over 0,5 2T", rx: "Esatti 0-0 / 1-1", r1: "Esatti 1-0 / 2-0 / 2-1", r2: "Esatti 0-1 / 0-2 / 1-2" };
+  const MKL = { cb: "1 PT o Over 1,5 PT", w1: "1 PT", sc: "Casa segna nel PT", o05: "Over 0,5 PT", o15: "Over 1,5 PT", m13: "Multigol 1-3 PT", m14: "Multigol 1-4 PT", c2: "Combo Over 0,5 PT + Over 0,5 2T", s05: "Over 0,5 2T", rx: "Esatti 0-0 / 1-1", r1: "Esatti 1-0 / 2-0 / 2-1", r2: "Esatti 0-1 / 0-2 / 1-2" };
   function render() {
     if (!on()) return;
     if (!["partite", "eventi", "scelta", "classifiche"].includes(S.tab)) S.tab = "partite";
@@ -1998,21 +2082,21 @@ function fileDB() {
     const m = mkOf(S.mk);
     M.sort((a, b) => (b.E[m[0]].v ?? -1) - (a.E[m[0]].v ?? -1) || (a.f.time || "").localeCompare(b.f.time || ""));
     $("tb-left").textContent = "· " + (S.tab === "partite" ? (day === today ? "oggi, " : "") + longDay.format(toDate(day)) : TABN[S.tab] || "");
-    $("tb-right").textContent = S.data ? "Primo tempo · dati fino al " + dm(S.data.last) + " · " + S.data.matches + " partite di " + S.data.leagues.length + " campionati · aggiornate il " + dm(S.data.updated) + " (football-data.co.uk)" : "";
+    $("tb-right").textContent = S.data ? "Dati fino al " + dm(S.data.last) + " · " + S.data.matches + " partite di " + S.data.leagues.length + " campionati · aggiornate il " + dm(S.data.updated) + " (football-data.co.uk ed ESPN)" : "";
     kpis(M, m);
     $("side").innerHTML = S.data ? sideHtml(ds, day, today, M) : "";
-    const tabs = '<nav class="tabs" role="tablist">' + [["partite", "PARTITE DEL GIORNO", M.length], ["eventi", "MIGLIORI EVENTI", S.evs.filter((x) => x.H).length], ["scelta", "MIGLIORE SCELTA", 0], ["classifiche", "CLASSIFICHE IN CASA", 0]]
-      .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="stab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + "</nav>";
+    const tabs = '<div class="tabrow"><nav class="tabs" role="tablist">' + [["partite", "PARTITE DEL GIORNO", M.length], ["eventi", "MIGLIORI EVENTI", S.evs.filter((x) => x.H).length], ["scelta", "MIGLIORE SCELTA", 0], ["classifiche", "CLASSIFICHE IN CASA", 0]]
+      .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="stab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + '</nav><button type="button" class="legbtn" data-act="legend" data-lg="stats" title="Legenda: come si legge questa pagina" aria-label="Legenda">?</button></div>';
     let body;
     if (S.err) body = '<div class="panel"><div class="empty">' + esc(S.err) + "</div></div>";
     else if (!S.data) body = '<div class="panel"><div class="empty">CARICAMENTO…</div></div>';
     else body = S.tab === "classifiche" ? tabRank() : S.tab === "eventi" ? tabEvents() : S.tab === "scelta" ? tabChoice() : tabDay(M, m, day);
-    $("s-body").innerHTML = tabs + body + howTo();
+    $("s-body").innerHTML = tabs + body;
   }
   const k = (l, v, c, n) => '<div class="k"><span class="l">' + l + '</span><span class="v num ' + (c || "") + '" title="' + esc(v) + '">' + v + '</span>' + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
   function kpis(M, m) {
-    const best = M[0], top = M.filter((x) => (x.E.cb.v || 0) >= 0.7).length;
-    $("kpis").innerHTML = k("PARTITE", String(M.length), "", "nel giorno") + k("SOPRA IL 70%", String(top), "up", "in 1 PT o Over 1,5") +
+    const best = M[0], top = M.filter((x) => (x.E[m[0]].v || 0) >= 0.7).length;
+    $("kpis").innerHTML = k("PARTITE", String(M.length), "", "nel giorno") + k("SOPRA IL 70%", String(top), "up", "in " + (MKL[m[0]] || m[1])) +
       k("MIGLIORE", best && best.E[m[0]].v !== null ? P(best.E[m[0]].v) : "—", "amb", best ? esc(best.f.home + " – " + best.f.away) : "");
   }
   function sideHtml(ds, day, today, M) {
@@ -2028,6 +2112,8 @@ function fileDB() {
     html += U.group("CAMPIONE", U.pills("ssamp", [["l", "Ultime 15"], ["s", "Solo stagione"]], (v) => S.sample === v));
     if (t === "partite" || t === "eventi" || t === "classifiche")
       html += U.group("ORDINA PER", GRP.map((g) => '<div class="lgh">' + g[1] + '</div><div class="lgl">' + MK.filter((x) => grpOf(x[0]) === g[0]).map((x) => '<button type="button" class="lrow rad' + (S.mk === x[0] ? " on" : "") + '" data-act="smk" data-mk="' + x[0] + '" title="' + esc(x[2]) + '"><span class="ck"></span><span class="ln">' + esc(MKL[x[0]] || x[1]) + "</span></button>").join("") + "</div>").join(""));
+    html += U.group('MOSTRA <span class="mut">· solo da questa percentuale</span>', U.pills("sthr", [["0", "Tutte"], ["60", "dal 60%"], ["70", "dal 70%"], ["80", "dal 80%"]], (v) => Number(v) === S.thr));
+    if (t !== "classifiche") html += U.group("QUOTA MINIMA TUA", '<div class="hint sqm"><b class="num">' + q2(myMin()) + '</b> · sotto questa quota una giocata non conviene mai. Si cambia in Pronostici, in cima a GIOCATE.</div>');
     if (rank) html += U.group("PROSSIMA PARTITA", U.pills("shome", [["0", "Tutte le squadre"], ["1", "Solo chi gioca in casa"]], (v) => (v === "1") === S.onlyHome));
     const cnt = new Map();
     if (t === "partite") M.forEach((x) => cnt.set(x.comp, (cnt.get(x.comp) || 0) + 1));
@@ -2035,45 +2121,85 @@ function fileDB() {
     else S.data.leagues.forEach((L) => cnt.set(L.name, L.teams.length));
     S.data.leagues.forEach((L) => { if (!cnt.has(L.name)) cnt.set(L.name, 0); });
     const list = Array.from(cnt.keys()).filter(Boolean).sort(U.compOrder).map((c) => ({ c, n: cnt.get(c) }));
-    html += U.group('CAMPIONATI <span class="mut">· ' + (rank ? "squadre" : "partite") + "</span>", U.leagues(list, S.ecomps, "secomp"));
+    html += U.group('CAMPIONATI <span class="mut">· ' + (rank ? "squadre" : "partite") + "</span>", leagueList(list, S.ecomps, "secomp", rank));
     const note = (t === "partite" ? longDay.format(toDate(day)) : TABN[t]) + (S.ecomps.size ? " · " + S.ecomps.size + (S.ecomps.size === 1 ? " campionato" : " campionati") : "");
     return U.side(html, note);
+  }
+  // CAMPIONATI divisi per nazione: in cima quelli con partite, gli altri chiusi in "SENZA PARTITE" (si aprono toccando)
+  function leagueList(list, set, act, rank) {
+    const row = (x) => '<button type="button" class="lrow' + (set.has(x.c) ? " on" : "") + (x.n ? "" : " zero") + '" data-act="' + act + '" data-c="' + esc(x.c) + '"><span class="ck"></span>' + U.flag(x.c) + '<span class="ln">' + esc(U.tc(x.c)) + '</span><span class="lc num">' + (x.n || "") + "</span></button>";
+    const byNat = (arr) => { let h = "", last = null; arr.forEach((x) => { const k = U.country(x.c); if (k !== last) { h += '<div class="lnat">' + esc((U.NAT[k] || "").toUpperCase()) + "</div>"; last = k; } h += row(x); }); return h; };
+    const yes = list.filter((x) => x.n || set.has(x.c)), no = list.filter((x) => !x.n && !set.has(x.c));
+    let h = '<div class="lgl"><button type="button" class="lrow' + (set.size ? "" : " on") + '" data-act="' + act + '" data-c=""><span class="ck"></span><span class="ln">Tutti</span><span class="lc num">' + list.reduce((a, x) => a + (x.n || 0), 0) + "</span></button>" + byNat(yes) + "</div>";
+    if (no.length) h += '<details class="lno"' + (S.open.has("lno") ? " open" : "") + ' data-k="lno"><summary>SENZA ' + (rank ? "SQUADRE" : "PARTITE") + " · " + no.length + '</summary><div class="lgl">' + byNat(no) + "</div></details>";
+    return h;
   }
   const mkSeg = () => '<div class="mkseg" role="group" aria-label="Ordina per">' + MK.map((x) => '<button type="button" data-act="smk" data-mk="' + x[0] + '" aria-pressed="' + (S.mk === x[0]) + '" title="' + esc(x[2]) + '">' + x[1] + "</button>").join("") + "</div>";
   const sampSeg = () => '<div class="seg sseg" role="group" aria-label="Campione"><button type="button" data-act="ssamp" data-s="l" aria-pressed="' + (S.sample === "l") + '">ULTIME 15</button><button type="button" data-act="ssamp" data-s="s" aria-pressed="' + (S.sample === "s") + '">SOLO STAGIONE</button></div>';
   // LIVE: le giocate della tabella scritte come le capisce window.APP.live.market
-  const LVM = { cb: "1 PT o Over 1,5 PT", w1: "1 PT", sc: "Casa segna PT", o05: "Over 0,5 PT", o15: "Over 1,5 PT", m02: "Multigol 0-2 PT", m13: "Multigol 1-3 PT", m14: "Multigol 1-4 PT", c2: "Over 0,5 PT + Over 0,5 2T", s05: "Over 0,5 2T", rx: "Esatti 0-0 / 1-1", r1: "Esatti 1-0 / 2-0 / 2-1", r2: "Esatti 0-1 / 0-2 / 1-2" };
-  // LIVE: sotto la partita una riga con l'esito di ogni giocata, nella stessa colonna della sua percentuale (niente colori dentro le caselle)
+  const LVM = { cb: "1 PT o Over 1,5 PT", w1: "1 PT", sc: "Casa segna PT", o05: "Over 0,5 PT", o15: "Over 1,5 PT", m13: "Multigol 1-3 PT", m14: "Multigol 1-4 PT", c2: "Over 0,5 PT + Over 0,5 2T", s05: "Over 0,5 2T", rx: "Esatti 0-0 / 1-1", r1: "Esatti 1-0 / 2-0 / 2-1", r2: "Esatti 0-1 / 0-2 / 1-2" };
+  // LIVE: sotto la partita una riga con l'esito di ogni giocata, nella stessa colonna della sua percentuale.
+  //  Etichette corte e tutte uguali (dal 23/11): ✓ / ✗ = deciso (colore pieno), ora ✓ / ora ✗ = può ancora cambiare, in corso = si decide dopo
+  const SHORT = { W: "✓", L: "✗", w: "ora ✓", l: "ora ✗", n: "in corso" };
+  const lvShort = (LV, st) => LV.tag(st, SHORT[st]);
   function lvRow(L, m) {
     const LV = window.APP.live;
-    return '<tr class="lvrow' + (L.state === "in" ? " in" : "") + '"><td></td><td class="l lvh">' + (L.state === "post" ? "ESITO FINALE" : "ESITO LIVE") + "</td>" +
-      MK.map((mm) => { const st = LV.market(LVM[mm[0]], L) || "n"; return '<td class="' + (mm[0] === m[0] ? "on" : "") + '">' + LV.tag(st) + "</td>"; }).join("") + "</tr>";
+    return '<tr class="lvrow' + (L.state === "in" ? " in" : "") + '"><td></td><td class="l lvh">' + (L.state === "post" ? "ESITO FINALE" : "ESITO LIVE") + "</td><td></td>" +
+      MK.map((mm) => { const st = LV.market(LVM[mm[0]], L) || "n"; return '<td class="' + (mm[0] === m[0] ? "on" : "") + '">' + lvShort(LV, st) + "</td>"; }).join("") + "</tr>";
   }
   // la partita come la cerca il live: se Claude l'ha caricata nel calendario, uso il suo link ESPN (abbinamento sicuro)
   const liveItem = (x) => { const fx = x.f.links ? x.f : S.fixtures.find((f) => f.date === x.f.date && x.H && x.A && find(f.home) === x.H && find(f.away) === x.A); return { date: x.f.date, time: x.f.time, comp: x.comp, home: x.f.home, away: x.f.away, links: fx && fx.links }; };
   const liveOf = (x) => (window.APP.live ? window.APP.live.get(liveItem(x)) : null);
   // ★ PREFERITI: la stellina accanto alla partita; giocate suggerite = quelle della tabella (ids delle giocate)
   const favStar = (x, ids) => (window.APP.fav ? window.APP.fav.star(liveItem(x), ids.map((id) => LVM[id])) : "");
+  // nome della partita, risultato live (su una riga a sé, senza andare a capo) e ora · campionato
+  function matchCell(x, ids, extra) {
+    const LV = window.APP.live, L = liveOf(x), live = !!L && L.state !== "pre";
+    const sc = live ? '<span class="lvs num">' + LV.scoreTxt(L) + ' <span class="mut">(' + LV.htTxt(L) + ")</span>" + LV.clockTag(L) + "</span>" : "";
+    return favStar(x, ids) + "<b>" + esc(x.f.home) + " – " + esc(x.f.away) + "</b>" + sc + '<span class="m">' + FL(x.comp) + esc(extra) + "</span>";
+  }
+  const pctCell = (v, id, on) => (below(v, id) ? '<td class="num hid' + (on ? " on" : "") + '"><span class="mut">·</span></td>'
+    : '<td class="num ' + cls(v, id) + (on ? " on" : "") + '">' + (v === null || v === undefined ? "—" : '<span class="pv">' + P(v) + '</span><i class="sb"><i style="width:' + Math.round(v * 100) + '%"></i></i>' + vTxt(id, v)) + "</td>");
   function tabDay(M, m, day) {
     if (window.APP.live) window.APP.live.need(M.map(liveItem));
-    if (!M.length) return '<div class="panel"><div class="empty">' + (S.ready ? "Nessuna partita dei 12 campionati in questo giorno. Scegli un altro giorno qui sopra, oppure chiedi a Claude di aggiornare le statistiche." : "CARICAMENTO…") + "</div></div>";
-    const list = S.ecomps.size ? M.filter((x) => S.ecomps.has(x.comp)) : M;
+    if (!M.length) return '<div class="panel"><div class="empty">' + (S.ready ? "Nessuna partita dei nostri campionati in questo giorno. Scegli un altro giorno nel calendario, oppure chiedi a Claude di aggiornare le statistiche." : "CARICAMENTO…") + "</div></div>";
+    let list = S.ecomps.size ? M.filter((x) => S.ecomps.has(x.comp)) : M;
     if (!list.length) return '<div class="panel"><div class="empty">Nessuna partita dei campionati scelti in questo giorno.</div></div>';
-    let h = '<div class="note"><b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". La stima è la media tra la squadra di casa nelle partite in casa e l'ospite nelle partite in trasferta.</div>";
+    const strong = (x) => MK.some((mm) => !RE.has(mm[0]) && !below(x.E[mm[0]].v, mm[0]));
+    const hidden = S.thr ? list.filter((x) => !strong(x)).length : 0;
+    if (S.thr) list = list.filter(strong);
     const LV = window.APP.live, anyLive = !!LV && list.some((x) => { const L = liveOf(x); return L && L.state !== "pre"; });
-    if (anyLive) h += LV.bar() + '<div class="note">LIVE: accanto alla partita trovi il risultato in tempo reale (primo tempo tra parentesi). Sotto ogni partita iniziata trovi la riga <b>ESITO</b>: sotto ogni percentuale dice come sta andando quella giocata. ' + LV.tag("W") + " e " + LV.tag("L") + " = già deciso · " + LV.tag("w") + " e " + LV.tag("l") + " = com'è adesso, può ancora cambiare · " + LV.tag("n") + ' = si decide più avanti.</div>';
-    h += '<div class="panel"><div class="ph"><span>PARTITE (' + list.length + ")</span><span class=\"r\">tocca una partita per i dettagli</span></div><div class=\"scroll\"><table class=\"stab\"><thead>" + grpHead(2, 0) + "<tr><th class=\"l\">#</th><th class=\"l\">PARTITA</th>" +
+    let h = anyLive ? LV.bar() : "";
+    const right = (hidden ? hidden + (hidden === 1 ? " partita nascosta" : " partite nascoste") + " (sotto il " + S.thr + "%) · " : "") + "tocca una partita per i dettagli";
+    h += '<div class="panel"><div class="ph"><span>PARTITE (' + list.length + ')</span><span class="r">' + right + "</span></div>";
+    if (!list.length) return h + '<div class="empty">Nessuna partita arriva al ' + S.thr + "%. Scegli una soglia più bassa in MOSTRA.</div></div>";
+    const when = (x) => [x.f.time ? x.f.time + (x.f.date !== day ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ");
+    // computer: tabella
+    h += '<div class="scroll dsk"><table class="stab"><thead>' + grpHead(3, 0) + '<tr><th class="l">#</th><th class="l">PARTITA</th><th class="l qh" title="quota probabile della giocata scelta in ORDINA PER e se conviene">QUOTA ~<br><span class="mut">' + SH[m[0]] + "</span></th>" +
       MK.map((x) => '<th class="' + (x[0] === m[0] ? "on" : "") + '" title="' + esc(x[1]) + '">' + SH[x[0]] + "</th>").join("") + "</tr></thead><tbody>";
     list.forEach((x, i) => {
-      const open = S.open.has(x.k), night = x.f.date !== day, L = liveOf(x), live = !!L && L.state !== "pre";
-      const sc = live ? ' <span class="lvs num">' + LV.scoreTxt(L) + ' <span class="mut">(' + LV.htTxt(L) + ")</span></span>" + LV.clockTag(L) : "";
-      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt">' + favStar(x, [m[0]]) + '<b>' + esc(x.f.home) + " – " + esc(x.f.away) + "</b>" + sc + '<span class="m">' + FL(x.comp) + esc([x.f.time ? x.f.time + (night ? " (notte)" : "") : "", x.comp].filter(Boolean).join(" · ")) + "</span></td>" +
-        MK.map((mm) => { const e = x.E[mm[0]];
-          return '<td class="num ' + cls(e.v, mm[0]) + (mm[0] === m[0] ? " on" : "") + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>"; }).join("") + "</tr>";
+      const open = S.open.has(x.k), L = liveOf(x), live = !!L && L.state !== "pre";
+      h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt">' + matchCell(x, [m[0]], when(x)) + "</td>" +
+        qCell(x, m[0]) + MK.map((mm) => pctCell(x.E[mm[0]].v, mm[0], mm[0] === m[0])).join("") + "</tr>";
       if (live) h += lvRow(L, m);
-      if (open) h += '<tr class="det"><td colspan="' + (MK.length + 2) + '">' + detail(x) + "</td></tr>";
+      if (open) h += '<tr class="det"><td colspan="' + (MK.length + 3) + '">' + detail(x) + "</td></tr>";
     });
-    return h + "</tbody></table></div></div>";
+    h += "</tbody></table></div>";
+    // telefono: una scheda per partita, con le giocate una sotto l'altra
+    h += '<div class="scards">' + list.map((x, i) => {
+      const open = S.open.has(x.k), L = liveOf(x), live = !!L && L.state !== "pre", Q = quota(x, m[0]);
+      let c = '<div class="scard' + (open ? " sel" : "") + '"><div class="sch" data-act="sopen" data-k="' + esc(x.k) + '"><span class="mut num scn">' + (i + 1) + '</span><span class="mt">' + matchCell(x, [m[0]], when(x)) + '</span><span class="car">' + (open ? "▴" : "▾") + "</span></div>";
+      if (Q) c += '<div class="scq" title="' + esc(qTip(Q)) + '"><span class="mut">' + esc(MKL[m[0]] || m[1]) + '</span> <b class="num">~' + q2(Q.q) + '</b> <span class="mut num">serve ' + q2(Q.need) + "</span> " + qTag(Q) + "</div>";
+      c += '<div class="scg">' + GRP.map((g) => {
+        const ms = MK.filter((mm) => grpOf(mm[0]) === g[0] && !below(x.E[mm[0]].v, mm[0]));
+        return ms.length ? '<div class="scgh ' + g[0] + '">' + g[1] + "</div>" + ms.map((mm) => {
+          const v = x.E[mm[0]].v, st = live ? window.APP.live.market(LVM[mm[0]], L) || "n" : null;
+          return '<div class="scr' + (mm[0] === m[0] ? " on" : "") + '"><span class="scl">' + esc(MKL[mm[0]] || mm[1]) + '</span><span class="num scp ' + cls(v, mm[0]) + '"><b>' + P(v) + "</b>" + vTxt(mm[0], v) + "</span>" + (st ? '<span class="sce">' + lvShort(window.APP.live, st) + "</span>" : "") + "</div>";
+        }).join("") : "";
+      }).join("") + "</div>";
+      return c + (open ? '<div class="scd">' + detail(x) + "</div>" : "") + "</div>";
+    }).join("") + "</div>";
+    return h + "</div>";
   }
   const nn = (n) => (n === 1 ? "1 partita" : n + " partite");
   function recs(list, home) {
@@ -2112,20 +2238,24 @@ function fileDB() {
     rows.sort((a, b) => (b.bv ?? -1) - (a.bv ?? -1) || (a.f.date + a.f.time).localeCompare(b.f.date + b.f.time));
     const lab = (d) => (d === today ? "OGGI" : d === addDays(today, 1) ? "DOMANI" : wd.format(toDate(d)).replace(".", "").toUpperCase() + " " + dm(d));
     const nm = { m13: "MULTIGOL 1-3 PT", cb: "1 PT O OVER 1,5 PT" };
-    let h = '<div class="note">Per ogni partita confronto <b>Multigol 1-3 PT</b> e <b>1 PT o Over 1,5 PT</b>. Vincono tutte e due con 1-0, 1-1, 2-0 e 2-1 all\'intervallo e perdono tutte e due con lo 0-0. Il Multigol 1-3 vince anche con 0-1 (segna solo l\'ospite); 1 PT o Over 1,5 vince anche con 4 o più gol nel primo tempo. Se le due percentuali sono vicine (meno di 4 punti) scegli quella con la quota migliore.</div>';
+    if (S.thr) rows = rows.filter((x) => x.bv !== null && x.bv * 100 >= S.thr);
+    let h = "";
     if (!rows.length) return h + '<div class="panel"><div class="empty">Nessuna partita in calendario. Chiedi a Claude di aggiornare le statistiche.</div></div>';
     const shown = S.evAll ? rows : rows.slice(0, EV_TOP);
-    const bar = (v, on) => '<td class="num ' + cls(v) + (on ? " on" : "") + '">' + (v === null || v === undefined ? "—" : '<span class="pv">' + P(v) + '</span><i class="sb"><i style="width:' + Math.round(v * 100) + '%"></i></i>') + "</td>";
+    const bar = (v, on, id, Q) => '<td class="num ' + cls(v) + (on ? " on" : "") + '">' + (v === null || v === undefined ? "—" : '<span class="pv">' + P(v) + '</span><i class="sb"><i style="width:' + Math.round(v * 100) + '%"></i></i>' + vTxt(id, v)) +
+      (Q ? '<span class="vq" title="' + esc(qTip(Q)) + '">~' + q2(Q.q) + " " + qTag(Q, true) + "</span>" : "") + "</td>";
     h += '<div class="panel"><div class="ph"><span>LE MIGLIORI SOLUZIONI (' + rows.length + ')</span><span class="r">tocca una partita per i dettagli</span></div><div class="scroll"><table class="stab ev"><thead><tr><th class="l">#</th><th class="l">PARTITA</th>' +
       '<th class="l">GIOCA</th><th title="nel primo tempo da 1 a 3 gol in tutto">MULTIGOL<br><span class="mut">1-3 PT</span></th><th title="la casa in vantaggio all\'intervallo, oppure almeno 2 gol nel PT">1 PT O<br><span class="mut">OVER 1,5 PT</span></th>' +
       '<th title="0-0 all\'intervallo: perdono tutte e due">RISCHIO<br><span class="mut">0-0 PT</span></th></tr></thead><tbody>';
     shown.forEach((x, i) => {
       const open = S.open.has(x.k), few = (x.E.cb.hn && x.E.cb.hn < minN()) || (x.E.cb.an && x.E.cb.an < minN()), z = x.E.o05.v === null ? null : 1 - x.E.o05.v;
       const close = x.diff !== null && x.diff < 0.04;
-      const why = !x.best ? "" : close ? "quasi uguali: scegli la quota più alta" : x.best === "m13" ? "copre anche lo 0-1 (gol solo dell'ospite)" : "copre anche i primi tempi con 4 o più gol";
+      const qa = quota(x, "m13"), qb = quota(x, "cb");
+      if (close && qa && qb && qa.q !== qb.q) x.best = qa.q > qb.q ? "m13" : "cb";  // quasi uguali: vince la quota più alta
+      const why = !x.best ? "" : close ? (qa && qb ? "quasi uguali: scelta la quota più alta" : "quasi uguali: scegli la quota più alta") : x.best === "m13" ? "copre anche lo 0-1 (gol solo dell'ospite)" : "copre anche i primi tempi con 4 o più gol";
       h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt">' + favStar(x, (x.best ? [x.best] : ["m13", "cb"])) + '<b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
         '<td class="l mt">' + (x.best ? '<span class="pick ' + (close ? "eq" : "") + '">' + nm[x.best] + "</span>" : "—") + '<span class="m">' + esc(why) + "</span></td>" +
-        bar(x.E.m13.v, x.best === "m13") + bar(x.E.cb.v, x.best === "cb") +
+        bar(x.E.m13.v, x.best === "m13", "m13", qa) + bar(x.E.cb.v, x.best === "cb", "cb", qb) +
         '<td class="num ' + (z !== null && z >= 0.25 ? "warn" : "mut") + '">' + (z === null ? "—" : P(z)) + "</td></tr>";
       if (open) h += '<tr class="det"><td colspan="6">' + detail(x) + "</td></tr>";
     });
@@ -2166,31 +2296,47 @@ function fileDB() {
     if (S.ecomps.size) rows = rows.filter((x) => S.ecomps.has(x.comp));
     rows.sort((a, b) => (b.E[m[0]].v ?? -1) - (a.E[m[0]].v ?? -1) || (a.f.date + a.f.time).localeCompare(b.f.date + b.f.time));
     const lab = (d) => (d === today ? "OGGI" : d === addDays(today, 1) ? "DOMANI" : wd.format(toDate(d)).replace(".", "").toUpperCase() + " " + dm(d));
-    let h = '<div class="note"><b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". <b>Probabilità</b> = media tra la squadra di casa nelle sue partite in casa e l'avversaria nelle sue partite in trasferta. Il calendario arriva fino al " + (dset.length ? dm(dset[dset.length - 1]) : "—") + ".</div>";
-    h += leagueRS(m);
+    if (S.thr && !RE.has(m[0])) rows = rows.filter((x) => !below(x.E[m[0]].v, m[0]));
+    let h = leagueRS(m);
     if (!rows.length) return h + '<div class="panel"><div class="empty">Nessuna partita in calendario. Chiedi a Claude di aggiornare le statistiche.</div></div>';
-    const re = RE.has(m[0]), shown = S.evAll ? rows : rows.slice(0, EV_TOP), MI = re ? 8 : 10, LV = window.APP.live;
+    const re = RE.has(m[0]), shown = S.evAll ? rows : rows.slice(0, EV_TOP), MI = re ? 9 : 11, LV = window.APP.live;
     if (LV) LV.need(shown.map(liveItem));
-    h += '<div class="panel"><div class="ph"><span>MIGLIORI EVENTI PER ' + esc(m[1]) + " (" + rows.length + ')</span><span class="r">tocca una partita per i dettagli</span></div><div class="scroll"><table class="stab ev"><thead><tr><th class="l">#</th><th class="l">PARTITA</th>' +
+    h += '<div class="panel"><div class="ph"><span>MIGLIORI EVENTI PER ' + esc(m[1]) + " (" + rows.length + ')</span><span class="r">calendario fino al ' + (dset.length ? dm(dset[dset.length - 1]) : "—") + (S.thr && !re ? " · solo dal " + S.thr + "%" : "") + ' · tocca una partita per i dettagli</span></div><div class="scroll dsk"><table class="stab ev"><thead><tr><th class="l">#</th><th class="l">PARTITA</th>' +
       '<th title="la squadra di casa nelle sue partite in casa">CASA<br><span class="mut">in casa</span></th><th title="l\'avversaria nelle sue partite in trasferta">OSPITE<br><span class="mut">in trasferta</span></th>' +
       (re ? "" : '<th title="quante volte l\'ospite, in trasferta, ha perso o pareggiato il primo tempo">OSPITE PT<br><span class="mut">perso o pari</span></th><th title="quante volte l\'ospite, in trasferta, ha subito almeno 1 gol nel primo tempo">OSPITE SUBISCE<br><span class="mut">gol nel PT</span></th>') +
-      '<th class="on">PROBABILITÀ</th><th class="c" title="esito della giocata scelta in ORDINA PER (dal live, si aggiorna da solo)">ESITO</th><th class="c" title="risultato del primo tempo">PT</th><th class="c" title="risultato finale (durante la partita: risultato adesso e minuto)">FINALE</th></tr></thead><tbody>';
+      '<th class="on">PROBABILITÀ</th><th class="l qh" title="quota probabile e se conviene">QUOTA ~</th><th class="c" title="esito della giocata scelta in ORDINA PER (dal live, si aggiorna da solo)">ESITO</th><th class="c" title="risultato del primo tempo">PT</th><th class="c" title="risultato finale (durante la partita: risultato adesso e minuto)">FINALE</th></tr></thead><tbody>';
     shown.forEach((x, i) => {
       const e = x.E[m[0]], open = S.open.has(x.k), a = awayNP(blk(x.A, "a")), few = (e.hn && e.hn < minN()) || (e.an && e.an < minN());
       const pc = (v, num, n, id) => (v === null || v === undefined ? '<td class="num mut">—</td>' : '<td class="num ' + cls(v, id) + '">' + P(v) + ' <span class="mut">' + num + "/" + n + "</span></td>");
       h += '<tr class="click' + (open ? " sel" : "") + '" data-act="sopen" data-k="' + esc(x.k) + '"><td class="l mut num">' + (i + 1) + '</td><td class="l mt">' + favStar(x, [m[0]]) + '<b>' + esc(x.f.home) + " – " + esc(x.f.away) + '</b><span class="m">' + FL(x.comp) + esc(whenOf(x.f) + " · " + x.comp) + (few ? " · poche partite" : "") + "</span></td>" +
         pc(e.hr, e.hx, e.hn, m[0]) + pc(e.ar, e.ax, e.an, m[0]) + (re ? "" : a ? pc(a.np, a.npx, a.n) + pc(a.con, a.conx, a.n) : '<td class="num mut">—</td><td class="num mut">—</td>') +
-        '<td class="num on ' + cls(e.v, m[0]) + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>') + "</td>" + evRes(x, m) + "</tr>";
+        '<td class="num on ' + cls(e.v, m[0]) + '">' + (e.v === null ? "—" : '<span class="pv">' + P(e.v) + '</span><i class="sb"><i style="width:' + Math.round(e.v * 100) + '%"></i></i>' + vTxt(m[0], e.v)) + "</td>" + qCell(x, m[0]) + evRes(x, m) + "</tr>";
       if (open) h += '<tr class="det"><td colspan="' + MI + '">' + detail(x) + "</td></tr>";
     });
-    h += "</tbody></table></div>" + (rows.length > EV_TOP ? '<div class="more"><button type="button" class="btn" data-act="sevall">' + (S.evAll ? "MOSTRA SOLO LE PRIME " + EV_TOP : "MOSTRA TUTTE (" + rows.length + ")") + "</button></div>" : "") + "</div>";
+    h += "</tbody></table></div>";
+    // telefono: una scheda per partita
+    h += '<div class="scards">' + shown.map((x, i) => {
+      const e = x.E[m[0]], open = S.open.has(x.k), Q = quota(x, m[0]), L = LV ? liveOf(x) : null, live = !!L && L.state !== "pre", few = (e.hn && e.hn < minN()) || (e.an && e.an < minN());
+      const fr = (v, num, n) => (v === null || v === undefined ? "—" : P(v) + ' <span class="mut">' + num + "/" + n + "</span>");
+      return '<div class="scard' + (open ? " sel" : "") + '"><div class="sch" data-act="sopen" data-k="' + esc(x.k) + '"><span class="mut num scn">' + (i + 1) + '</span><span class="mt">' + matchCell(x, [m[0]], whenOf(x.f) + " · " + x.comp + (few ? " · poche partite" : "")) + '</span><span class="car">' + (open ? "▴" : "▾") + "</span></div>" +
+        '<div class="scg"><div class="scr on"><span class="scl">' + esc(MKL[m[0]] || m[1]) + '</span><span class="num scp ' + cls(e.v, m[0]) + '"><b>' + P(e.v) + "</b>" + vTxt(m[0], e.v) + "</span>" + (live ? '<span class="sce">' + lvShort(LV, LV.market(LVM[m[0]], L) || "n") + "</span>" : "") + "</div>" +
+        '<div class="scr"><span class="scl mut">casa in casa · ospite fuori</span><span class="num scp">' + fr(e.hr, e.hx, e.hn) + " · " + fr(e.ar, e.ax, e.an) + "</span></div></div>" +
+        (Q ? '<div class="scq" title="' + esc(qTip(Q)) + '"><span class="mut">quota</span> <b class="num">~' + q2(Q.q) + '</b> <span class="mut num">serve ' + q2(Q.need) + "</span> " + qTag(Q) + "</div>" : "") +
+        (open ? '<div class="scd">' + detail(x) + "</div>" : "") + "</div>";
+    }).join("") + "</div>";
+    h += (rows.length > EV_TOP ? '<div class="more"><button type="button" class="btn" data-act="sevall">' + (S.evAll ? "MOSTRA SOLO LE PRIME " + EV_TOP : "MOSTRA TUTTE (" + rows.length + ")") + "</button></div>" : "") + "</div>";
     return h;
   }
   function detail(x) {
     const smp = S.sample === "l" ? "ultime 15" : "stagione";
-    let h = '<div class="sdet"><table class="cmp"><thead><tr><th class="l">MERCATO</th><th>' + esc(x.f.home) + ' <span class="mut">in casa</span></th><th>' + esc(x.f.away) + ' <span class="mut">in trasferta</span></th><th>STIMA</th></tr></thead><tbody>' +
-      MK.map((m, i) => { const e = x.E[m[0]], g = grpOf(m[0]), head = i === 0 || grpOf(MK[i - 1][0]) !== g ? '<tr class="grh"><td colspan="4">' + GRP.find((y) => y[0] === g)[1] + "</td></tr>" : "";
-        return head + '<tr><td class="l" title="' + esc(m[2]) + '">' + m[1] + '</td><td class="num">' + (e.hr === null ? "—" : P(e.hr) + ' <span class="mut">' + e.hx + "/" + e.hn + "</span>") + '</td><td class="num">' + (e.ar === null ? "—" : P(e.ar) + ' <span class="mut">' + e.ax + "/" + e.an + "</span>") + '</td><td class="num ' + cls(e.v, m[0]) + '"><b>' + P(e.v) + "</b></td></tr>"; }).join("") + "</tbody></table>";
+    // quote del bookmaker (da ESPN), quando ci sono: 1 X 2 e Over/Under
+    const o = x.Q && x.Q.o, qq = (v) => (v ? q2(v) : "—");
+    let h = '<div class="sdet">' + (o ? '<div class="hint sbk">Quote del bookmaker: 1 <b class="num">' + qq(o[0]) + '</b> · X <b class="num">' + qq(o[1]) + '</b> · 2 <b class="num">' + qq(o[2]) + "</b>" + (o[3] ? " · Over " + String(o[3]).replace(".", ",") + ' <b class="num">' + qq(o[4]) + '</b> · Under <b class="num">' + qq(o[5]) + "</b>" : "") + '. Le quote “~” delle altre giocate sono ricavate da queste.</div>'
+      : x.Q ? '<div class="hint sbk">Il bookmaker su ESPN non ha quote per questa partita: le quote “~” sono ricavate dal nostro calcolo dei gol (meno precise).</div>' : "") +
+      '<table class="cmp"><thead><tr><th class="l">MERCATO</th><th>' + esc(x.f.home) + ' <span class="mut">in casa</span></th><th>' + esc(x.f.away) + ' <span class="mut">in trasferta</span></th><th>STIMA</th><th title="quante volte è uscita davvero in passato con statistiche simili">VERA</th><th title="quota probabile e quota che serve">QUOTA ~</th></tr></thead><tbody>' +
+      MK.map((m, i) => { const e = x.E[m[0]], g = grpOf(m[0]), t = vera(m[0], e.v), Q = quota(x, m[0]), head = i === 0 || grpOf(MK[i - 1][0]) !== g ? '<tr class="grh"><td colspan="6">' + GRP.find((y) => y[0] === g)[1] + "</td></tr>" : "";
+        return head + '<tr><td class="l" title="' + esc(m[2]) + '">' + m[1] + '</td><td class="num">' + (e.hr === null ? "—" : P(e.hr) + ' <span class="mut">' + e.hx + "/" + e.hn + "</span>") + '</td><td class="num">' + (e.ar === null ? "—" : P(e.ar) + ' <span class="mut">' + e.ax + "/" + e.an + "</span>") + '</td><td class="num ' + cls(e.v, m[0]) + '"><b>' + P(e.v) + '</b></td><td class="num">' + (t === null ? "—" : P(t)) + "</td>" +
+          '<td class="num">' + (Q ? '~' + q2(Q.q) + ' <span class="mut">serve ' + q2(Q.need) + "</span> " + qTag(Q, true) : "—") + "</td></tr>"; }).join("") + "</tbody></table>";
     h += '<div class="hint">Campione: ' + smp + ". Per l'ospite, “1 PT” conta le volte che in trasferta era sotto all'intervallo e “casa segna” le volte che ha subito gol nel primo tempo.</div>";
     h += '<div class="sgrid"><div><h5>' + esc(x.f.home) + ' <span class="mut">· in casa</span></h5>' + (x.H ? '<div class="hint">' + line(x.H, "h") + '</div><div class="rcs">' + recs(x.H.h.r, true) + "</div>" : '<div class="hint">Squadra non presente nelle statistiche.</div>') + "</div>" +
       '<div><h5>' + esc(x.f.away) + ' <span class="mut">· in trasferta</span></h5>' + (x.A ? '<div class="hint">' + line(x.A, "a") + '</div><div class="rcs">' + recs(x.A.a.r, false) + "</div>" : '<div class="hint">Squadra non presente nelle statistiche.</div>') + "</div></div>";
@@ -2199,18 +2345,18 @@ function fileDB() {
   function tabRank() {
     const Ls = S.data.leagues, sel = Ls.filter((x) => !S.ecomps.size || S.ecomps.has(x.name));
     const L = sel.length === 1 ? sel[0] : null, all = !L, m = mkOf(S.mk), mn = minN();
-    let h = '<div class="note">Solo le partite giocate IN CASA. <b>' + esc(MKL[m[0]] || m[1]) + "</b>: " + esc(m[2]) + ". Le squadre che la prossima partita giocano FUORI sono in grigio." + (all ? " In classifica entra solo chi ha almeno " + mn + " partite in casa nel campione scelto." : "") + "</div>";
-    h += leagueRS(m);
+    let h = leagueRS(m);
     const pool = sel.flatMap((x) => x.teams.map((t) => ({ t, L: x })));
     let rows = pool.map(({ t, L }) => { const b = blk(t, "h"); return { t, L, b, v: b ? m[3](b) / b[0] : null, nx: S.next.get(L.code + "|" + t.t) || null }; });
     if (all) rows = rows.filter((r) => r.b && r.b[0] >= mn);
     if (S.onlyHome) rows = rows.filter((r) => r.nx && r.nx.home);
-    // a pari percentuale: nel Multigol 0-2 prima chi fa meno gol nel PT, nelle altre giocate prima chi ne fa di più
-    const gpt = (r) => (r.b && r.b[0] ? (r.b[4] + r.b[5]) / r.b[0] : 0), dir = m[0] === "m02" ? 1 : -1;
+    if (S.thr && !RE.has(m[0])) rows = rows.filter((r) => !below(r.v, m[0]));
+    // a pari percentuale prima chi fa più gol nel PT
+    const gpt = (r) => (r.b && r.b[0] ? (r.b[4] + r.b[5]) / r.b[0] : 0), dir = -1;
     rows.sort((a, b) => (b.v ?? -1) - (a.v ?? -1) || ((b.b || [0])[0] - (a.b || [0])[0]) || dir * (gpt(a) - gpt(b)) || a.t.t.localeCompare(b.t.t));
     const total = rows.length;
     if (all && !S.rankAll) rows = rows.slice(0, RANK_TOP);
-    const title = all ? (S.ecomps.size ? "CAMPIONATI SCELTI" : "TUTTI I CAMPIONATI") : L.name, right = all ? total + " squadre in classifica" : L.matches + " partite giocate · ultima il " + dm(L.last);
+    const title = all ? (S.ecomps.size ? "CAMPIONATI SCELTI" : "TUTTI I CAMPIONATI") : L.name, right = "solo partite in casa · in grigio chi gioca la prossima fuori · " + (all ? total + " squadre (almeno " + mn + " partite in casa)" : L.matches + " partite giocate · ultima il " + dm(L.last));
     h += '<div class="panel"><div class="ph"><span>' + esc(title) + " · CLASSIFICA IN CASA PER " + esc(m[1]) + '</span><span class="r">' + esc(right) + "</span></div><div class=\"scroll\"><table class=\"stab rank\"><thead>" + grpHead(5, 2) + "<tr><th class=\"l\">#</th><th class=\"l\">SQUADRA</th><th class=\"l\">PROSSIMA PARTITA</th><th>PARTITE</th><th>PT V-N-P</th>" +
       MK.map((x) => '<th class="' + (x[0] === m[0] ? "on" : "") + '" title="' + esc(x[1]) + '">' + SH[x[0]].replace("CASA SEGNA PT", "SEGNA NEL PT") + "</th>").join("") +
       '<th>GOL PT</th><th class="l">ULTIME 5 IN CASA (PT)</th></tr></thead><tbody>';
@@ -2227,15 +2373,6 @@ function fileDB() {
     h += "</tbody></table></div>" + (all && total > RANK_TOP ? '<div class="more"><button type="button" class="btn" data-act="srankall">' + (S.rankAll ? "MOSTRA SOLO LE PRIME " + RANK_TOP : "MOSTRA TUTTE (" + total + ")") + "</button></div>" : "") + "</div>";
     return h;
   }
-  const howTo = () => '<details class="panel how"' + (S.open.has("how") ? " open" : "") + ' data-k="how"><summary>COME FUNZIONANO QUESTE STATISTICHE</summary><div class="hint">' +
-    "Conta solo il primo tempo. Per ogni squadra guardo le partite giocate in casa (e, per l'ospite, quelle in trasferta): quante volte era in vantaggio all'intervallo, quante volte ha segnato nel primo tempo e quanti gol ci sono stati.<br>" +
-    "<b>ULTIME 15</b> usa le ultime 15 partite in casa, anche della stagione scorsa: è un campione più solido. <b>SOLO STAGIONE</b> usa solo quest'anno: è più aggiornato ma conta poche partite.<br>" +
-    "<b>1 PT O OVER 1,5 PT</b> vince se all'intervallo la squadra di casa è in vantaggio, oppure se nel primo tempo ci sono almeno 2 gol (1-0 vinta, 1-1 vinta, 0-0 e 0-1 perse).<br>" +
-    "<b>MULTIGOL 0-2 / 1-3 / 1-4 PT</b> contano i gol totali del primo tempo (di tutte e due le squadre): vince se sono tra i due numeri. Il Multigol 0-2 premia le partite con pochi gol, gli altri due perdono con lo 0-0.<br>" +
-    "<b>MIGLIORI EVENTI</b>: le prossime partite di campionato (10 giorni), ordinate per probabilità. La probabilità è la media tra la squadra di casa in casa e l'avversaria in trasferta; per l'avversaria vedi anche quante volte fuori casa perde o pareggia il primo tempo e quante volte subisce almeno un gol nel primo tempo. “Poche partite” = meno di " + minN() + " partite nel campione: numero meno affidabile.<br>" +
-    "<b>COMBO OVER 0,5 PT + OVER 0,5 2T</b> (gruppo MULTIBET PARTITA) vince se c'è almeno un gol nel primo tempo e almeno un gol nel secondo tempo. <b>OVER 0,5 2T</b> (ESITI SECONDO TEMPO) vince se c'è almeno un gol nel secondo tempo: i gol del secondo tempo sono quelli finali meno quelli dell'intervallo.<br>" +
-    "<b>RISULTATI ESATTI</b> (risultato finale): <b>0-0 / 1-1</b> vince se la partita finisce 0-0 o 1-1; <b>1-0 / 2-0 / 2-1</b> se vince la squadra di casa con uno di questi risultati; <b>0-1 / 0-2 / 1-2</b> se vince l'ospite con uno di questi. La stima è la media tra la squadra di casa nelle sue partite in casa e l'avversaria nelle sue trasferte: per esempio, per 0-0 / 1-1 conto i pareggi 0-0 e 1-1 della squadra di casa in casa e quelli dell'ospite in trasferta. Nelle schede MIGLIORI EVENTI e CLASSIFICHE IN CASA c'è anche la tabella PER CAMPIONATO, con tutte le partite di questa stagione. Per queste giocate il verde parte dal 40% e il grigio è sotto il 20%, perché sono risultati precisi e le percentuali sono più basse.<br>" +
-    "Verde = almeno 70%. I risultati vengono da football-data.co.uk, il calendario da ESPN: Claude li aggiorna quando glielo chiedi.</div></details>";
 
   // ---------- eventi ----------
   document.addEventListener("click", (ev) => {
@@ -2259,12 +2396,14 @@ function fileDB() {
       render();
     }
     else if (a === "sevall") { S.evAll = !S.evAll; render(); }
+    else if (a === "sthr") { S.thr = Number(b.dataset.c) || 0; render(); }
     else if (a === "sopen") { const kk = b.dataset.k; if (S.open.has(kk)) S.open.delete(kk); else S.open.add(kk); render(); }
   });
-  document.addEventListener("toggle", (ev) => { const d = ev.target; if (!on() || !d || !d.dataset || d.dataset.k !== "how") return; if (d.open) S.open.add("how"); else S.open.delete("how"); }, true);
+  document.addEventListener("toggle", (ev) => { const d = ev.target; if (!on() || !d || !d.dataset || !["how", "lno"].includes(d.dataset.k)) return; if (d.open) S.open.add(d.dataset.k); else S.open.delete(d.dataset.k); }, true);
 
   // ---------- avvio ----------
   window.APP.apps[ME] = { render, close() {} };
+  window.APP.stats = { cal: () => (S.data ? S.data.cal : null), names: MKL, ids: () => MK.map((m) => m[0]), sample: () => S.sample, myMin, minN };
   (async function start() {
     try {
       const r = await fetch("stats.json", { cache: "no-store" });
@@ -2671,8 +2810,8 @@ function fileDB() {
 })();
 </script>
 <script>
-/* LEGENDA di Pronostici (dal 23/11/2026): pulsante "?" accanto alle schede GIOCATE · PARTITE · DA VERIFICARE.
-   Apre una finestra che spiega ogni cosa della sezione, con esempi veri (stessi colori della pagina). */
+/* LEGENDA (dal 23/11/2026): pulsante "?" accanto alle schede di Pronostici (GIOCATE · PARTITE · DA VERIFICARE) e di Statistiche.
+   Apre una finestra che spiega ogni cosa della sezione, con esempi veri (stessi colori della pagina). open("stats") = Statistiche. */
 (function () {
   const ME = "legenda";
   const $ = (id) => document.getElementById(id);
@@ -2770,11 +2909,93 @@ function fileDB() {
     return h;
   }
 
+  // ---------- LEGENDA DI STATISTICHE (dal 23/11/2026) ----------
+  const ST = () => window.APP && window.APP.stats;
+  const pc = (x) => Math.round(x * 100) + "%";
+  function veraOf(c, v) { const p = Math.min(Math.max(v, 0.03), 0.97); return 1 / (1 + Math.exp(-(c[0] + c[1] * Math.log(p / (1 - p))))); }
+  // tabella "cosa dicono i numeri", dalla taratura in stats.json
+  function numbers() {
+    const S = ST(), cal = S && S.cal();
+    if (!cal || !cal.l) return row("<b>—</b>", "I numeri arrivano con il prossimo aggiornamento delle statistiche.");
+    const smp = S.sample() === "s" && cal.s ? "s" : "l", C = cal[smp], dt = (iso) => (iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) + "/" + iso.slice(0, 4) : "—");
+    let t = '<table class="lgtab"><thead><tr><th class="l">GIOCATA</th><th>ESCE IN GENERALE</th><th>STATISTICHE 60%</th><th>70%</th><th>80%</th><th>90%</th></tr></thead><tbody>';
+    S.ids().forEach((id) => { const c = C[id]; if (!c) return;
+      t += '<tr><td class="l">' + S.names[id] + "</td><td><b>" + c[3] + "%</b></td>" + [0.6, 0.7, 0.8, 0.9].map((v) => "<td>" + pc(veraOf(c, v)) + "</td>").join("") + "</tr>"; });
+    t += "</tbody></table>";
+    return row("<b>" + (cal.n || 0).toLocaleString("it-IT") + " partite</b>", "Prova fatta sulle partite già giocate dal " + dt(cal.from) + " al " + dt(cal.to) + " (" + (smp === "l" ? "campione ultime 15" : "campione solo stagione") + "). Per ogni partita ho calcolato la percentuale come fa la pagina, usando solo le partite giocate <b>prima</b>, e ho guardato se la giocata è uscita.") +
+      '<div class="lgtw">' + t + "</div>" +
+      row("<b>Come si legge</b>", "Esempio: quando le statistiche dicono <b>80%</b> per una giocata, la colonna 80% dice quante volte è uscita davvero. Se il numero è vicino a “esce in generale”, le statistiche di quella giocata servono poco: esce più o meno sempre uguale, qualunque squadra giochi.") +
+      row("<b>In pratica</b>", "Le giocate sui gol (Over 0,5 PT, Over 0,5 2T, Multigol) escono spesso ma quasi sempre con la stessa frequenza, quindi hanno quote basse. Per trovare una giocata che conviene guarda la colonna <b>QUOTA ~</b>: CONVIENE solo se la quota è sopra quella che serve.");
+  }
+  function contentStats() {
+    const S = ST(), mn = S ? S.minN() : 8, my = S ? S.myMin().toFixed(2).replace(".", ",") : "1,20";
+    const toc = [["stab", "Tabella"], ["svera", "Percentuale vera"], ["squota", "Quota e conviene"], ["sfil", "Filtri"], ["slive", "Live"], ["sschede", "Le schede"], ["sgioc", "Le giocate"], ["stel", "Sul telefono"], ["snum", "Cosa dicono i numeri"]];
+    let h = '<nav class="lgtoc">' + toc.map(([id, t]) => '<button type="button" data-lgto="' + id + '">' + t + "</button>").join("") + "</nav>";
+
+    h += sec("stab", "LA TABELLA · una riga per ogni partita, una colonna per ogni giocata",
+      row("<b>78%</b>", "Quante volte esce la giocata secondo le <b>statistiche</b>: media tra la squadra di casa nelle sue partite in casa e l'ospite nelle sue partite fuori.") +
+      row('<span class="vr" style="display:inline">vera 70%</span>', "La <b>percentuale vera</b>: quante volte è uscita davvero in passato quando le statistiche dicevano un numero simile. È quella di cui fidarsi (spiegata sotto).") +
+      row('<b style="color:var(--up)">verde</b> · nero · <span class="mut">grigio</span>', "Verde = almeno 70%. Grigio = sotto il 40%. Per i risultati esatti il verde parte dal 40% e il grigio è sotto il 20%, perché sono risultati precisi.") +
+      row("<b>Gruppi</b>", "Le colonne sono divise in gruppi: MULTIBET PRIMO TEMPO, ESITI PRIMO TEMPO, MULTIBET PARTITA, ESITI SECONDO TEMPO, RISULTATI ESATTI. La colonna evidenziata è la giocata scelta in <b>ORDINA PER</b>: le partite sono in ordine con quella.") +
+      row('<span style="color:#9aa3ae;font-size:15px">☆</span>', "Stellina dei <b>Preferiti</b>: mette da parte la partita con la giocata scelta.") +
+      row("<b>(notte)</b>", "La partita è dopo mezzanotte, ma resta nel giorno prima.") +
+      row("<i>tocca la partita</i>", "Si apre il dettaglio: le quote del bookmaker, ogni giocata con casa, ospite, stima, vera e quota, e le ultime 5 partite delle due squadre (in grassetto il primo tempo; verde = in vantaggio all'intervallo, rosso = in svantaggio).") +
+      row("<b>poche partite</b>", "Meno di " + mn + " partite nel campione: il numero è meno affidabile."));
+
+    h += sec("svera", "LA PERCENTUALE VERA · quanto fidarsi delle statistiche",
+      row('<b>78%</b> <span class="vr" style="display:inline">vera 70%</span>', "Le statistiche delle squadre sono spesso <b>troppo ottimiste</b>: una squadra che ha fatto 12 su 15 non lo rifà per forza. Per questo ho provato le statistiche su migliaia di partite già giocate e ho misurato quante volte la giocata è uscita davvero.") +
+      row("<b>Si aggiorna da sola</b>", "Ogni volta che aggiorni le statistiche la prova si rifà con le partite nuove.") +
+      row("<b>Esempio</b>", "1 PT o Over 1,5 PT al 75% nelle statistiche: in passato è uscita circa 62 volte su 100. Over 0,5 2T al 90%: circa 81 su 100, quasi come al 60% (esce sempre circa 8 volte su 10)."));
+
+    h += sec("squota", "QUOTA PROBABILE E CONVIENE · colonna QUOTA ~",
+      row("<b>~1,32</b>", "La <b>quota probabile</b> della giocata scelta in ORDINA PER. Quando ESPN ha le quote del bookmaker (1X2 e Over/Under) è ricavata da quelle; se non le ha, dal nostro calcolo dei gol (meno precisa: lo dice il dettaglio della partita). Controlla sempre la quota vera sul tuo bookmaker.") +
+      row("<b>serve 1,40</b>", "La quota che serve perché la giocata convenga: 100 diviso la <b>percentuale vera</b>, più un margine del 3%, e mai meno della <b>tua quota minima</b> (adesso " + my + "; si cambia in Pronostici, in cima a GIOCATE).") +
+      row('<span class="tag w">CONVIENE</span> <span class="tag l">NON CONVIENE</span>', "CONVIENE se la quota probabile è almeno quella che serve. Se il tuo bookmaker paga di più della quota che serve, conviene anche quando qui c'è scritto NON CONVIENE.") +
+      row("<b>Perché quasi sempre NO</b>", "Il bookmaker guadagna su ogni quota: per le giocate che escono spesso paga poco (esempio: Over 0,5 2T a 1,12-1,15). Una giocata conviene solo quando le squadre fanno uscire la giocata molto più spesso di quanto pensa il bookmaker."));
+
+    h += sec("sfil", "LA COLONNA DEI FILTRI · sul telefono si apre con FILTRI",
+      row("<b>GIORNO</b>", "Il calendario: in PARTITE DEL GIORNO si sceglie un giorno solo; in MIGLIORI EVENTI e MIGLIORE SCELTA anche più giorni insieme.") +
+      row("<b>CAMPIONE</b>", "<b>Ultime 15</b> usa le ultime 15 partite in casa (o fuori), anche della stagione scorsa: più solido. <b>Solo stagione</b> usa solo quest'anno: più aggiornato ma con meno partite.") +
+      row("<b>ORDINA PER</b>", "La giocata che conta: ordina le partite, evidenzia la colonna e decide la quota mostrata.") +
+      row("<b>MOSTRA</b>", "Tutte, oppure solo dal 60%, 70% o 80%: le percentuali più basse non si vedono e le partite senza nessuna giocata forte spariscono. Non vale per i risultati esatti.") +
+      row("<b>CAMPIONATI</b>", "Divisi per nazione. In cima quelli con partite; gli altri sono in <b>SENZA PARTITE</b>, che si apre toccandolo. Se non scegli niente valgono tutti."));
+
+    h += sec("slive", "IL LIVE · durante la partita",
+      row('<span class="lvs" style="margin:0">2-1 <span class="mut">(1-0)</span></span>', "Risultato in tempo reale accanto alla partita, il primo tempo tra parentesi. Si aggiorna da solo ogni 30 secondi.") +
+      row(live("W", "✓") + " " + live("L", "✗"), "Riga <b>ESITO</b> sotto la partita: colore pieno = giocata già decisa, presa o persa.") +
+      row(live("w", "ora ✓") + " " + live("l", "ora ✗"), "Colore chiaro = com'è adesso, può ancora cambiare.") +
+      row(live("n", "in corso"), "Si decide più avanti (per esempio una giocata sul secondo tempo mentre si gioca il primo)."));
+
+    h += sec("sschede", "LE SCHEDE",
+      row("<b>PARTITE DEL GIORNO</b>", "Tutte le partite di un giorno con tutte le giocate.") +
+      row("<b>MIGLIORI EVENTI</b>", "Le prossime partite (10 giorni) in ordine per la giocata scelta. CASA = la squadra di casa nelle sue partite in casa; OSPITE = l'avversaria fuori; OSPITE PT perso o pari e OSPITE SUBISCE gol nel PT aiutano a capire quanto soffre fuori casa. Poi esito, primo tempo e finale dal live.") +
+      row("<b>MIGLIORE SCELTA</b>", "Per ogni partita confronta <b>Multigol 1-3 PT</b> e <b>1 PT o Over 1,5 PT</b>. Vincono tutte e due con 1-0, 1-1, 2-0 e 2-1 all'intervallo e perdono tutte e due con lo 0-0. Il Multigol 1-3 vince anche con 0-1; 1 PT o Over 1,5 vince anche con 4 o più gol nel PT. Se sono vicine (meno di 4 punti) sceglie quella con la quota più alta. RISCHIO 0-0 PT = quante volte finisce 0-0 il primo tempo.") +
+      row("<b>CLASSIFICHE IN CASA</b>", "Le squadre in ordine per la giocata, solo partite in casa. In grigio quelle che la prossima partita la giocano fuori. Con i risultati esatti c'è anche la tabella PER CAMPIONATO."));
+
+    h += sec("sgioc", "LE GIOCATE",
+      row("<b>1 PT o Over 1,5 PT</b>", "La squadra di casa è in vantaggio all'intervallo, oppure nel primo tempo ci sono almeno 2 gol (1-0 e 1-1 vinte; 0-0 e 0-1 perse).") +
+      row("<b>1 PT · Casa segna nel PT</b>", "Casa in vantaggio all'intervallo · la squadra di casa segna almeno un gol nel primo tempo.") +
+      row("<b>Over 0,5 / 1,5 PT</b>", "Almeno 1 / almeno 2 gol nel primo tempo.") +
+      row("<b>Multigol 1-3 / 1-4 PT</b>", "Gol totali del primo tempo tra 1 e 3 / tra 1 e 4 (lo 0-0 perde).") +
+      row("<b>Combo Over 0,5 PT + Over 0,5 2T</b>", "Almeno un gol nel primo tempo E almeno uno nel secondo.") +
+      row("<b>Over 0,5 2T</b>", "Almeno un gol nel secondo tempo (gol finali meno quelli dell'intervallo).") +
+      row("<b>Risultati esatti</b>", "Risultato finale: 0-0 / 1-1; 1-0 / 2-0 / 2-1 (vince la casa); 0-1 / 0-2 / 1-2 (vince l'ospite).") +
+      row('<span class="mut">Multigol 0-2 PT</span>', "Tolto il 23/11: ha quote troppo basse."));
+
+    h += sec("stel", "SUL TELEFONO",
+      row("<b>Schede</b>", "Al posto della tabella larga, ogni partita è una scheda con le giocate una sotto l'altra, divise per gruppo, con percentuale, vera ed esito live. La giocata scelta in ORDINA PER è evidenziata, con la sua quota. Tocca il nome della partita per il dettaglio."));
+
+    h += sec("snum", "COSA DICONO I NUMERI · statistiche contro realtà", numbers() +
+      row("<b>Fonti</b>", "Risultati da football-data.co.uk (Brasile, Austria, Danimarca ed Eerste Divisie da ESPN), calendario e quote da ESPN. Claude li aggiorna quando glielo chiedi.") +
+      row("⚠", "Nessuna statistica è certa: anche all'80% si perde una volta su cinque. Gioca solo soldi che puoi permetterti di perdere."));
+    return h;
+  }
+
   function ov() {
     let o = $("lg-ov");
     if (!o) {
       o = document.createElement("div"); o.className = "overlay"; o.id = "lg-ov"; o.hidden = true;
-      o.innerHTML = '<div class="sheet lgsheet" role="dialog" aria-modal="true" aria-label="Legenda"><h3>LEGENDA · COME SI LEGGE LA PAGINA PRONOSTICI<button type="button" class="lgx" data-lgclose aria-label="Chiudi">×</button></h3><div class="lgbody" id="lg-body"></div></div>';
+      o.innerHTML = '<div class="sheet lgsheet" role="dialog" aria-modal="true" aria-label="Legenda"><h3><span id="lg-title">LEGENDA</span><button type="button" class="lgx" data-lgclose aria-label="Chiudi">×</button></h3><div class="lgbody" id="lg-body"></div></div>';
       document.body.appendChild(o);
       o.addEventListener("click", (e) => {
         if (e.target === o || e.target.closest("[data-lgclose]")) { o.hidden = true; return; }
@@ -2785,8 +3006,12 @@ function fileDB() {
     }
     return o;
   }
-  function open() { const o = ov(); $("lg-body").innerHTML = content(); o.hidden = false; $("lg-body").scrollTop = 0; }
-  document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest('[data-act="legend"]'); if (b) { e.preventDefault(); open(); } });
+  function open(kind) {
+    const o = ov(), st = kind === "stats";
+    $("lg-title").textContent = "LEGENDA · COME SI LEGGE LA PAGINA " + (st ? "STATISTICHE" : "PRONOSTICI");
+    $("lg-body").innerHTML = st ? contentStats() : content(); o.hidden = false; $("lg-body").scrollTop = 0;
+  }
+  document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest('[data-act="legend"]'); if (b) { e.preventDefault(); open(b.dataset.lg); } });
   window.APP = window.APP || {};
   window.APP.legend = { open, ME };
 })();
