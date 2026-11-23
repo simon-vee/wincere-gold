@@ -763,6 +763,36 @@ table.stab tr.lvrow .lv { font-size: 10px; padding: 2px 6px; }
 .lgr .lge { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12px; }
 .lgr .lgt { font-size: 12px; line-height: 1.5; color: #374151; }
 @media (max-width: 760px) { .lgr { grid-template-columns: 1fr; gap: 4px; } .lgsheet { max-height: calc(100% - 4px); } }
+/* IL CONSIGLIO di Pronostici (23/11): verdetto, cassa, quota, puntata */
+.cv { display: inline-block; font-weight: 800; letter-spacing: .05em; border-radius: 6px; padding: 3px 9px; font-size: 11px; white-space: nowrap; }
+.cv.sm { font-size: 9.5px; padding: 1px 6px; border-radius: 4px; vertical-align: middle; }
+.cv-go { background: #15803d; color: #fff; }
+.cv-small { background: #fdf2e1; color: #b45309; border: 1px solid #f5c98b; }
+.cv-no { background: #fcebeb; color: var(--down); }
+.cv-na { background: #eef0f3; color: var(--muted); }
+.cbox { border: 1px solid #c9d6f5; background: #f6f8fe; border-radius: 8px; padding: 9px 11px; display: grid; gap: 6px; max-width: 980px; }
+.cbh { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 10px; font-weight: 700; letter-spacing: .07em; color: var(--acc); }
+.cbh .cbw { font-size: 12px; font-weight: 500; letter-spacing: 0; color: var(--ink); }
+.cbl { display: grid; grid-template-columns: 92px 1fr; gap: 8px; font-size: 12px; line-height: 1.5; align-items: start; }
+.cbk { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); padding-top: 3px; }
+.cq { width: 86px; padding: 3px 7px; font-size: 12px; display: inline-block; }
+.cq.cc { width: 90px; }
+.calt { display: grid; gap: 3px; }
+.calx { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.cadv { display: grid; gap: 0; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden; }
+.cadv .car { display: grid; grid-template-columns: 64px 1fr 48px 150px; gap: 8px; align-items: center; padding: 5px 9px; font-size: 12px; border-top: 1px solid var(--line2); }
+.cadv .car:first-child { border-top: 0; background: #f3fbf5; }
+.cadv .car > .cv { justify-self: start; }
+.cbar { border: 1px solid #c9d6f5; background: #f6f8fe; border-radius: var(--r); padding: 8px 12px; margin: 0 0 8px; display: grid; gap: 6px; }
+.cbr { display: grid; grid-template-columns: 78px 1fr; gap: 8px; align-items: center; font-size: 12px; }
+.cbr .mut { font-size: 11px; }
+.cml { display: grid; gap: 2px; }
+.cbn { font-size: 11px; }
+@media (max-width: 760px) {
+  .cbl, .cbr { grid-template-columns: 1fr; gap: 2px; }
+  .cadv .car { grid-template-columns: 60px 1fr 40px; }
+  .cadv .car > :last-child { grid-column: 2 / -1; }
+}
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1451,6 +1481,9 @@ function fileDB() {
   const th = (v, l, cls) => '<th class="' + (cls || "") + '">' + (v ? '<button type="button" class="thb' + (S.sort === v ? " on" : "") + '" data-act="psort" data-v="' + v + '">' + l + (S.sort === v ? " ▾" : "") + "</button>" : l) + "</th>";
   // ★ PREFERITI: la stellina nella cella ORA (vedi strumenti/preferiti.js)
   const favStar = (date, time, comp, home, away, fx, sugg) => (window.APP.fav ? window.APP.fav.star({ date, time, comp, home, away, links: fx && fx.links }, sugg) : "");
+  // IL CONSIGLIO (strumenti/consiglio.js): verdetto, quota, puntata
+  const CS = () => window.APP.consiglio;
+  const consTag = (x) => (CS() ? CS().tag(x) : ""), consBox = (x, fx) => (CS() ? CS().box(x, fx) : ""), consBar = (L, d) => (CS() ? CS().bar(L, d) : ""), consAdv = (fx) => (CS() ? CS().advSect(fx) : "");
   // LISTA DEI CONTROLLI: calcolata da strumenti/controlli.py (campo chk dei pronostici)
   const CKN = { stat: "Statistiche", calc: "Calcolo dei gol", odds: "Quote", form: "Forma", h2h: "Scontri diretti", rest: "Assenti e stanchezza", mot: "Motivazioni" };
   const CKS = { ok: "✓", no: "✗", mid: "≈", na: "–" };
@@ -1481,7 +1514,7 @@ function fileDB() {
   function tabPlays(C, D, G, day) {
     if (!G.all.length) return '<div class="panel"><div class="empty">' + (S.ready.picks && S.ready.ideas ? "Nessuna giocata per questo giorno. Chiedi a Claude i pronostici del giorno, oppure aggiungili con + PRONOSTICO." : "CARICAMENTO…") + "</div></div>";
     if (!G.list.length) return '<div class="panel"><div class="empty">Nessuna giocata con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
-    let h = liveBar() + '<div class="gtw"><table class="gt"><thead><tr>' + th("time", "ORA") + th("comp", "CAMPIONATO") + th("", "CASA") + th("", "OSPITE") + th("", "PT", "c") + th("", "FIN", "c") +
+    let h = liveBar() + consBar(G.all.filter((o) => o.t === "p").map((o) => o.x), day) + '<div class="gtw"><table class="gt"><thead><tr>' + th("time", "ORA") + th("comp", "CAMPIONATO") + th("", "CASA") + th("", "OSPITE") + th("", "PT", "c") + th("", "FIN", "c") +
       th("", "GIOCATA") + th("conf", "FIDUCIA") + th("prob", "PROB", "r") + th("", "QUOTA", "r") + th("", "ESITO", "r") + "</tr></thead><tbody>";
     for (const o of G.list) {
       const open = S.rows.has(o.rid), x = o.x, night = x.date !== day, L = liveOf(x.date, x.time, o.comp, o.home, o.away, o.c && o.c.fx);
@@ -1490,7 +1523,7 @@ function fileDB() {
         '<td class="cp"><span class="cpi">' + U.flag(o.comp) + esc(U.tc(o.comp)) + "</span></td>" +
         '<td class="tn h">' + esc(o.home) + '<span class="vs"> – ' + esc(o.away) + '</span></td><td class="tn a">' + esc(o.away) + "</td>" +
         scoreCells(o.r, L) +
-        '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(x.player) : esc(x.market) + safeTag(x) + ckDots(x)) + "</td>" +
+        '<td class="mk' + (o.t === "i" ? " sc" : "") + '">' + (o.t === "i" ? '<span class="mut">Marcatore:</span> ' + esc(x.player) : esc(x.market) + safeTag(x) + ckDots(x) + consTag(x)) + "</td>" +
         '<td class="cf">' + confLow(x.conf) + '</td><td class="r pr"><b>' + (hasProb(x.prob) ? Math.round(Number(x.prob)) + "%" : "—") + "</b></td>" +
         '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : x.chk && Number(x.chk.qmin) > 1 ? '<span title="quota minima: sotto questa non conviene">min ' + n2(x.chk.qmin) + "</span>" : "") + '</td><td class="r es">' + resCell(o, C.today, L) + "</td></tr>";
       if (open) h += '<tr class="gx"><td colspan="11">' + expand(o, day, C.today) + "</td></tr>";
@@ -1499,7 +1532,7 @@ function fileDB() {
   }
   function expand(o, day, today) {
     const x = o.x, ok = S.db && S.canWrite, col = o.t === "p" ? "p" : "i";
-    let h = '<div class="gxin">' + (x.why ? '<div class="why">' + esc(x.why) + "</div>" : '<div class="why mut">Nessun motivo scritto.</div>') + (o.t === "p" ? ckList(x) : "") +
+    let h = '<div class="gxin">' + (x.why ? '<div class="why">' + esc(x.why) + "</div>" : '<div class="why mut">Nessun motivo scritto.</div>') + (o.t === "p" ? consBox(x, o.c && o.c.fx) + ckList(x) : "") +
       '<div class="gxb"><span class="pt">' + confTag(x.conf) + pp(x.prob) + (Number(x.odds) > 1 ? '<span class="mut num">@ ' + n2(x.odds) + "</span>" : "") + "</span>";
     if (ok) {
       h += '<button type="button" class="btn small" data-act="edit-' + (o.t === "p" ? "pick" : "idea") + '" data-id="' + esc(x.id) + '">MODIFICA</button>';
@@ -1629,6 +1662,7 @@ function fileDB() {
     let h = '<article class="mcard"><div class="mh"><span>' + (c.time ? '<span class="tm num">' + esc(c.time) + "</span>" : "") + "<b>" + esc(c.comp || "") + "</b>" + (night ? ' <span class="tag o">NOTTE · ' + dm(c.date) + "</span>" : "") + "</span>" +
       "<span>" + esc([f.venue, f.tv].filter(Boolean).join(" · ")) + "</span></div><h4>" + esc(home + (away ? " – " + away : "")) + "</h4>" + (f.table ? '<div class="tbl">' + esc(f.table) + "</div>" : "");
     if (hasProb(f.p1)) h += probBar(f, home, away);
+    h += consAdv(f);
     h += newsSect(f, home, away, c.comp);
     if (c.picks.length) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div>' + c.picks.map(pickRow).join("") + "</div>";
     else if (hasProb(f.p1) || f.analysis) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div><p class="mut">Nessuno: partita troppo incerta, meglio evitarla.</p></div>';
@@ -2633,7 +2667,7 @@ function fileDB() {
   const sec = (id, title, body) => '<section class="lgs" id="lg-' + id + '"><h4>' + title + "</h4>" + body + "</section>";
 
   function content() {
-    const toc = [["tab", "Tabella"], ["live", "Live"], ["safe", "Bollino SICURO"], ["ck", "I 7 controlli"], ["est", "Stima e quota minima"], ["card", "Scheda partita"], ["news", "Notizie"], ["tabs", "Altre schede"], ["prova", "Cosa dicono i numeri"]];
+    const toc = [["tab", "Tabella"], ["live", "Live"], ["safe", "Bollino SICURO"], ["ck", "I 7 controlli"], ["est", "Stima e quota minima"], ["card", "Scheda partita"], ["news", "Notizie"], ["tabs", "Altre schede"], ["cons", "Il consiglio e la puntata"], ["prova", "Cosa dicono i numeri"]];
     let h = '<nav class="lgtoc">' + toc.map(([id, t]) => '<button type="button" data-lgto="' + id + '">' + t + "</button>").join("") + "</nav>";
 
     h += sec("tab", "LA TABELLA GIOCATE · una riga per ogni giocata",
@@ -2696,6 +2730,19 @@ function fileDB() {
       row("<b>DA VERIFICARE</b>", "Pronostici e marcatori dei giorni passati senza esito: chiedi a Claude di aggiornare i risultati.") +
       row("<b>Filtri</b>", "Giorno (calendario), campionati, tipo di giocata e fiducia. Sul telefono si aprono con il pulsante FILTRI."));
 
+    h += sec("cons", "IL CONSIGLIO · se giocare, cosa, come e quanto puntare",
+      row('<span class="cv cv-go">GIOCA</span>', "Ha il bollino SICURO e la quota conviene (o non l'hai ancora scritta: allora gioca solo se è almeno la quota minima).") +
+      row('<span class="cv cv-small">GIOCA PICCOLO</span>', "Stima almeno 70% e nessun ✗, ma non è SICURO: solo da sola (singola) e con una puntata piccola.") +
+      row('<span class="cv cv-no">NON GIOCARE</span>', "C'è un ✗, oppure la stima è sotto il 70%, oppure la quota è sotto la quota minima. Il motivo è scritto accanto.") +
+      row('<span class="cv cv-go sm">GIOCA</span> <span class="cv cv-small sm">PICCOLO</span> <span class="cv cv-no sm">NO</span>', "La versione piccola del verdetto, accanto alla giocata nella tabella. Sparisce quando la partita è iniziata.") +
+      row("<b>CASSA</b>", "In cima a GIOCATE scrivi i soldi che dedichi alle scommesse (per esempio 100 €). Restano solo su quel telefono o computer.") +
+      row("<b>QUOTA</b>", "Nella riga aperta scrivi la quota che ti dà il tuo bookmaker: la pagina ricalcola subito se conviene e quanto puntare.") +
+      row("<b>QUANTO</b>", "La puntata è più alta quando la giocata è più sicura e la quota è più alta (un metodo prudente, un quarto del metodo di Kelly). Mai più del <b>5%</b> della cassa per un GIOCA, del <b>2%</b> per un GIOCA PICCOLO. Se le puntate del giorno superano il <b>10%</b> della cassa si riducono da sole.") +
+      row("<b>MULTIPLA</b>", "Con almeno 2 GIOCA nello stesso giorno vedi la doppia con i due più sicuri e tutti i SICURI insieme, con la probabilità vera (si moltiplicano: 84% × 83% = 70%) e la quota minima. Meglio le singole, al massimo una doppia.") +
+      row("<b>ALTERNATIVE · COSA GIOCARE</b>", "Per ogni partita sono provate 13 giocate. <span class=\"tag c\">PIÙ SICURA</span> è quella con la stima più alta; <span class=\"tag w\">CONVIENE DI PIÙ</span> quella con il guadagno atteso migliore rispetto alla quota del bookmaker (solo quando il bookmaker la quota).") +
+      row("⏳", "Prima di giocare guarda le formazioni ufficiali, circa un'ora prima: gli assenti non sono controllati in automatico.") +
+      row("⚠", "Gioca solo soldi che puoi permetterti di perdere e non inseguire le perdite. Nessun pronostico è certo."));
+
     h += sec("prova", "COSA DICONO I NUMERI · prova su 720 partite già giocate (settembre-novembre 2026, 12 campionati)",
       row("<b>1X · X2</b>", "Qui i dati funzionano davvero. 1X con il bookmaker all'80% o più: <b>presa 90 volte su 100</b>. Con bookmaker, calcolo e statistiche d'accordo: <b>93 su 100</b>. X2 con il bookmaker all'85% o più: 16 su 17.") +
       row("<b>Giocate sui gol</b>", "Escono più o meno sempre con la stessa frequenza, anche quando le statistiche dicono 90%:<br>· Over 0,5 2T circa <b>81%</b><br>· Over 1,5 circa <b>78%</b><br>· Over 0,5 PT circa <b>73%</b><br>· Multigol 1-3 PT circa <b>69%</b><br>· 1 PT o Over 1,5 PT circa <b>57%</b><br>· Over 2,5 e Goal circa <b>55%</b>") +
@@ -2722,6 +2769,174 @@ function fileDB() {
   document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest('[data-act="legend"]'); if (b) { e.preventDefault(); open(); } });
   window.APP = window.APP || {};
   window.APP.legend = { open, ME };
+})();
+</script>
+<script>
+/* IL CONSIGLIO di Pronostici (dal 23/11/2026): se giocare, cosa, come e quanto puntare.
+   Usa la lista dei controlli (picks.chk) e le giocate provate per ogni partita (fixtures.adv, da controlli.py).
+   Cassa e quote scritte dall'utente restano solo nel browser (localStorage "gold.cassa").
+   Puntata: un quarto del metodo di Kelly, al massimo 5% della cassa (GIOCA) o 2% (GIOCA PICCOLO); limite del giorno 10%. */
+(function () {
+  const ME = "consiglio", KEY = "gold.cassa";
+  const MAX_GO = 0.05, MAX_SMALL = 0.02, MAX_DAY = 0.10;
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const nf = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const q2 = (n) => nf.format(Math.round(Number(n) * 100) / 100);
+  const eur = (n) => nf.format(n) + " €";
+  let MEM = null;
+  const DAYF = {};  // giorno -> fattore per restare nel limite del 10% al giorno (calcolato dalla barra di GIOCATE)
+  function st() {
+    if (MEM) return MEM;
+    try { MEM = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { MEM = {}; }
+    if (!MEM.q || typeof MEM.q !== "object") MEM.q = {};
+    return MEM;
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st())); } catch (e) { /* niente */ } }
+  const cassa = () => (Number(st().cassa) > 0 ? Number(st().cassa) : 0);
+  const userQ = (k) => (Number(st().q[k]) > 1 ? Number(st().q[k]) : 0);
+
+  // dati comuni di un pronostico (picks) o di una giocata provata (fixtures.adv)
+  function fromPick(x) {
+    const c = x.chk || {};
+    return { key: "p:" + x.id, m: x.market, est: Number.isFinite(Number(c.est)) && c.est !== null ? Number(c.est) : null, safe: !!c.safe, no: Number(c.no) || 0,
+      qmin: Number(c.qmin) || 0, qb: Number(c.qbook) > 1 ? Number(c.qbook) : Number(x.odds) > 1 ? Number(x.odds) : 0, qby: Number(c.qbook) > 1 ? c.qby || "bookmaker" : "quota segnata",
+      date: x.date, time: x.time };
+  }
+  function fromCand(fx, a) {
+    return { key: "f:" + fx.id + "|" + a.m, m: a.m, est: Number(a.est), safe: !!a.safe, no: (a.v || "").split("x").length - 1, qmin: Number(a.qmin) || 0,
+      qb: Number(a.q) > 1 ? Number(a.q) : 0, qby: "bookmaker", date: fx.date, time: fx.time };
+  }
+  const quoteOf = (o) => userQ(o.key) || o.qb || 0;
+  function started(o) {
+    if (!o.date || !o.time) return false;
+    const t = new Date(o.date + "T" + o.time + ":00");
+    return !isNaN(t) && Date.now() >= t.getTime();
+  }
+
+  // VERDETTO: go = GIOCA, small = GIOCA PICCOLO, no = NON GIOCARE, na = nessun consiglio
+  function verdict(o) {
+    const q = quoteOf(o);
+    if (o.est === null) return { k: "na", t: "NESSUN CONSIGLIO", why: "Per questo pronostico non c'è la lista dei controlli." };
+    if (o.no > 0) return { k: "no", t: "NON GIOCARE", why: "Almeno un controllo è contro (✗)." };
+    if (o.est < 65) return { k: "no", t: "NON GIOCARE", why: "La stima combinata è troppo bassa (" + o.est + "%)." };
+    if (q && o.qmin && q < o.qmin) return { k: "no", t: "NON GIOCARE", why: "La quota " + q2(q) + " è sotto la quota minima " + q2(o.qmin) + ": si vince troppo poco per il rischio." };
+    if (o.safe) return { k: "go", t: "GIOCA", why: "Ha il bollino SICURO" + (q ? " e la quota conviene." : ": gioca solo se la quota è almeno " + q2(o.qmin) + ".") };
+    if (o.est >= 70) return { k: "small", t: "GIOCA PICCOLO", why: "Stima " + o.est + "% e nessun ✗, ma non è SICURO: puntata piccola" + (q ? "." : ", e solo con quota almeno " + q2(o.qmin) + ".") };
+    return { k: "no", t: "NON GIOCARE", why: "Stima " + o.est + "%: per giocare serve almeno il 70%." };
+  }
+  // PUNTATA: un quarto di Kelly, con i tetti
+  function stake(o, v) {
+    const q = quoteOf(o), C = cassa();
+    if (!C || !q || (v.k !== "go" && v.k !== "small")) return null;
+    const p = o.est / 100, f = (p * q - 1) / (q - 1);
+    if (!(f > 0)) return { eur: 0, pct: 0 };
+    const pct = Math.min(f / 4, v.k === "go" ? MAX_GO : MAX_SMALL);
+    const k = DAYF[o.date] || 1;  // ridotta se le puntate del giorno superano il 10% della cassa
+    let e = Math.round(C * pct * k * 2) / 2;
+    if (e < 0.5) e = 0.5;
+    return { eur: e, pct: e / C, f, cut: k < 1 };
+  }
+  const vtag = (v, small) => '<span class="cv cv-' + v.k + (small ? " sm" : "") + '">' + (small ? { go: "GIOCA", small: "PICCOLO", no: "NO", na: "—" }[v.k] : v.t) + "</span>";
+
+  // piccola etichetta per la tabella GIOCATE
+  function tag(x) {
+    if (!x || !x.chk) return "";
+    const o = fromPick(x);
+    if (started(o) || x.hit === true || x.hit === false) return "";
+    return " " + vtag(verdict(o), true);
+  }
+
+  // riquadro completo (riga aperta di GIOCATE)
+  function box(x, fx) {
+    if (!x || !x.chk) return "";
+    const o = fromPick(x), v = verdict(o), q = quoteOf(o), s = stake(o, v), C = cassa();
+    let h = '<div class="cbox"><div class="cbh">IL CONSIGLIO ' + vtag(v) + '<span class="cbw">' + esc(v.why) + "</span></div>";
+    if (started(o) || x.hit === true || x.hit === false) h += '<div class="cbl mut">La partita è già iniziata: il consiglio valeva prima del calcio d\'inizio.</div>';
+    h += '<div class="cbl"><span class="cbk">COSA</span><span><b>' + esc(o.m) + "</b> · stima combinata " + o.est + "%</span></div>";
+    h += '<div class="cbl"><span class="cbk">QUOTA</span><span><input class="cq" type="number" inputmode="decimal" step="0.01" min="1.01" placeholder="la tua quota" data-cq="' + esc(o.key) + '" value="' + (userQ(o.key) ? userQ(o.key) : "") + '"> ' +
+      '<span class="mut">scrivi la quota del tuo bookmaker · minima <b>' + q2(o.qmin) + "</b>" + (o.qb ? " · " + esc(o.qby) + " " + q2(o.qb) : "") + "</span></span></div>";
+    let how = "";
+    if (v.k === "go") how = "Da sola (singola) è la scelta più sicura. Al massimo in doppia con un altro SICURO (vedi MULTIPLA DEL GIORNO).";
+    else if (v.k === "small") how = "Solo da sola (singola), con una puntata piccola. Non metterla in multipla.";
+    else if (v.k === "no") how = "Lasciala stare. Guarda sotto se c'è un'alternativa migliore per questa partita.";
+    if (how) h += '<div class="cbl"><span class="cbk">COME</span><span>' + how + "</span></div>";
+    if (v.k === "go" || v.k === "small") {
+      h += '<div class="cbl"><span class="cbk">QUANTO</span><span>' + (!C ? '<span class="mut">Scrivi la tua cassa in alto (CASSA) per sapere quanto puntare.</span>' : !q ? '<span class="mut">Scrivi la quota per sapere quanto puntare.</span>' :
+        "<b>" + eur(s.eur) + "</b> <span class=\"mut\">· " + (s.pct * 100).toFixed(1).replace(".", ",") + "% della cassa (" + eur(C) + ") · massimo " + (v.k === "go" ? "5" : "2") + "% per questa giocata" + (s.cut ? " · <b>ridotta</b> per restare nel 10% al giorno" : "") + " · se vinci incassi " + eur(s.eur * q) + "</span>") + "</span></div>";
+      if (!started(o)) h += '<div class="cbl"><span class="cbk">⏳</span><span>Prima di giocare guarda le <b>formazioni ufficiali</b> (circa un\'ora prima): se manca un titolare importante, ripensaci.</span></div>';
+    }
+    if (fx) h += alts(fx, o.m);
+    return h + "</div>";
+  }
+
+  // le altre giocate provate per la partita
+  function alts(fx, skip) {
+    const a = fx.adv; if (!a || !Array.isArray(a.c) || !a.c.length) return "";
+    const L = a.c.filter((c) => c.m !== skip).slice(0, 5);
+    if (!L.length) return "";
+    return '<div class="cbl"><span class="cbk">ALTERNATIVE</span><span class="calt">' + L.map((c) => {
+      const o = fromCand(fx, c), v = verdict(o);
+      return '<span class="calx">' + vtag(v, true) + " <b>" + esc(c.m) + "</b> " + c.est + "%" + (c.safe ? ' <span class="tag safe">SICURO</span>' : "") +
+        (c.m === a.safe ? ' <span class="tag c">PIÙ SICURA</span>' : "") + (c.m === a.val ? ' <span class="tag w">CONVIENE DI PIÙ</span>' : "") + ' <span class="mut">min ' + q2(c.qmin) + "</span></span>";
+    }).join("") + "</span></div>";
+  }
+
+  // sezione per la scheda partita: tutte le giocate provate
+  function advSect(fx) {
+    const a = fx && fx.adv; if (!a || !Array.isArray(a.c) || !a.c.length) return "";
+    const rows = a.c.slice(0, 8).map((c) => {
+      const o = fromCand(fx, c), v = verdict(o), q = quoteOf(o);
+      return '<div class="car">' + vtag(v, true) + '<span class="cam"><b>' + esc(c.m) + "</b>" + (c.safe ? ' <span class="tag safe">SICURO</span>' : "") + (c.m === a.safe ? ' <span class="tag c">PIÙ SICURA</span>' : "") + (c.m === a.val ? ' <span class="tag w">CONVIENE DI PIÙ</span>' : "") +
+        '</span><span class="num"><b>' + c.est + '%</b></span><span class="num mut">min ' + q2(c.qmin) + (q ? " · quota " + q2(q) : "") + "</span></div>";
+    }).join("");
+    return '<div class="sect"><div class="st">COSA GIOCARE <span class="mut">· tutte le giocate provate per questa partita, dalla più sicura · stima combinata e quota minima</span></div><div class="cadv">' + rows + "</div></div>";
+  }
+
+  // barra in cima a GIOCATE: cassa, quanto puntare oggi, multipla del giorno
+  function bar(picks, day) {
+    const C = cassa();
+    const open = (picks || []).filter((x) => x && x.chk && x.hit !== true && x.hit !== false && !started(fromPick(x)));
+    const lim = C * MAX_DAY;
+    open.forEach((x) => { delete DAYF[x.date]; });
+    let cut = false;
+    let plan = open.map((x) => { const o = fromPick(x), v = verdict(o); return { x, o, v, s: stake(o, v) }; });
+    let play = plan.filter((p) => p.v.k === "go" || p.v.k === "small");
+    let tot = play.reduce((a, p) => a + (p.s ? p.s.eur : 0), 0);
+    if (C && tot > lim) {  // troppe puntate: si riducono tutte nella stessa proporzione
+      const f = lim / tot; open.forEach((x) => { DAYF[x.date] = f; }); cut = true;
+      plan = open.map((x) => { const o = fromPick(x), v = verdict(o); return { x, o, v, s: stake(o, v) }; });
+      play = plan.filter((p) => p.v.k === "go" || p.v.k === "small");
+      tot = play.reduce((a, p) => a + (p.s ? p.s.eur : 0), 0);
+    }
+    let h = '<div class="cbar"><div class="cbr"><span class="cbk">CASSA</span><span><input class="cq cc" type="number" inputmode="decimal" step="1" min="1" placeholder="es. 100" data-cassa value="' + (C || "") + '"> € ' +
+      '<span class="mut">i soldi che dedichi alle scommesse · restano solo su questo dispositivo</span></span></div>';
+    if (open.length) {
+      h += '<div class="cbr"><span class="cbk">OGGI</span><span>' + plan.filter((p) => p.v.k === "go").length + ' <span class="cv cv-go sm">GIOCA</span> · ' + plan.filter((p) => p.v.k === "small").length + ' <span class="cv cv-small sm">PICCOLO</span> · ' +
+        plan.filter((p) => p.v.k === "no").length + ' <span class="cv cv-no sm">NO</span>' + (C ? " · puntate consigliate <b>" + eur(tot) + "</b> su un massimo di " + eur(lim) + " al giorno (10%)" + (cut ? ' <span class="tag o">RIDOTTE PER RESTARE NEL 10%</span>' : "") : "") +
+        (play.some((p) => !quoteOf(p.o)) ? ' <span class="mut">· scrivi le quote per avere le puntate</span>' : "") + "</span></div>";
+    }
+    const safe = (picks || []).filter((x) => x && x.chk && x.chk.safe && x.hit !== true && x.hit !== false && !started(fromPick(x)))
+      .map((x) => fromPick(x)).filter((o) => verdict(o).k === "go").sort((a, b) => b.est - a.est);
+    if (safe.length >= 2) {
+      const pr = (L) => L.reduce((a, o) => a * o.est / 100, 1);
+      const qq = (L) => (L.every((o) => quoteOf(o)) ? L.reduce((a, o) => a * quoteOf(o), 1) : 0);
+      const line = (L, lab) => { const p = pr(L), q = qq(L); return "<div>" + lab + ": <b>" + L.map((o) => esc(o.m)).join(" + ") + "</b> · probabilità vera <b>" + Math.round(p * 100) + "%</b> · quota minima " + q2(1 / p) + (q ? " · quota " + q2(q) + " " + (q >= 1 / p ? '<span class="tag w">CONVIENE</span>' : '<span class="tag l">NON CONVIENE</span>') : "") + "</div>"; };
+      h += '<div class="cbr"><span class="cbk">MULTIPLA</span><span class="cml">' + line(safe.slice(0, 2), "Doppia con i 2 più sicuri") + (safe.length > 2 ? line(safe, "Tutti i " + safe.length + " SICURI insieme") : "") +
+        '<div class="mut">Ogni giocata in più abbassa la probabilità. Meglio singole, o al massimo una doppia; in multipla punta come per una sola giocata piccola.</div></span></div>';
+    }
+    h += '<div class="cbr mut cbn"><span class="cbk">⚠</span><span>Gioca solo soldi che puoi permetterti di perdere. Non inseguire le perdite: se una giornata va male non aumentare le puntate. Nessun pronostico è certo.</span></div>';
+    return h + "</div>";
+  }
+
+  function rerender() { const A = window.APP; if (A && A.apps && A.active && A.apps[A.active]) A.apps[A.active].render(); }
+  document.addEventListener("change", (e) => {
+    const t = e.target; if (!t || !t.matches) return;
+    if (t.matches("[data-cassa]")) { const v = Number(String(t.value).replace(",", ".")); st().cassa = v > 0 ? v : null; save(); rerender(); }
+    else if (t.matches("[data-cq]")) { const v = Number(String(t.value).replace(",", ".")); if (v > 1) st().q[t.dataset.cq] = v; else delete st().q[t.dataset.cq]; save(); rerender(); }
+  });
+  window.addEventListener("storage", (e) => { if (e.key === KEY) { MEM = null; rerender(); } });
+  window.APP = window.APP || {};
+  window.APP.consiglio = { ME, tag, box, bar, advSect, verdict, stake, fromPick };
 })();
 </script>
 <script>
