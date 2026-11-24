@@ -884,15 +884,84 @@ table.cdt td.l { min-width: 130px; }
   table.cdt { font-size: 11px; }
   table.cdt td.l { min-width: 0; white-space: normal; }
 }
+/* LA BOLLETTA (24/11): schedina del giorno composta dalla pagina + storico delle bollette giocate */
+.bset { padding: 10px 12px; margin-bottom: 10px; }
+.bsh, .bch .bct { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; color: var(--acc); }
+.bsr { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 8px; align-items: end; }
+.bsr label { display: grid; gap: 3px; }
+.bsr .lab { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); }
+.bsr .cq { width: 96px; font-size: 13px; font-weight: 700; padding: 5px 8px; }
+.bsr .beur { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
+.bsn { font-size: 11px; margin-top: 6px; }
+.bcard { padding: 0; margin-bottom: 10px; overflow: hidden; border: 1px solid #c9d6f5; }
+.bcard.bh.won { border-color: rgba(21,128,61,.45); }
+.bcard.bh.lost { border-color: #f5c2c2; }
+.bch { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 9px 12px; background: #f6f8fe; border-bottom: 1px solid #dfe6f8; font-size: 11.5px; }
+.bch .bhr { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; }
+.bcard .gtw { border: 0; border-radius: 0; }
+table.gt.bt tr.row { cursor: default; }
+table.gt.bt td.bn { color: var(--muted); width: 18px; }
+table.gt.bt td.bm b { display: block; }
+table.gt.bt td.bm .bcp { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; }
+table.gt.bt td.bm .btm { display: none; }
+table.gt.bt td.bg { white-space: normal; min-width: 140px; }
+table.gt.bt td.bg .tag { margin-left: 3px; }
+table.gt.bt td.bq { white-space: nowrap; }
+table.gt.bt td.bq .cq { width: 70px; }
+table.gt.bt td.bq .bqs { display: block; font-size: 10px; margin-top: 2px; }
+table.gt.bt td.bes .lv { margin-left: 3px; }
+.bx { border: 0; background: none; color: var(--muted); font-size: 17px; line-height: 1; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
+.bx:hover { background: #fcebeb; color: var(--down); }
+.bsum { display: flex; flex-wrap: wrap; gap: 8px 26px; padding: 10px 12px; border-top: 1px solid var(--line2); background: #fbfcfe; }
+.bsk { display: grid; gap: 1px; }
+.bsk .l { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; color: var(--muted); }
+.bsk .v { font-size: 17px; font-weight: 800; }
+.bsk .n { font-size: 10.5px; color: var(--muted); }
+.bsk.up .v { color: var(--up); }
+.bjud { display: flex; align-items: flex-start; gap: 8px; padding: 8px 12px; font-size: 12px; line-height: 1.5; border-top: 1px solid var(--line2); }
+.bjud .cv { margin-top: 1px; }
+.bfoot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px 12px; border-top: 1px solid var(--line2); font-size: 11px; }
+.bwarn { margin: 8px 12px; padding: 7px 10px; border-radius: 8px; background: #fdf2e1; border: 1px solid #f5c98b; font-size: 12px; }
+.bnotes { padding: 7px 12px 10px; font-size: 11.5px; color: var(--muted); display: grid; gap: 3px; border-top: 1px solid var(--line2); }
+.bcard .empty { padding: 18px 12px; }
+@media (max-width: 760px) {
+  table.gt.bt tr.row { grid-template-columns: 18px minmax(0, 1fr) auto auto; grid-template-areas: "bn bm bm bx" "bn bg bg bp" "bn bq bes bes"; }
+  table.gt.bt td.bn { grid-area: bn; } table.gt.bt td.bm { grid-area: bm; min-width: 0; } table.gt.bt td.bg { grid-area: bg; min-width: 0; }
+  table.gt.bt td.bp { grid-area: bp; text-align: right; } table.gt.bt td.bq { grid-area: bq; text-align: left; } table.gt.bt td.bes { grid-area: bes; text-align: right; }
+  table.gt.bt td.bxc { grid-area: bx; } table.gt.bt td.tm { display: none; }
+  table.gt.bt td.bm .btm { display: inline; }
+  .bsum { gap: 8px 18px; }
+  .bsk .v { font-size: 15px; }
+  .bch .bhr { margin-left: 0; }
+}
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
 </head>
 <body>
 <div class="shell">
-<nav class="rail" role="tablist" aria-label="Sezioni"><span class="logo" title="Wincere Gold"></span><button type="button" role="tab" data-app="idee" aria-selected="false" title="analisi delle partite e marcatori consigliati"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Pronostici</span></button><button type="button" role="tab" data-app="stats" aria-selected="false" title="come vanno le squadre nel primo tempo, in casa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg><span>Statistiche</span></button><button type="button" role="tab" data-app="classi" aria-selected="false" title="le classifiche complete di tutti i campionati"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg><span>Classifiche</span></button><button type="button" role="tab" data-app="storico" aria-selected="false" title="tutti gli esiti dei pronostici e dei marcatori"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 8v4l3 2"></path></svg><span>Storico</span></button><button type="button" role="tab" data-app="pref" aria-selected="false" title="le partite che hai messo da parte con la stellina, con la tua giocata in tempo reale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.15 1 5.85L12 16.9l-5.25 2.8 1-5.85L3.5 9.7l5.9-.9z"></path></svg><span>Preferiti</span></button></nav>
+<nav class="rail" role="tablist" aria-label="Sezioni"><span class="logo" title="Wincere Gold"></span><button type="button" role="tab" data-app="bol" aria-selected="false" title="la schedina del giorno composta con i nostri calcoli, e lo storico delle bollette giocate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5a2 2 0 0 0 0-4z"></path><path d="M9 9h6M9 13h6M9 17h3"></path></svg><span>La Bolletta</span></button><button type="button" role="tab" data-app="idee" aria-selected="false" title="analisi delle partite e marcatori consigliati"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Pronostici</span></button><button type="button" role="tab" data-app="stats" aria-selected="false" title="come vanno le squadre nel primo tempo, in casa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg><span>Statistiche</span></button><button type="button" role="tab" data-app="classi" aria-selected="false" title="le classifiche complete di tutti i campionati"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"></path></svg><span>Classifiche</span></button><button type="button" role="tab" data-app="storico" aria-selected="false" title="tutti gli esiti dei pronostici e dei marcatori"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 8v4l3 2"></path></svg><span>Storico</span></button><button type="button" role="tab" data-app="pref" aria-selected="false" title="le partite che hai messo da parte con la stellina, con la tua giocata in tempo reale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.15 1 5.85L12 16.9l-5.25 2.8 1-5.85L3.5 9.7l5.9-.9z"></path></svg><span>Preferiti</span></button></nav>
 <div id="app"></div>
 </div>
+<template id="tpl-bol">
+<div class="lay">
+  <aside class="side" id="side" aria-label="Filtri"></aside>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>La Bolletta <small id="tb-left"></small></h1>
+        <div class="sub num" id="tb-right"></div>
+      </div>
+      <div class="hr">
+        <section class="kpis" id="kpis" aria-label="Numeri principali"></section>
+      </div>
+    </header>
+    <div class="banner" id="banner" hidden></div>
+    <div id="b-body" class="body"></div>
+  </div>
+</div>
+</template>
+
 <template id="tpl-idee">
 <div class="lay">
   <aside class="side" id="side" aria-label="Filtri"></aside>
@@ -1314,7 +1383,7 @@ function fileDB() {
       if (S.again) schedule(50); else if (keep) schedule(POLL);
     }
   }
-  function redraw() { const a = window.APP.active, app = a && window.APP.apps[a]; if (app && (a === "idee" || a === "stats" || a === "pref") && !document.querySelector("#overlay:not([hidden])")) app.render(); }
+  function redraw() { const a = window.APP.active, app = a && window.APP.apps[a]; if (app && (a === "idee" || a === "stats" || a === "pref" || a === "bol") && !document.querySelector("#overlay:not([hidden])")) app.render(); }
   document.addEventListener("visibilitychange", () => { if (!document.hidden && S.want.size) tick(); });
 
   // ---------- lettura di una partita ESPN ----------
@@ -3082,6 +3151,41 @@ function fileDB() {
     return h;
   }
 
+  // LA BOLLETTA (dal 24/11/2026)
+  function contentBol() {
+    let h = '<nav class="lgtoc">' + [["bimp", "Impostazioni"], ["bsce", "Come sceglie"], ["bquo", "Quote"], ["bcon", "Totali e conviene"], ["bgio", "L'ho giocata"], ["bsto", "Storico bollette"]]
+      .map(([i, t]) => '<button type="button" data-lgto="' + i + '">' + t + "</button>").join("") + "</nav>";
+    h += sec("bimp", "IMPOSTA LA TUA BOLLETTA",
+      row("<b>PARTITE</b>", "Quante partite vuoi nella bolletta (da 1 a 10). Ogni partita in più abbassa la probabilità di prenderla.") +
+      row("<b>QUOTA MINIMA PER PARTITA</b>", "Ogni partita della bolletta deve avere una quota almeno così (di partenza 1,20).") +
+      row("<b>IMPORTO</b>", "Quanto giochi: serve per calcolare vincita e utile.") +
+      row("<b>Dove restano</b>", "Le scelte restano solo su questo dispositivo e in questo browser."));
+    h += sec("bsce", "COME SCEGLIE LE PARTITE",
+      row("<b>Per ogni partita</b>", "Guarda le 13 giocate provate nei Pronostici (1X, X2, Over 1,5, Over 0,5 2T, Multigol 1-3 PT…) e prende la <b>più probabile</b> (stima combinata) che ha quota almeno la tua minima e <b>nessun controllo contro (✗)</b>.") +
+      row("<b>Quali partite</b>", "Tiene le partite con la stima più alta, fino al numero che hai scelto. Una sola giocata per partita.") +
+      row('<span class="tag safe">SICURO</span> <span class="tag w">PRONOSTICO</span>', "SICURO = la giocata ha il bollino dei Pronostici. PRONOSTICO = è anche tra i pronostici del giorno.") +
+      row("<b>×</b>", "Scarta una partita che non ti convince: al suo posto entra la migliore delle altre. \"Rimettile\" le fa tornare.") +
+      row('<span class="tag o">GIÀ INIZIATA</span>', "La partita è già cominciata: non puoi più giocarla. Tocca \"Rifalla solo con le partite non ancora iniziate\"."));
+    h += sec("bquo", "LE QUOTE",
+      row("<b>1,30</b>", "Quota vera del bookmaker (DraftKings, da ESPN): c'è per 1X2, doppie e Over/Under principali.") +
+      row("<b>~1,30</b>", "Quota probabile: stimata dalle quote del bookmaker per le giocate che ESPN non quota (es. Over 0,5 2T). Può essere diversa dal tuo bookmaker.") +
+      row('<input class="cq" type="number" placeholder="1,30" disabled style="width:64px">', "Scrivi la quota del <b>tuo</b> bookmaker: quota totale, vincita, utile e giudizio si ricalcolano con quella. Se scendi sotto la quota minima, la partita esce dalla bolletta."));
+    h += sec("bcon", "TOTALI E GIUDIZIO",
+      row("<b>QUOTA TOTALE</b>", "Le quote moltiplicate tra loro (es. 1,25 × 1,30 × 1,22 = 1,98).") +
+      row("<b>PROBABILITÀ</b>", "Le stime moltiplicate tra loro: quante volte su 100 prenderesti questa bolletta (es. 80% × 80% × 80% = 51%, circa 1 volta su 2).") +
+      row("<b>VINCITA · UTILE</b>", "Vincita = importo × quota totale. Utile = vincita − importo.") +
+      row('<span class="cv cv-go">CONVIENE</span> <span class="cv cv-small">AL LIMITE</span> <span class="cv cv-no">NON CONVIENE</span>', "Confronta la quota totale con quella che servirebbe (100 ÷ probabilità, più il 3%). Sotto quella quota, giocandola sempre, alla lunga si perde, anche se oggi la vinci."));
+    h += sec("bgio", "✓ L'HO GIOCATA",
+      row("<b>Salva</b>", "Salva la bolletta così com'è adesso (partite, quote, importo) nello STORICO BOLLETTE. In alto nella scheda del giorno compare \"LA TUA BOLLETTA GIOCATA\" con il live.") +
+      row("<b>Live</b>", "Durante le partite ogni giocata mostra PRESA / PERSA / PER ORA ✓ / PER ORA ✗ / IN CORSO, e la bolletta VINTA, PERSA o IN CORSO."));
+    h += sec("bsto", "STORICO BOLLETTE",
+      row("<b>In alto</b>", "Bollette giocate, vinte (e % sulle decise), quanto hai puntato e l'utile (vincite meno importi), con il rendimento in %.") +
+      row("<b>MOSTRA</b>", "Tutte, solo vinte, solo perse o in attesa.") +
+      row("<b>×</b>", "Toglie una bolletta dallo storico (per esempio se l'hai salvata per sbaglio o una partita è stata rinviata).") +
+      row("<b>Dove resta</b>", "Lo storico è salvato solo su questo dispositivo: telefono e computer hanno storici separati."));
+    return h;
+  }
+
   function ov() {
     let o = $("lg-ov");
     if (!o) {
@@ -3098,9 +3202,9 @@ function fileDB() {
     return o;
   }
   function open(kind) {
-    const o = ov(), st = kind === "stats", cl = kind === "classi";
-    $("lg-title").textContent = "LEGENDA · COME SI LEGGE LA PAGINA " + (st ? "STATISTICHE" : cl ? "CLASSIFICHE" : "PRONOSTICI");
-    $("lg-body").innerHTML = st ? contentStats() : cl ? contentClassi() : content(); o.hidden = false; $("lg-body").scrollTop = 0;
+    const o = ov(), st = kind === "stats", cl = kind === "classi", bo = kind === "bol";
+    $("lg-title").textContent = "LEGENDA · COME SI LEGGE LA PAGINA " + (st ? "STATISTICHE" : cl ? "CLASSIFICHE" : bo ? "LA BOLLETTA" : "PRONOSTICI");
+    $("lg-body").innerHTML = st ? contentStats() : cl ? contentClassi() : bo ? contentBol() : content(); o.hidden = false; $("lg-body").scrollTop = 0;
   }
   document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest('[data-act="legend"]'); if (b) { e.preventDefault(); open(b.dataset.lg); } });
   window.APP = window.APP || {};
@@ -3501,9 +3605,299 @@ function fileDB() {
 })();
 </script>
 <script>
+// LA BOLLETTA (dal 24/11/2026, chiesta dall'utente): la schedina del giorno composta dalla pagina con i nostri calcoli.
+// L'utente sceglie quante partite, la quota minima per partita e l'importo. Per ogni partita del giorno la pagina prende,
+// tra le giocate provate da controlli.py (fixtures.adv), la più probabile con quota >= minima e senza controlli contro (✗);
+// poi tiene le N partite con la stima più alta. Quota: quella scritta dall'utente, se no quella vera del bookmaker, se no la probabile (~).
+// Scelte, quote scritte, partite scartate e bollette giocate (STORICO BOLLETTE) restano solo nel browser (localStorage "gold.bol").
 (function () {
   "use strict";
-  const names = ["idee", "stats", "classi", "storico", "pref"], alias = { pronostici: "idee", statistiche: "stats", classifiche: "classi", preferiti: "pref" }, box = document.getElementById("app");
+  const ME = "bol", on = () => window.APP.active === ME, KEY = "gold.bol";
+  const DEF = { n: 3, qmin: 1.2, imp: 10 }, EDGE = 1.03;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const plain = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
+  const nf = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const q2 = (n) => nf.format(Math.round(Number(n) * 100) / 100);
+  const eur = (n) => nf.format(Math.round(Number(n) * 100) / 100) + " €";
+  const sgn = (n) => (n > 0.004 ? "+" : n < -0.004 ? "−" : "") + nf.format(Math.abs(Math.round(n * 100) / 100)) + " €";
+  const romeFmt = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+  const nowRome = () => { const s = romeFmt.format(new Date()); return { date: s.slice(0, 10), time: s.slice(11, 16) }; };
+  const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  // le partite prima delle 06:00 stanno nel giorno prima ("notte"), come nel resto della pagina
+  const vdayOf = (date, time) => (time && time < "06:00" ? addDays(date, -1) : date);
+  const today = () => { const n = nowRome(); return vdayOf(n.date, n.time); };
+  const wd = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+  const dayLab = (d) => { const t = today(); return (d === t ? "oggi · " : d === addDays(t, 1) ? "domani · " : d === addDays(t, -1) ? "ieri · " : "") + wd.format(new Date(d + "T12:00:00Z")); };
+  const begun = (x) => { if (!x.date || !x.time) return false; const n = nowRome(); return x.date + " " + x.time <= n.date + " " + n.time; };
+
+  // ---------- archivio nel browser ----------
+  let MEM = null;
+  function st() {
+    if (MEM) return MEM;
+    try { MEM = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { MEM = {}; }
+    if (!MEM.q || typeof MEM.q !== "object") MEM.q = {};
+    if (!MEM.skip || typeof MEM.skip !== "object") MEM.skip = {};
+    if (!Array.isArray(MEM.hist)) MEM.hist = [];
+    return MEM;
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(st())); return true; } catch (e) { toast("Non riesco a salvare: il browser non lo permette (navigazione privata?)"); return false; }
+  }
+  const nSet = () => { const v = Math.round(Number(st().n)); return v >= 1 && v <= 10 ? v : DEF.n; };
+  const qSet = () => { const v = Number(st().qmin); return v > 1 ? v : DEF.qmin; };
+  const iSet = () => { const v = Number(st().imp); return v > 0 ? v : DEF.imp; };
+  const userQ = (k) => (Number(st().q[k]) > 1 ? Number(st().q[k]) : 0);
+
+  // ---------- dati ----------
+  const S = { tab: "day", day: null, fresh: false, show: "all", fixtures: [], picks: [], ready: false, err: "" };
+  const keyOf = (f, m) => f.id + "|" + m;
+  function quote(f, c) {
+    const u = userQ(keyOf(f, c.m));
+    if (u) return { q: u, src: "tua" };
+    if (Number(c.q) > 1) return { q: Number(c.q), src: "book" };
+    if (Number(c.qe) > 1) return { q: Number(c.qe), src: "stima" };
+    return { q: 0, src: "" };
+  }
+  const item = (x) => ({ date: x.date, time: x.time, comp: x.comp, home: x.home, away: x.away, links: x.links || [] });
+  const slimLinks = (ls) => (Array.isArray(ls) ? ls : []).filter((l) => l && /gameId\/\d+/.test(l.u || "")).map((l) => ({ t: l.t, u: l.u }));
+  const days = () => {
+    const t = today();
+    return Array.from(new Set(S.fixtures.filter((f) => f.adv && Array.isArray(f.adv.c) && f.adv.c.length).map((f) => vdayOf(f.date, f.time)).filter((d) => d >= t))).sort();
+  };
+
+  // LA BOLLETTA: per ogni partita la giocata più probabile con quota >= minima, poi le N partite migliori
+  function build(day) {
+    const qmin = qSet(), n = nSet(), skip = new Set(st().skip[day] || []);
+    const pk = new Set(S.picks.filter((p) => p && p.date && vdayOf(p.date, p.time) === day).map((p) => plain(p.match) + "|" + plain(p.market)));
+    const fx = S.fixtures.filter((f) => vdayOf(f.date, f.time) === day && f.adv && Array.isArray(f.adv.c));
+    const per = []; let nBegun = 0;
+    for (const f of fx) {
+      if (skip.has(f.id)) continue;
+      const bg = begun(f);
+      if (bg) nBegun++;
+      if (S.fresh && bg) continue;
+      let best = null;
+      for (const c of f.adv.c) {
+        const est = Number(c.est);
+        if (!(est > 0) || String(c.v || "").includes("x")) continue;  // nessun controllo contro
+        const Q = quote(f, c);
+        if (!Q.q || Q.q < qmin) continue;
+        const o = { f, m: c.m, est, safe: !!c.safe, q: Q.q, src: Q.src, key: keyOf(f, c.m), begun: bg, pick: pk.has(plain(f.home + " - " + f.away) + "|" + plain(c.m)) };
+        if (!best || o.est > best.est || (o.est === best.est && (o.safe > best.safe || (o.safe === best.safe && o.q > best.q)))) best = o;
+      }
+      if (best) per.push(best);
+    }
+    per.sort((a, b) => b.est - a.est || b.safe - a.safe || b.q - a.q);
+    const legs = per.slice(0, n).sort((a, b) => (a.f.time < "06:00" ? "1" : "0").concat(a.f.time).localeCompare((b.f.time < "06:00" ? "1" : "0").concat(b.f.time)));
+    return { legs, n, qmin, imp: iSet(), found: per.length, skipped: skip.size, nBegun, total: fx.length };
+  }
+  function totals(legs, imp) {
+    const qt = legs.reduce((a, l) => a * l.q, 1), p = legs.reduce((a, l) => a * l.est / 100, 1);
+    return { qt, p, win: imp * qt, net: imp * qt - imp, ev: p * qt, need: Math.ceil(EDGE * 100 / p) / 100 };
+  }
+  function judge(T) {
+    if (T.ev >= EDGE) return { k: "go", t: "CONVIENE", why: "La quota totale è più alta di quella che serve (" + q2(T.need) + "): alla lunga questa bolletta guadagna." };
+    if (T.ev >= 0.95) return { k: "small", t: "AL LIMITE", why: "Per essere conveniente servirebbe una quota totale di almeno " + q2(T.need) + ". Se la giochi, punta poco." };
+    return { k: "no", t: "NON CONVIENE", why: "Per essere conveniente servirebbe una quota totale di almeno " + q2(T.need) + ": con queste quote, alla lunga, si perde. Prova a scrivere le quote del tuo bookmaker o a cambiare le scelte." };
+  }
+  const vtag = (k, t) => '<span class="cv cv-' + k + '">' + esc(t) + "</span>";
+  const once = (p) => (p >= 0.95 ? "quasi sempre" : p >= 0.15 ? "circa " + Math.round(p * 10) + " volte su 10" : "circa 1 volta su " + Math.round(1 / p));
+
+  // stato live di una giocata e di una bolletta
+  function legState(x) {
+    const LV = window.APP.live; if (!LV) return { L: null, s: null };
+    const L = LV.get(item(x));
+    return { L, s: L && L.state !== "pre" ? LV.market(x.m, L) : null };
+  }
+  function slipState(states) {
+    if (states.some((s) => s === "L")) return "L";
+    if (states.length && states.every((s) => s === "W")) return "W";
+    if (states.some((s) => s)) return "n";
+    return "pre";
+  }
+  const STX = { W: ["W", "✓ VINTA"], L: ["L", "✗ PERSA"], n: ["n", "IN CORSO"] };
+  const sTag = (s, LV) => (s === "pre" || !LV ? '<span class="res p">DA GIOCARE</span>' : LV.tag(STX[s][0], STX[s][1]));
+  const legTag = (s, LV) => (!s || !LV ? "" : LV.tag(s, s === "W" ? "✓ PRESA" : s === "L" ? "✗ PERSA" : s === "w" ? "PER ORA ✓" : s === "l" ? "PER ORA ✗" : "IN CORSO"));
+
+  // ---------- pezzi di pagina ----------
+  const k = (l, v, c, n) => '<div class="k"><span class="l">' + l + '</span><span class="v num ' + (c || "") + '">' + v + "</span>" + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+  const tabs = () => '<div class="tabrow"><nav class="tabs" role="tablist">' + [["day", "LA BOLLETTA DEL GIORNO"], ["hist", "STORICO BOLLETTE · " + st().hist.length]].map(([t, l]) =>
+    '<button class="tab" role="tab" type="button" data-bact="tab" data-c="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + "</button>").join("") +
+    '</nav><button type="button" class="legbtn" data-act="legend" data-lg="bol" title="Legenda: come funziona la bolletta" aria-label="Legenda">?</button></div>';
+  const srcTxt = (l) => (l.src === "tua" ? "la tua quota" : l.src === "book" ? "bookmaker" : "stimata");
+  const qShow = (l) => (l.src === "stima" ? "~" : "") + q2(l.q);
+  function legRow(l, i, LV, editable) {
+    const f = l.f || l, U = window.APP.ui, S1 = legState({ date: f.date, time: f.time, comp: f.comp, home: f.home, away: f.away, links: f.links, m: l.m }), live = S1.L && S1.L.state !== "pre";
+    const tags = (l.safe ? ' <span class="tag safe">SICURO</span>' : "") + (l.pick ? ' <span class="tag w" title="è anche tra i pronostici del giorno">PRONOSTICO</span>' : "") + (editable && l.begun && !live ? ' <span class="tag o">GIÀ INIZIATA</span>' : "");
+    return '<tr class="row"><td class="c bn num">' + (i + 1) + '</td><td class="tm">' + esc(f.time || "—") + (f.time && f.time < "06:00" ? ' <span class="mut">notte</span>' : "") + "</td>" +
+      '<td class="bm"><b>' + esc(f.home) + " – " + esc(f.away) + '</b><span class="mut bcp">' + (U ? U.flag(f.comp) : "") + esc(U ? U.tc(f.comp) : f.comp) + '<span class="btm"> · ' + esc(f.time || "") + "</span></span></td>" +
+      '<td class="bg"><b>' + esc(l.m) + "</b>" + tags + "</td>" +
+      '<td class="c num bp"><b>' + l.est + "%</b></td>" +
+      '<td class="c bq">' + (editable ? '<input class="cq" type="number" inputmode="decimal" step="0.01" min="1.01" data-bq="' + esc(l.key) + '" value="' + (l.src === "tua" ? l.q : "") + '" placeholder="' + q2(l.q) + '" title="Scrivi la quota del tuo bookmaker"><span class="mut bqs">' + esc(srcTxt(l)) + (l.src !== "tua" ? " " + qShow(l) : "") + "</span>" : '<b class="num">' + qShow(l) + "</b>") + "</td>" +
+      '<td class="c bes">' + (live ? '<span class="num">' + esc(LV.scoreTxt(S1.L)) + "</span> " + LV.clockTag(S1.L) + " " + legTag(S1.s, LV) : '<span class="mut">' + (begun(f) ? "—" : "da giocare") + "</span>") + "</td>" +
+      (editable ? '<td class="r bxc"><button type="button" class="bx" data-bact="skip" data-c="' + esc(f.id) + '" title="Scarta questa partita: al suo posto entra la migliore delle altre" aria-label="Scarta">×</button></td>' : "") + "</tr>";
+  }
+  const sum = (T, imp, extra) => '<div class="bsum">' +
+    '<div class="bsk"><span class="l">QUOTA TOTALE</span><span class="v num">' + q2(T.qt) + "</span></div>" +
+    '<div class="bsk"><span class="l">PROBABILITÀ</span><span class="v num">' + Math.round(T.p * 100) + '%</span><span class="n">' + esc(once(T.p)) + "</span></div>" +
+    '<div class="bsk"><span class="l">IMPORTO</span><span class="v num">' + eur(imp) + "</span></div>" +
+    '<div class="bsk"><span class="l">VINCITA</span><span class="v num">' + eur(imp * T.qt) + "</span></div>" +
+    '<div class="bsk up"><span class="l">' + (extra === "" ? "UTILE SE VINTA" : "UTILE") + '</span><span class="v num">' + sgn(imp * T.qt - imp) + "</span></div>" + (extra || "") + "</div>";
+
+  // ---------- scheda LA BOLLETTA DEL GIORNO ----------
+  function renderDay(LV, U) {
+    const ds = days(), t = today();
+    if (!S.day || !ds.includes(S.day)) S.day = ds.includes(t) ? t : ds[0] || null;
+    $("side").innerHTML = U.side((ds.length ? U.group("GIORNO", U.pills("bday", ds.map((d) => [d, d === t ? "OGGI" : d === addDays(t, 1) ? "DOMANI" : esc(wd.format(new Date(d + "T12:00:00Z")))]), (v) => v === S.day)) : "") +
+      U.group("COME FUNZIONA", '<p class="mut favtip">Scegli quante partite, la quota minima per partita e l\'importo. La pagina compone la bolletta con le giocate più probabili secondo i nostri calcoli (stima combinata, controlli, quote).<br><br>Tocca <b>×</b> per scartare una partita: entra la migliore delle altre. Scrivi la quota del tuo bookmaker per avere vincita e utile esatti.<br><br>Scelte e bollette giocate restano solo su questo dispositivo.</p>'), S.day ? dayLab(S.day) : "");
+    const set = '<div class="panel bset"><div class="bsh">IMPOSTA LA TUA BOLLETTA</div><div class="bsr">' +
+      '<label><span class="lab">PARTITE</span><input class="cq" type="number" inputmode="numeric" step="1" min="1" max="10" data-bset="n" value="' + nSet() + '"></label>' +
+      '<label><span class="lab">QUOTA MINIMA PER PARTITA</span><input class="cq" type="number" inputmode="decimal" step="0.01" min="1.01" data-bset="qmin" value="' + qSet() + '"></label>' +
+      '<label><span class="lab">IMPORTO</span><span class="beur"><input class="cq" type="number" inputmode="decimal" step="0.5" min="0.5" data-bset="imp" value="' + iSet() + '"> €</span></label>' +
+      '</div><div class="mut bsn">Le scelte restano su questo dispositivo. Cambiale quando vuoi: la bolletta si rifà subito.</div></div>';
+    let h = tabs();
+    if (!S.ready) { $("b-body").innerHTML = h + '<div class="panel"><div class="empty">Carico le partite…</div></div>'; return; }
+    if (S.err) { $("b-body").innerHTML = h + '<div class="panel"><div class="empty">' + esc(S.err) + "</div></div>"; return; }
+    if (!S.day) {
+      $("kpis").innerHTML = ""; $("tb-left").textContent = ""; $("tb-right").textContent = "";
+      $("b-body").innerHTML = h + set + '<div class="panel"><div class="empty">Non ci sono ancora partite analizzate per oggi o per i prossimi giorni.<br>Chiedi a Claude i pronostici del giorno: la bolletta si compone da sola.</div></div>'; return;
+    }
+    const B = build(S.day), legs = B.legs, T = totals(legs, B.imp), J = judge(T);
+    $("tb-left").textContent = "· " + dayLab(S.day);
+    $("tb-right").textContent = B.total + " partite analizzate · " + B.found + " con una giocata a quota da " + q2(B.qmin) + " in su";
+    $("kpis").innerHTML = legs.length ? k("QUOTA TOTALE", q2(T.qt)) + k("PROBABILITÀ", Math.round(T.p * 100) + "%", "", once(T.p)) + k("VINCITA", eur(T.win), "", "con " + eur(B.imp)) + k("UTILE", sgn(T.net), "up") : "";
+    if (LV) LV.need(legs.map((l) => item(l.f)).concat(st().hist.filter((b) => b.day === S.day).flatMap((b) => b.legs.map(item))));
+    h += set;
+    // le bollette di questo giorno già giocate
+    const mine = st().hist.filter((b) => b.day === S.day);
+    if (mine.length) h += mine.map((b) => histCard(b, LV, true)).join("");
+    h += '<div class="panel bcard"><div class="bch"><span class="bct">🎟 LA BOLLETTA DEL GIORNO</span><span class="mut">' + esc(dayLab(S.day)) + " · " + legs.length + (legs.length === 1 ? " partita" : " partite") + " · quota minima " + q2(B.qmin) + " per partita</span></div>";
+    if (!legs.length) {
+      h += '<div class="empty">Nessuna partita ha una giocata con quota da ' + q2(B.qmin) + " in su" + (B.skipped ? " (" + B.skipped + " scartate da te)" : "") + ".<br>Abbassa la quota minima, oppure scrivi le quote del tuo bookmaker nei Pronostici.</div>";
+    } else {
+      if (legs.length < B.n) h += '<div class="bwarn">Oggi solo <b>' + legs.length + "</b> " + (legs.length === 1 ? "partita ha" : "partite hanno") + " una giocata con quota da " + q2(B.qmin) + " in su (ne avevi chieste " + B.n + "). Abbassa la quota minima per averne di più.</div>";
+      h += '<div class="gtw"><table class="gt bt"><thead><tr><th class="c">#</th><th>ORA</th><th>PARTITA</th><th>GIOCATA</th><th class="c">PROB.</th><th class="c">QUOTA</th><th class="c">ESITO</th><th></th></tr></thead><tbody>' +
+        legs.map((l, i) => legRow(l, i, LV, true)).join("") + "</tbody></table></div>";
+      const sts = legs.map((l) => legState({ date: l.f.date, time: l.f.time, comp: l.f.comp, home: l.f.home, away: l.f.away, links: l.f.links, m: l.m }).s);
+      const ss = slipState(sts), played = mine.some((b) => sameSlip(b, legs));
+      h += sum(T, B.imp, '<div class="bsk"><span class="l">ESITO</span><span class="v">' + sTag(ss, LV) + "</span>" + (ss !== "pre" ? '<span class="n">' + sts.filter((s) => s === "W").length + " su " + legs.length + " prese</span>" : "") + "</div>");
+      h += '<div class="bjud">' + vtag(J.k, J.t) + '<span>' + esc(J.why) + (legs.some((l) => l.src === "stima") ? " Le quote con ~ sono stimate dalle quote del bookmaker: scrivi le tue per il conto esatto." : "") + "</span></div>";
+      h += '<div class="bfoot">' + (played ? '<span class="tag w">✓ GIÀ NEL TUO STORICO</span>' : '<button type="button" class="btn primary" data-bact="play">✓ L\'HO GIOCATA</button>') +
+        '<span class="mut">Salva la bolletta nello STORICO BOLLETTE con quote e importo di adesso: lì vedi se l\'hai vinta e l\'utile.</span></div>';
+    }
+    const notes = [];
+    if (B.skipped) notes.push("Hai scartato " + B.skipped + (B.skipped === 1 ? " partita" : " partite") + '. <button type="button" class="linkbtn" data-bact="unskip">Rimettile</button>');
+    if (B.nBegun && !S.fresh && legs.some((l) => l.begun)) notes.push('Alcune partite sono già iniziate. <button type="button" class="linkbtn" data-bact="fresh">Rifalla solo con le partite non ancora iniziate</button>');
+    if (S.fresh) notes.push('Sto usando solo le partite non ancora iniziate. <button type="button" class="linkbtn" data-bact="fresh">Usa tutte le partite del giorno</button>');
+    if (notes.length) h += '<div class="bnotes">' + notes.map((x) => "<div>" + x + "</div>").join("") + "</div>";
+    h += "</div>";
+    h += '<div class="note">Come sceglie: per ogni partita prende la giocata <b>più probabile</b> (stima combinata dei Pronostici) con quota almeno ' + q2(B.qmin) + " e nessun controllo contro (✗); poi tiene le " + B.n + " partite con la stima più alta. Probabilità della bolletta = prodotto delle stime. " +
+      "⏳ Prima di giocare guarda le formazioni ufficiali. ⚠ Gioca solo soldi che puoi permetterti di perdere: ogni partita in più abbassa la probabilità.</div>";
+    $("b-body").innerHTML = h;
+  }
+  const sameSlip = (b, legs) => b.legs.length === legs.length && legs.every((l) => b.legs.some((x) => x.fid === l.f.id && x.m === l.m));
+
+  // ---------- scheda STORICO BOLLETTE ----------
+  function evalSlip(b, LV) {
+    const sts = b.legs.map((x) => legState(x).s), s = slipState(sts);
+    return { sts, s, won: sts.filter((x) => x === "W").length };
+  }
+  function histCard(b, LV, small) {
+    const E = evalSlip(b, LV), T = { qt: b.qt, p: b.p };
+    const res = E.s === "W" ? '<b class="up num">' + sgn(b.imp * b.qt - b.imp) + "</b>" : E.s === "L" ? '<b class="down num">' + sgn(-b.imp) + "</b>" : '<span class="mut">in attesa</span>';
+    let h = '<div class="panel bcard bh' + (E.s === "W" ? " won" : E.s === "L" ? " lost" : "") + '"><div class="bch"><span class="bct">' + (small ? "🎟 LA TUA BOLLETTA GIOCATA" : "🎟 " + esc(dayLab(b.day).toUpperCase())) + "</span>" +
+      '<span class="mut">' + b.legs.length + (b.legs.length === 1 ? " partita" : " partite") + " · giocata il " + esc(new Date(b.at).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })) + "</span>" +
+      '<span class="bhr">' + sTag(E.s, LV) + " " + res + '<button type="button" class="bx" data-bact="del" data-c="' + esc(String(b.id)) + '" title="Togli dallo storico" aria-label="Togli dallo storico">×</button></span></div>';
+    h += '<div class="gtw"><table class="gt bt"><thead><tr><th class="c">#</th><th>ORA</th><th>PARTITA</th><th>GIOCATA</th><th class="c">PROB.</th><th class="c">QUOTA</th><th class="c">ESITO</th></tr></thead><tbody>' +
+      b.legs.map((x, i) => legRow(Object.assign({}, x, { f: x }), i, LV, false)).join("") + "</tbody></table></div>";
+    return h + sum(T, b.imp, "") + "</div>";
+  }
+  function renderHist(LV, U) {
+    const H = st().hist.slice().sort((a, b) => b.day.localeCompare(a.day) || b.at - a.at);
+    if (LV) LV.need(H.flatMap((b) => b.legs.map(item)), true);
+    const ev = H.map((b) => ({ b, E: evalSlip(b, LV) })), dec = ev.filter((x) => x.E.s === "W" || x.E.s === "L");
+    const won = ev.filter((x) => x.E.s === "W"), lost = ev.filter((x) => x.E.s === "L");
+    const staked = dec.reduce((a, x) => a + x.b.imp, 0), back = won.reduce((a, x) => a + x.b.imp * x.b.qt, 0), net = back - staked;
+    const SHOW = [["all", "Tutte", ev.length], ["W", "Vinte", won.length], ["L", "Perse", lost.length], ["open", "In attesa", ev.length - dec.length]];
+    $("side").innerHTML = U.side(U.group("MOSTRA", U.pills("bshow", SHOW.map((x) => [x[0], x[1] + ' <span class="mut num">' + x[2] + "</span>"]), (v) => S.show === v)) +
+      U.group("COME FUNZIONA", '<p class="mut favtip">Qui finiscono le bollette che salvi con <b>✓ L\'HO GIOCATA</b>. Gli esiti arrivano in tempo reale da ESPN.<br><br>Lo storico resta solo su questo dispositivo e in questo browser.</p>'), SHOW.find((x) => x[0] === S.show)[1].toLowerCase());
+    $("tb-left").textContent = H.length ? "· " + H.length + (H.length === 1 ? " bolletta" : " bollette") : "";
+    $("tb-right").textContent = "salvate su questo dispositivo";
+    $("kpis").innerHTML = k("GIOCATE", String(H.length), "", dec.length + " decise") + k("VINTE", String(won.length), won.length ? "up" : "", dec.length ? Math.round(100 * won.length / dec.length) + "% delle decise" : "") +
+      k("PUNTATO", eur(staked), "", "sulle decise") + k("UTILE", sgn(net), net > 0 ? "up" : net < 0 ? "down" : "", dec.length ? "rendimento " + (staked ? (net >= 0 ? "+" : "") + Math.round(100 * net / staked) + "%" : "—") : "");
+    let h = tabs();
+    if (!H.length) { $("b-body").innerHTML = h + '<div class="panel"><div class="empty">Nessuna bolletta nello storico.<br>Nella scheda <b>LA BOLLETTA DEL GIORNO</b> tocca <b>✓ L\'HO GIOCATA</b> quando la giochi: qui vedrai se l\'hai vinta e quanto hai guadagnato.</div></div>'; return; }
+    const shown = ev.filter((x) => S.show === "all" || (S.show === "open" ? !(x.E.s === "W" || x.E.s === "L") : x.E.s === S.show));
+    h += shown.length ? shown.map((x) => histCard(x.b, LV, false)).join("") : '<div class="panel"><div class="empty">Nessuna bolletta in questo gruppo.</div></div>';
+    $("b-body").innerHTML = h + '<div class="note">Utile = vincite delle bollette vinte meno gli importi di tutte quelle decise. Le bollette ancora in corso non contano. Una partita rinviata resta "in attesa": toglila con × se serve.</div>';
+  }
+
+  function render() {
+    if (!on()) return;
+    const LV = window.APP.live, U = window.APP.ui;
+    if (S.tab === "hist") renderHist(LV, U); else renderDay(LV, U);
+  }
+
+  // ---------- azioni ----------
+  let toastT = null;
+  function toast(msg) { const t = $("toast"); if (!t) return; t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200); }
+  const num = (t) => Number(String(t.value).replace(",", "."));
+  document.addEventListener("change", (e) => {
+    if (!on()) return;
+    const t = e.target; if (!t || !t.matches) return;
+    if (t.matches("[data-bset]")) {
+      const f = t.dataset.bset, v = num(t);
+      if (f === "n") st().n = v >= 1 && v <= 10 ? Math.round(v) : null;
+      else if (f === "qmin") st().qmin = v > 1 ? v : null;
+      else if (f === "imp") st().imp = v > 0 ? Math.round(v * 100) / 100 : null;
+      save(); render();
+    } else if (t.matches("[data-bq]")) {
+      const v = num(t); if (v > 1) st().q[t.dataset.bq] = v; else delete st().q[t.dataset.bq]; save(); render();
+    }
+  });
+  document.addEventListener("click", (ev) => {
+    if (!on()) return;
+    const b = ev.target.closest("[data-bact], [data-act]"); if (!b || !b.closest("#b-body, #side")) return;
+    const a = b.dataset.bact || b.dataset.act, c = b.dataset.c;
+    if (a === "tab") { S.tab = c; render(); }
+    else if (a === "bday") { S.day = c; S.fresh = false; render(); }
+    else if (a === "bshow") { S.show = c || "all"; render(); }
+    else if (a === "skip") { const L = st().skip[S.day] || []; if (!L.includes(c)) L.push(c); st().skip[S.day] = L; save(); render(); }
+    else if (a === "unskip") { delete st().skip[S.day]; save(); render(); }
+    else if (a === "fresh") { S.fresh = !S.fresh; render(); }
+    else if (a === "play") {
+      const B = build(S.day), T = totals(B.legs, B.imp);
+      if (!B.legs.length) return;
+      st().hist.push({ id: Date.now(), day: S.day, at: Date.now(), imp: B.imp, qt: T.qt, p: T.p,
+        legs: B.legs.map((l) => ({ fid: l.f.id, date: l.f.date, time: l.f.time, comp: l.f.comp, home: l.f.home, away: l.f.away, links: slimLinks(l.f.links), m: l.m, q: l.q, src: l.src, est: l.est, safe: l.safe, pick: l.pick })) });
+      if (save()) toast("Bolletta salvata nello STORICO BOLLETTE ✓");
+      render();
+    } else if (a === "del") {
+      const i = st().hist.findIndex((x) => String(x.id) === c);
+      if (i >= 0 && window.confirm("Tolgo questa bolletta dallo storico?")) { st().hist.splice(i, 1); save(); render(); }
+    }
+  });
+  window.addEventListener("storage", (e) => { if (e.key === KEY) { MEM = null; render(); } });
+  // ridisegno ogni minuto (etichette "già iniziata", live) se la scheda è aperta e non stai scrivendo in una casella
+  setInterval(() => { const a = document.activeElement; if (on() && !document.hidden && !(a && a.matches && a.matches("input"))) render(); }, 60000);
+
+  window.APP.apps[ME] = { render, close() {} };
+  (async function start() {
+    let db = null; try { db = await window.APP.use("db"); } catch (e) { db = null; }
+    if (!db) { S.ready = true; S.err = "I dati non sono raggiungibili. Ricarica la pagina tra qualche minuto."; render(); return; }
+    const docs = (s) => s.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+    let got = 0; const done = () => { if (++got >= 2) S.ready = true; render(); };
+    const fail = () => { S.ready = true; S.err = "Errore nel leggere i dati. Ricarica la pagina tra qualche minuto."; render(); };
+    db.collection("fixtures").onSnapshot((s) => { S.fixtures = docs(s); done(); }, fail);
+    db.collection("picks").onSnapshot((s) => { S.picks = docs(s); done(); }, () => done());
+  })();
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  const names = ["bol", "idee", "stats", "classi", "storico", "pref"], alias = { bolletta: "bol", pronostici: "idee", statistiche: "stats", classifiche: "classi", preferiti: "pref" }, box = document.getElementById("app");
   function pick() {
     const h0 = location.hash.replace("#", ""), h = alias[h0] || h0;
     if (names.includes(h)) return h;
