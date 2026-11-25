@@ -939,6 +939,17 @@ table.gt.bt td.bes .lv { margin-left: 3px; }
 .hmoney .ph .r { font-size: 11px; }
 .bsk.down .v { color: var(--down); }
 .hsum td.up { color: var(--up); } .hsum td.down { color: var(--down); }
+/* MARCATORI (25/11/2026): scheda MARCATORI di Pronostici, semafori e dettagli di ogni marcatore (strumenti/marcatori.js) */
+.mcg { margin-top: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; }
+.mcg .nwb:first-child, .mcg .nwb:last-child { grid-column: 1 / -1; }
+.mcg .bsum.mst { padding: 2px 0; border: 0; background: none; gap: 6px 24px; }
+.mcg .bsum.mst .bsk .v { font-size: 15px; }
+.mlast { flex-wrap: wrap; }
+.mcg .mlast .nwg { min-width: 46px; }
+.mcg .mlast .nwg i { width: 32px; font-size: 9.5px; }
+.mcg .mlast .nwg b { font-size: 10px; line-height: 1; min-height: 11px; }
+table.gt.msc td.mk.sc b { font-weight: 700; color: #111827; }
+@media (max-width: 760px) { .mcg { grid-template-columns: minmax(0, 1fr); } .mcg .bsum.mst { gap: 6px 16px; } }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1490,6 +1501,80 @@ function fileDB() {
 })();
 </script>
 <script>
+/* MARCATORI (25/11/2026, chiesta dall'utente): semafori, dettagli e stima di ogni marcatore.
+   I numeri li calcola strumenti/marcatori.py (campo chk dei marcatori, ideas). Qui c'è solo il disegno:
+   la scheda MARCATORI (tabella, righe, filtri) è nello script "idee", che usa window.APP.marc.
+   Si rimette nella pagina con:  py -I strumenti/resplice.py web/index.html strumenti/marcatori.js */
+(function () {
+  "use strict";
+  const ME = "marc";
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const nf = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const n1f = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const n2 = (n) => nf.format(Math.round((Number(n) || 0) * 100) / 100), n1 = (n) => n1f.format(Number(n) || 0);
+  const thou = (n) => String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const CKN = { gol: "Gol in stagione", forma: "Forma", rig: "Rigorista", tit: "Titolare o panchina", disc: "Squalifiche e diffide", inf: "Infortuni", fat: "Stanchezza", avv: "Gol attesi della squadra", h2h: "Contro questa squadra" };
+  const CKS = { ok: "✓", no: "✗", mid: "≈", na: "–" };
+  const items = (x) => (x && x.chk && Array.isArray(x.chk.items) ? x.chk.items : []);
+  const has = (x) => items(x).length > 0;
+  const est = (x) => (x && x.chk && x.chk.est != null && Number.isFinite(Number(x.chk.est)) ? Number(x.chk.est) : null);
+  // quota che serve: 100 diviso la stima + 3% di margine (come per i pronostici)
+  const need = (x) => (x && x.chk && Number(x.chk.qmin) > 1 ? Math.round(Number(x.chk.qmin) * 1.03 * 100) / 100 : null);
+  const dots = (x) => { const L = items(x); return L.length ? '<span class="ckd" title="lista dei controlli del marcatore">' + L.map((i) => '<i class="' + esc(i.v) + '" title="' + esc((CKN[i.k] || i.k) + ": " + i.t) + '">' + (CKS[i.v] || "–") + "</i>").join("") + "</span>" : ""; };
+  const top = (x) => (x && x.chk && x.chk.top ? ' <span class="tag safe" title="nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 40%">TOP</span>' : "");
+  const blk = (t, body) => '<div class="nwb"><div class="nwh">' + t + "</div>" + body + "</div>";
+  const tile = (l, v, n) => '<div class="bsk"><span class="l">' + l + '</span><span class="v num">' + v + "</span>" + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+  const ST = { T: ["TIT", "titolare", "w"], E: ["ENT", "entrato dalla panchina", "p"], P: ["PAN", "in panchina, non è entrato", "l"], "-": ["—", "non convocato", "l"] };
+
+  function details(c) {
+    const d = c.d || {}, s = d.st || {}, out = [];
+    if (s.n) {
+      out.push(blk('STAGIONE <span class="mut">· tutte le competizioni, con ' + esc(d.team || "la sua squadra") + "</span>",
+        '<div class="bsum mst">' + tile("PARTITE", s.n, (s.tit || 0) + " da titolare") + tile("MINUTI", thou(s.min)) + tile("GOL", s.g, s.pen ? s.pen + " su rigore" : "") +
+        tile("UN GOL OGNI", s.g ? Math.round(s.min / s.g) + "'" : "—") + tile("TIRI IN PORTA", n1(s.sot / s.n), "a partita") + "</div>" +
+        (Array.isArray(s.c) && s.c.length > 1 ? '<div class="nwl">' + s.c.map((x) => "<div><span>" + esc(x[0]) + ": " + x[2] + " gol in " + x[1] + (x[1] === 1 ? " partita" : " partite") + "</span></div>").join("") + "</div>" : "")));
+    }
+    const L = Array.isArray(d.last) ? d.last : [];
+    if (L.length) out.push(blk('ULTIME ' + L.length + ' DELLA SQUADRA <span class="mut">· dalla più vecchia · TIT titolare · ENT entrato · PAN panchina · — non convocato</span>',
+      '<div class="nwf mlast">' + L.map((x) => { const t = ST[x.s] || ST["-"]; return '<span class="nwg" title="' + esc(x.d + " · " + (x.v === "C" ? "in casa" : "in trasferta") + " contro " + x.o + " · " + x.c + " · " + x.r + " · " + t[1] + (x.m ? ", " + x.m + " minuti" : "")) + '"><i class="' + t[2] + '">' + t[0] + "</i><small>" + esc(x.o.split(" ")[0]) + "</small><small>" + (x.m ? x.m + "'" : "&nbsp;") + "</small><b>" + ("⚽".repeat(x.g || 0) || "&nbsp;") + "</b></span>"; }).join("") + "</div>"));
+    const r = d.rig;
+    if (r) out.push(blk("RIGORI DELLA SQUADRA IN STAGIONE", '<div class="nwl"><div><span>' + (r.n ? "<b>" + r.n + "</b> rigori: <b>" + r.me + "</b> tirati da lui (" + r.ok + " segnati)" + (r.oth && r.oth.length ? " · " + r.oth.map((o) => esc(o[0]) + " " + o[1]).join(", ") : "") : "Nessun rigore finora.") + "</span></div></div>"));
+    const k = d.card;
+    if (k) out.push(blk("CARTELLINI <span class=\"mut\">· " + esc(k.c || "") + "</span>", '<div class="nwl"><div><span><b>' + k.y + "</b> " + (k.y === 1 ? "giallo" : "gialli") + (k.lim ? " · al " + k.lim + "° salta una partita" : "") +
+      (k.st ? ' <span class="tag ' + (k.st === "squalificato" ? "l" : "o") + '">' + esc(k.st.toUpperCase()) + "</span>" : "") + "</span></div></div>"));
+    const f = d.fat;
+    if (f) out.push(blk("STANCHEZZA", '<div class="nwl"><div><span>' + (f.gp != null ? "Ultima partita giocata " + f.gp + (f.gp === 1 ? " giorno" : " giorni") + " fa · " : "") + "<b>" + (f.m8 || 0) + "</b> minuti negli ultimi 8 giorni" +
+      (f.gn != null ? " · la squadra rigioca tra " + f.gn + (f.gn === 1 ? " giorno" : " giorni") + (f.nc ? " (" + esc(f.nc) + ")" : "") : "") + "</span></div></div>"));
+    const h = d.h2h;
+    if (h) out.push(blk("CONTRO " + esc(d.opp || "QUESTA SQUADRA") + ' <span class="mut">· tutte le partite ESPN dal 2018, anche con altre squadre</span>',
+      h.n ? '<div class="nwl"><div><span><b>' + h.g + " gol</b> in " + h.n + (h.n === 1 ? " partita" : " partite") + " · a segno in " + h.sc + "</span></div>" +
+        (h.l || []).map((x) => '<div><span class="num">' + esc(x.d) + "</span><span>" + esc(x.c) + " · " + esc(x.s) + (x.g ? " · <b>" + "⚽".repeat(x.g) + "</b>" : ' · <span class="mut">non ha segnato</span>') + "</span></div>").join("") + "</div>"
+        : '<div class="nwl"><div><span class="mut">Mai affrontata.</span></div></div>'));
+    return out.length ? '<div class="nw mcg">' + out.join("") + "</div>" : "";
+  }
+
+  function box(x, odds) {
+    const L = items(x); if (!L.length) return '<div class="ck"><div class="ckh">LISTA DEI CONTROLLI DEL MARCATORE <span class="mut">· non ancora calcolata: chiedi a Claude di aggiornare i marcatori</span></div></div>';
+    const c = x.chk, ok = L.filter((i) => i.v === "ok").length, e = est(x);
+    let h = '<div class="ck"><div class="ckh">LISTA DEI CONTROLLI DEL MARCATORE ' + (c.top ? '<span class="tag safe">TOP</span>' : '<span class="tag p">' + ok + " ✓ SU " + L.length + "</span>") +
+      '<span class="mut">· TOP = nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 40% · ✓ a favore · ≈ così così · ✗ contro · – manca il dato' + (c.at ? " · calcolata il " + esc(c.at) : "") + "</span></div>";
+    h += L.map((i) => '<div class="ckr"><span class="cks ' + esc(i.v) + '">' + (CKS[i.v] || "–") + '</span><span class="ckn">' + esc(CKN[i.k] || i.k) + '</span><span class="ckt">' + esc(i.t) + "</span></div>").join("");
+    if (e !== null) {
+      const k = (c.d && c.d.calc) || {};
+      h += '<div class="ckq"><b>Stima: segna nel ' + e + "% dei casi</b>" + (e === 0 ? ' <span class="mut">· non gioca</span>' :
+        ' <span class="mut">· gol attesi ' + esc((c.d && c.d.team) || "della squadra") + " " + n1(k.xg) + " (dalle quote) × sua parte dei gol quando è in campo " + (k.share || 0) + "% × circa " + (k.min || 0) + " minuti" + (k.pen ? " + i rigori (li tira lui)" : "") + "</span>") +
+        (Number.isFinite(Number(x.prob)) && x.prob !== null && x.prob !== "" && Math.abs(Number(x.prob) - e) >= 8 ? ' <span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA (' + Math.round(Number(x.prob)) + "%)</span>" : "") +
+        '<div class="mut" style="font-size:11px;margin-top:2px">Anche il miglior attaccante segna circa 4-5 volte su 10. Gli scontri diretti contano nel semaforo ma non cambiano la stima: sono troppo poche partite.</div></div>';
+      const nd = need(x), q = Number(odds) > 1 ? Number(odds) : 0;
+      if (nd) h += '<div class="ckq"><b>Serve quota ' + n2(nd) + '</b> <span class="mut">· 100 diviso la stima + 3% di margine</span>' + (q ? " · quota segnata <b>" + n2(q) + "</b> " + (q >= nd ? '<span class="tag w">CONVIENE</span>' : '<span class="tag l">NON CONVIENE</span>') : ' <span class="mut">· scrivi la quota del bookmaker con MODIFICA per sapere se conviene</span>') + "</div>";
+    }
+    return h + "</div>" + details(c);
+  }
+
+  window.APP.marc = { ME, CKN, dots, top, box, est, need, has };
+})();
+</script>
+<script>
 (function () {
   "use strict";
   const ME = "idee", on = () => window.APP.active === ME;
@@ -1500,7 +1585,7 @@ function fileDB() {
   //  squads/*   rose       { team, players: [{ s, n, r: P|D|C|A }] }
   // Le partite giocate dopo mezzanotte (prima delle 06:00) compaiono nella giornata precedente, come "notte".
   const S = { db: null, canWrite: false, ideas: [], picks: [], fixtures: [], squads: new Map(), marca: [], lists: { players: [], matches: [], comps: [] }, ready: { ideas: false, picks: false, fixtures: false }, sheet: null, picked: new Set(), bannerMsg: "", tab: "giocate", day: null, open: new Set(),
-    comps: new Set(), kinds: new Set(), confs: new Set(), sort: "time", rows: new Set(), mrows: new Set(), month: "" };
+    comps: new Set(), kinds: new Set(), confs: new Set(), sort: "time", rows: new Set(), mrows: new Set(), month: "", srows: new Set(), ssort: "time" };
 
   // ---------- utilità ----------
   const $ = (id) => document.getElementById(id);
@@ -1622,9 +1707,9 @@ function fileDB() {
     renderKpis(C, D);
     $("side").innerHTML = sideHtml(C, D, G, day);
     const wait = C.picks.filter((p) => p.hit === null && p.vday < C.today).length + C.ideas.filter((i) => i.hit === null && i.vday < C.today).length;
-    const tabs = '<div class="tabrow"><nav class="tabs" role="tablist">' + [["giocate", "GIOCATE", G.all.length], ["partite", "PARTITE", D.cards.length], ["esiti", "DA VERIFICARE", wait]]
+    const tabs = '<div class="tabrow"><nav class="tabs" role="tablist">' + [["giocate", "GIOCATE", G.all.length], ["marcatori", "MARCATORI", G.sc.length], ["partite", "PARTITE", D.cards.length], ["esiti", "DA VERIFICARE", wait]]
       .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="ptab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + '</nav><button type="button" class="legbtn" data-act="legend" title="Legenda: come si legge questa pagina" aria-label="Legenda">?</button></div>';
-    $("i-body").innerHTML = tabs + (S.tab === "esiti" ? tabResults(C) : S.tab === "partite" ? tabMatches(C, D, G, day) : tabPlays(C, D, G, day));
+    $("i-body").innerHTML = tabs + (S.tab === "esiti" ? tabResults(C) : S.tab === "partite" ? tabMatches(C, D, G, day) : S.tab === "marcatori" ? tabScorers(C, D, G, day) : tabPlays(C, D, G, day));
     showBanner(); updatePick();
     document.querySelectorAll('#app [data-act="new-idea"], #app [data-act="new-pick"]').forEach((b) => { b.disabled = !(S.db && S.canWrite); });
   }
@@ -1640,10 +1725,12 @@ function fileDB() {
     const cards = new Map(D.cards.map((c) => [c.k, c])), res = new Map();
     const items = [].concat(D.picks.map((x) => ({ t: "p", x })), D.ideas.filter((x) => x.match).map((x) => ({ t: "i", x })));
     items.forEach((o) => { const kk = o.x.date + "|" + norm(o.x.match), r = res.get(kk) || {}; if (o.x.result && !r.result) r.result = String(o.x.result); if (o.x.ht && !r.ht) r.ht = String(o.x.ht); res.set(kk, r); });
-    const all = items.map((o) => {
+    const full = items.map((o) => {
       const kk = o.x.date + "|" + norm(o.x.match), c = cards.get(kk) || null, tm = c ? teamsOf(c) : norm(o.x.match).split(" - ");
       return Object.assign(o, { kk, c, home: tm[0] || "", away: tm[1] || "", comp: norm(o.x.comp || (c && c.comp) || ""), kind: kindOf(o), r: res.get(kk) || {}, rid: o.t + ":" + o.x.id });
     });
+    // dal 25/11/2026 i marcatori hanno la loro scheda (MARCATORI): in GIOCATE restano solo i pronostici
+    const all = full.filter((o) => o.t === "p"), sc = full.filter((o) => o.t === "i");
     const list = all.filter((o) => (!S.comps.size || S.comps.has(o.comp)) && (!S.kinds.size || S.kinds.has(o.kind)) && (!S.confs.size || S.confs.has(o.x.conf)));
     const ci = (o) => (CONF.indexOf(o.x.conf) < 0 ? 9 : CONF.indexOf(o.x.conf)), tk = (o) => o.x.date + (o.x.time || "99"), pr = (o) => (hasProb(o.x.prob) ? Number(o.x.prob) : -1);
     const cmp = {
@@ -1653,7 +1740,7 @@ function fileDB() {
       conf: (a, b) => ci(a) - ci(b) || pr(b) - pr(a)
     };
     list.sort(cmp[S.sort] || cmp.time);
-    return { all, list, res };
+    return { all, list, res, sc };
   }
   // LIVE: risultato in tempo reale della partita (null se non è iniziata o non è stata trovata)
   const liveOf = (date, time, comp, home, away, fx) => (window.APP.live ? window.APP.live.get({ date, time: time || (fx && fx.time) || "", comp, home, away, links: fx && fx.links }) : null);
@@ -1733,7 +1820,7 @@ function fileDB() {
   }
   function expand(o, day, today) {
     const x = o.x, ok = S.db && S.canWrite, col = o.t === "p" ? "p" : "i";
-    let h = '<div class="gxin">' + (x.why ? '<div class="why">' + esc(x.why) + "</div>" : '<div class="why mut">Nessun motivo scritto.</div>') + (o.t === "p" ? consBox(x, o.c && o.c.fx) + ckList(x) : "") +
+    let h = '<div class="gxin">' + (x.why ? '<div class="why">' + esc(x.why) + "</div>" : '<div class="why mut">Nessun motivo scritto.</div>') + (o.t === "p" ? consBox(x, o.c && o.c.fx) + ckList(x) : MC() ? MC().box(x, x.odds) : "") +
       '<div class="gxb"><span class="pt">' + confTag(x.conf) + pp(x.prob) + (Number(x.odds) > 1 ? '<span class="mut num">@ ' + n2(x.odds) + "</span>" : "") + "</span>";
     if (ok) {
       h += '<button type="button" class="btn small" data-act="edit-' + (o.t === "p" ? "pick" : "idea") + '" data-id="' + esc(x.id) + '">MODIFICA</button>';
@@ -1742,6 +1829,31 @@ function fileDB() {
     h += "</div>";
     if (o.c) h += det(o.kk + "|card", "SCHEDA PARTITA · NOTIZIE, ANALISI, ASSENTI, FORMAZIONI E ROSE", card(o.c, day));
     return h + "</div>";
+  }
+  // MARCATORI (25/11/2026): una riga per marcatore, con semafori (window.APP.marc, strumenti/marcatori.js) e stima di strumenti/marcatori.py
+  const MC = () => window.APP.marc;
+  function tabScorers(C, D, G, day) {
+    const M = MC();
+    if (!G.sc.length) return '<div class="panel"><div class="empty">' + (S.ready.ideas ? "Nessun marcatore per questo giorno. Chiedi a Claude i marcatori del giorno, oppure aggiungili con + MARCATORE." : "CARICAMENTO…") + "</div></div>";
+    const list = G.sc.filter((o) => !S.comps.size || S.comps.has(o.comp));
+    if (!list.length) return '<div class="panel"><div class="empty">Nessun marcatore con questi filtri. <button type="button" class="linkbtn" data-act="preset">Togli i filtri</button></div></div>';
+    const ev = (o) => (M && M.est(o.x) !== null ? M.est(o.x) : hasProb(o.x.prob) ? Number(o.x.prob) : -1), tk = (o) => o.x.date + (o.x.time || "99");
+    list.sort(S.ssort === "est" ? (a, b) => ev(b) - ev(a) || tk(a).localeCompare(tk(b)) : (a, b) => tk(a).localeCompare(tk(b)) || ev(b) - ev(a));
+    const sth = (v, l, cls) => '<th class="' + (cls || "") + '"><button type="button" class="thb' + (S.ssort === v ? " on" : "") + '" data-act="ssort" data-v="' + v + '">' + l + (S.ssort === v ? " ▾" : "") + "</button></th>";
+    let h = liveBar() + '<div class="gtw"><table class="gt msc"><thead><tr>' + sth("time", "ORA") + '<th>CAMPIONATO</th><th>CASA</th><th>OSPITE</th><th class="c">PT</th><th class="c">FIN</th><th>MARCATORE · CONTROLLI</th><th>FIDUCIA</th>' + sth("est", "STIMA", "r") + '<th class="r">QUOTA</th><th class="r">ESITO</th></tr></thead><tbody>';
+    for (const o of list) {
+      const x = o.x, open = S.srows.has(x.id), night = x.date !== day, L = liveOf(x.date, x.time, o.comp, o.home, o.away, o.c && o.c.fx), e = M ? M.est(x) : null, nd = M ? M.need(x) : null;
+      h += '<tr class="row' + (open ? " sel" : "") + '" data-act="srow" data-id="' + esc(x.id) + '" aria-expanded="' + open + '">' +
+        '<td class="tm">' + favStar(x.date, x.time, o.comp, o.home, o.away, o.c && o.c.fx, o.c ? o.c.picks.map((p) => p.market) : []) + esc(x.time || "—") + (night ? ' <span class="mut">notte</span>' : "") + "</td>" +
+        '<td class="cp"><span class="cpi">' + U.flag(o.comp) + esc(U.tc(o.comp)) + "</span></td>" +
+        '<td class="tn h">' + esc(o.home) + '<span class="vs"> – ' + esc(o.away) + '</span></td><td class="tn a">' + esc(o.away) + "</td>" +
+        scoreCells(o.r, L) +
+        '<td class="mk sc"><b>' + esc(x.player) + "</b>" + (x.chk && x.chk.d && x.chk.d.team ? ' <span class="mut">· ' + esc(x.chk.d.team) + "</span>" : "") + (M ? M.top(x) + M.dots(x) : "") + "</td>" +
+        '<td class="cf">' + confLow(x.conf) + '</td><td class="r pr"><b' + (hasProb(x.prob) ? ' title="probabilità scritta da Claude: ' + Math.round(Number(x.prob)) + '%"' : "") + ">" + (e !== null ? e + "%" : hasProb(x.prob) ? Math.round(Number(x.prob)) + "%" : "—") + "</b></td>" +
+        '<td class="r mut qt">' + (Number(x.odds) > 1 ? n2(x.odds) : nd ? '<span title="quota che serve: sotto questa non conviene">serve ' + n2(nd) + "</span>" : "") + '</td><td class="r es">' + resCell(o, C.today, L) + "</td></tr>";
+      if (open) h += '<tr class="gx"><td colspan="11">' + expand(o, day, C.today) + "</td></tr>";
+    }
+    return h + '</tbody></table></div><div class="note">Una riga per ogni marcatore. STIMA = probabilità che segni, calcolata dai controlli (se non ci sono ancora, quella scritta da Claude). Tocca una riga per semafori e dettagli: stagione, ultime partite, rigori, cartellini, stanchezza, gol contro questa squadra. Tocca ORA o STIMA per ordinare.</div>';
   }
   // PARTITE: una riga per partita del giorno (anche senza pronostici); tocca per la scheda completa
   function tabMatches(C, D, G, day) {
@@ -1868,7 +1980,7 @@ function fileDB() {
     if (c.picks.length) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div>' + c.picks.map(pickRow).join("") + "</div>";
     else if (hasProb(f.p1) || f.analysis) h += '<div class="sect"><div class="st">PRONOSTICI CONSIGLIATI</div><p class="mut">Nessuno: partita troppo incerta, meglio evitarla.</p></div>';
     if (f.analysis) h += sect("ANALISI", f.analysis);
-    if (c.ideas.length) h += '<div class="sect"><div class="st">MARCATORI</div><div class="chips">' + c.ideas.map((i) => '<button type="button" class="pchip" data-act="goto-scorer" data-id="' + esc(i.id) + '">' + esc(i.player) + (hasProb(i.prob) ? ' <span class="mut num">' + Math.round(Number(i.prob)) + "%</span>" : "") + (i.hit === true ? ' <span class="up">✓</span>' : i.hit === false ? ' <span class="down">✗</span>' : "") + "</button>").join("") + "</div></div>";
+    if (c.ideas.length) h += '<div class="sect"><div class="st">MARCATORI</div><div class="chips">' + c.ideas.map((i) => '<button type="button" class="pchip" data-act="goto-scorer" data-id="' + esc(i.id) + '">' + esc(i.player) + (MC() && MC().est(i) !== null ? ' <span class="mut num">' + MC().est(i) + "%</span>" + (i.chk.top ? " ★" : "") : hasProb(i.prob) ? ' <span class="mut num">' + Math.round(Number(i.prob)) + "%</span>" : "") + (i.hit === true ? ' <span class="up">✓</span>' : i.hit === false ? ' <span class="down">✗</span>' : "") + "</button>").join("") + "</div></div>";
     if (f.absent) h += sect("ASSENTI E DUBBI", f.absent);
     const more = (f.lineups ? sect("PROBABILI FORMAZIONI", f.lineups) : "") + roster(home, away);
     if (more) h += det(c.k + "|more", "PROBABILI FORMAZIONI E ROSE", more);
@@ -2014,12 +2126,14 @@ function fileDB() {
     else if (a === "pcomp" || a === "pkind" || a === "pconf") { const set = a === "pcomp" ? S.comps : a === "pkind" ? S.kinds : S.confs, v = el.dataset.c; if (!v) set.clear(); else if (set.has(v)) set.delete(v); else set.add(v); render(); }
     else if (a === "preset") { S.comps.clear(); S.kinds.clear(); S.confs.clear(); render(); }
     else if (a === "psort") { S.sort = el.dataset.v; render(); }
+    else if (a === "ssort") { S.ssort = el.dataset.v; render(); }
+    else if (a === "srow") { const r = el.dataset.id; if (S.srows.has(r)) S.srows.delete(r); else S.srows.add(r); render(); }
     else if (a === "prow" || a === "pmrow") { const set = a === "prow" ? S.rows : S.mrows, r = el.dataset.id; if (set.has(r)) set.delete(r); else set.add(r); render(); }
     else if (a === "new-idea") { if (ok) ideaSheet(null, { date: S.day && S.day > todayISO() ? S.day : todayISO() }); }
     else if (a === "new-pick") { if (ok) pickSheet(null, { date: S.day && S.day > todayISO() ? S.day : todayISO() }); }
     else if (a === "edit-idea") { const i = compute().ideas.find((x) => x.id === id); if (i && ok) ideaSheet(i); }
     else if (a === "edit-pick") { const p = S.picks.find((x) => x.id === id); if (p && ok) pickSheet(p); }
-    else if (a === "goto-scorer") { S.tab = "giocate"; S.rows.add("i:" + id); render(); const r = document.querySelector('#i-body tr[data-id="i:' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'); if (r) { r.scrollIntoView({ block: "center" }); r.classList.add("flash"); setTimeout(() => r.classList.remove("flash"), 1400); } }
+    else if (a === "goto-scorer") { S.tab = "marcatori"; S.srows.add(id); render(); const r = document.querySelector('#i-body tr[data-act="srow"][data-id="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'); if (r) { r.scrollIntoView({ block: "center" }); r.classList.add("flash"); setTimeout(() => r.classList.remove("flash"), 1400); } }
     else if (a === "close") closeSheet();
     else if (a === "conf" || a === "ihit") $("sheet").querySelectorAll('[data-act="' + a + '"]').forEach((b) => b.setAttribute("aria-pressed", String(b === el)));
     else if (a === "save-more") submit(true);
@@ -2673,9 +2787,10 @@ function fileDB() {
     return U.side(html, (S.period === "all" ? "tutto lo storico" : "ultimi " + S.period + " giorni") + (any ? " · filtri attivi" : ""));
   }
   const GROUPS = [["kind", "PER GIOCATA"], ["conf", "PER FIDUCIA"], ["safe", "PER BOLLINO"], ["comp", "PER CAMPIONATO"], ["day", "PER GIORNO"]];
-  // PER BOLLINO (dal 23/11): i pronostici con la lista dei controlli, SICURI o no, e quelli di prima
-  const SAFE = ["SICURO", "NON SICURO", "SENZA LISTA DEI CONTROLLI", SC];
-  const safeOf = (o) => (o.t === "i" ? SC : !o.chk ? "SENZA LISTA DEI CONTROLLI" : o.chk.safe ? "SICURO" : "NON SICURO");
+  // PER BOLLINO (dal 23/11): i pronostici con la lista dei controlli, SICURI o no, e quelli di prima.
+  // Dal 25/11 anche i marcatori: TOP, NON TOP (con i semafori di strumenti/marcatori.py) e quelli senza controlli
+  const SAFE = ["SICURO", "NON SICURO", "SENZA LISTA DEI CONTROLLI", "MARCATORI TOP", "MARCATORI NON TOP", "MARCATORI SENZA CONTROLLI"];
+  const safeOf = (o) => (o.t === "i" ? (!o.chk || !Array.isArray(o.chk.items) ? "MARCATORI SENZA CONTROLLI" : o.chk.top ? "MARCATORI TOP" : "MARCATORI NON TOP") : !o.chk ? "SENZA LISTA DEI CONTROLLI" : o.chk.safe ? "SICURO" : "NON SICURO");
   function summary(F) {
     const keyOf = { conf: (o) => o.conf || "", kind: (o) => o.kind, safe: safeOf, comp: (o) => o.comp || "—", day: (o) => o.vday }[S.group];
     const m = new Map(); F.forEach((o) => { const kk = keyOf(o); if (!m.has(kk)) m.set(kk, []); m.get(kk).push(o); });
@@ -2685,7 +2800,7 @@ function fileDB() {
     else if (S.group === "day") rows.sort((a, b) => b.kk.localeCompare(a.kk));
     else if (S.group === "safe") rows.sort((a, b) => SAFE.indexOf(a.kk) - SAFE.indexOf(b.kk));
     else rows.sort((a, b) => (a.kk === SC) - (b.kk === SC) || tot(b) - tot(a) || a.kk.localeCompare(b.kk));
-    const label = (kk) => (S.group === "safe" && kk === "SICURO" ? '<span class="tag safe">SICURO</span>' : S.group === "conf" ? "FIDUCIA " + (confTxt[kk] || "—") : S.group === "day" ? longDay.format(toDate(kk)) : S.group === "comp" ? U.flag(kk) + " " + esc(U.tc(kk)) : esc(kk));
+    const label = (kk) => (S.group === "safe" && kk === "SICURO" ? '<span class="tag safe">SICURO</span>' : S.group === "safe" && kk === "MARCATORI TOP" ? 'MARCATORI <span class="tag safe">TOP</span>' : S.group === "conf" ? "FIDUCIA " + (confTxt[kk] || "—") : S.group === "day" ? longDay.format(toDate(kk)) : S.group === "comp" ? U.flag(kk) + " " + esc(U.tc(kk)) : esc(kk));
     const cnt = (x) => (!x.n ? '<td class="mut">—</td>' : '<td class="num"><b>' + x.ok + "</b> su " + x.known + (x.wait ? ' <span class="mut">+' + x.wait + " in attesa</span>" : "") + "</td>");
     const rt = (x, hi, lo) => (!x.known ? '<td class="mut">' + (x.n ? "—" : "") + "</td>" : '<td class="num ' + rateCls(x, hi, lo) + '"><span class="pv">' + pct(x.rate) + '</span><span class="sb"><i style="width:' + (x.rate * 100).toFixed(1) + '%"></i></span></td>');
     const est = (x) => '<td class="num mut">' + (x.nProb ? pct(x.avgProb) : "") + "</td>";
@@ -2975,7 +3090,7 @@ function fileDB() {
   const sec = (id, title, body) => '<section class="lgs" id="lg-' + id + '"><h4>' + title + "</h4>" + body + "</section>";
 
   function content() {
-    const toc = [["tab", "Tabella"], ["live", "Live"], ["safe", "Bollino SICURO"], ["ck", "I 7 controlli"], ["est", "Stima e quota minima"], ["card", "Scheda partita"], ["news", "Notizie"], ["tabs", "Altre schede"], ["cons", "Il consiglio e la puntata"], ["prova", "Cosa dicono i numeri"]];
+    const toc = [["tab", "Tabella"], ["live", "Live"], ["safe", "Bollino SICURO"], ["ck", "I 7 controlli"], ["est", "Stima e quota minima"], ["card", "Scheda partita"], ["news", "Notizie"], ["marc", "Marcatori"], ["tabs", "Altre schede"], ["cons", "Il consiglio e la puntata"], ["prova", "Cosa dicono i numeri"]];
     let h = '<nav class="lgtoc">' + toc.map(([id, t]) => '<button type="button" data-lgto="' + id + '">' + t + "</button>").join("") + "</nav>";
 
     h += sec("tab", "LA TABELLA GIOCATE · una riga per ogni giocata",
@@ -3033,9 +3148,25 @@ function fileDB() {
       row('<span class="tag o">POCO RIPOSO</span>', "La squadra ha giocato 3 giorni fa o meno.") +
       row('<span class="tag o">COPPA TRA 3 GIORNI: POSSIBILE TURNOVER</span>', "Subito dopo ha una partita di coppa: potrebbe far riposare i titolari."));
 
+    h += sec("marc", "LA SCHEDA MARCATORI · una riga per ogni marcatore, con 9 controlli",
+      row("<b>RAPHINHA</b> " + dots(["ok", "ok", "ok", "ok", "ok", "ok", "mid", "ok", "na"]), "Il marcatore consigliato, la sua squadra e i <b>9 quadratini</b> dei controlli, sempre in questo ordine: gol in stagione, forma, rigorista, titolare o panchina, squalifiche e diffide, infortuni, stanchezza, gol attesi della squadra, contro questa squadra.") +
+      row("<b>1 · Gol in stagione</b>", "Gol, partite, minuti, tiri in porta in tutte le competizioni. ✓ almeno un gol ogni 180 minuti (0,5 a partita intera), ✗ meno di uno ogni 300.") +
+      row("<b>2 · Forma</b>", "Gol nelle ultime 5 partite della squadra che ha giocato. ✓ almeno 2 gol, ≈ uno, ✗ nessuno.") +
+      row("<b>3 · Rigorista</b>", "Chi ha tirato i rigori della squadra quest'anno (anche quelli sbagliati). ✓ se li tira lui: i rigori alzano la stima. Se la squadra non ne ha ancora avuti, Claude cerca il rigorista sul web.") +
+      row("<b>4 · Titolare o panchina</b>", "Formazione ufficiale (circa un'ora prima), se no le probabili formazioni cercate sul web, se no le ultime 3 partite: titolare, entrato o panchina.") +
+      row("<b>5 · Squalifiche e diffide</b>", "Gialli e rossi nella competizione di oggi. ✗ squalificato (non gioca), ≈ diffidato (al prossimo giallo salta una partita, ma oggi gioca).") +
+      row("<b>6 · Infortuni</b>", "Infortuni segnalati da ESPN; ≈ se nell'ultima partita non era nemmeno in panchina.") +
+      row("<b>7 · Stanchezza</b>", "Minuti giocati negli ultimi 8 giorni, giorni di riposo e partita dopo vicina (rischio di cambio o turnover). ✗ da 240 minuti in 8 giorni.") +
+      row("<b>8 · Gol attesi della squadra</b>", "Quanti gol dovrebbe fare la sua squadra secondo le quote del bookmaker, e quanti ne ha subiti l'avversaria nelle ultime 5. ✓ da 1,6 gol attesi, ✗ sotto 1,1.") +
+      row("<b>9 · Contro questa squadra</b>", "Tutte le partite del giocatore contro l'avversaria di oggi, dal 2018, anche con altre maglie: gol e volte a segno. ✓ a segno in almeno 4 partite su 10, ✗ mai a segno in 3 o più. Non cambia la stima: sono poche partite.") +
+      row('<span class="tag safe">TOP</span>', "Nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 40%.") +
+      row("<b>STIMA 43%</b>", "Probabilità che segni: gol attesi della squadra × la sua parte dei gol della squadra quando è in campo × minuti che dovrebbe giocare, più i rigori se li tira lui. Anche il miglior attaccante segna circa 4-5 volte su 10. <b>Serve</b> = quota sotto la quale non conviene.") +
+      row("<i>tocca la riga</i>", "Si aprono i controlli e i dettagli: stagione, ultime 5 (TIT titolare, ENT entrato, PAN panchina, — non convocato, ⚽ gol), rigori della squadra, cartellini, stanchezza e tutte le partite contro questa squadra."));
+
     h += sec("tabs", "LE ALTRE SCHEDE E LA COLONNA DEI FILTRI",
       row("<b>PARTITE</b>", "Una riga per ogni partita del giorno (anche senza pronostici), con la stima 1-X-2, le giocate e il risultato.") +
       row("<b>DA VERIFICARE</b>", "Pronostici e marcatori dei giorni passati senza esito: chiedi a Claude di aggiornare i risultati.") +
+      row("<b>Storico</b>", "In <b>Storico → PER BOLLINO</b> i marcatori sono divisi in TOP, NON TOP e senza controlli: così si vede se i semafori funzionano.") +
       row("<b>Filtri</b>", "Giorno (calendario), campionati, tipo di giocata e fiducia. Sul telefono si aprono con il pulsante FILTRI."));
 
     h += sec("cons", "IL CONSIGLIO · se giocare, cosa, come e quanto puntare",
