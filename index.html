@@ -934,6 +934,11 @@ table.gt.bt td.bes .lv { margin-left: 3px; }
   .bsk .v { font-size: 15px; }
   .bch .bhr { margin-left: 0; }
 }
+/* SE AVESSI GIOCATO (25/11): riquadro nello Storico */
+.hmoney { margin-bottom: 10px; overflow: hidden; }
+.hmoney .ph .r { font-size: 11px; }
+.bsk.down .v { color: var(--down); }
+.hsum td.up { color: var(--up); } .hsum td.down { color: var(--down); }
 </style>
 <meta name="robots" content="noindex, nofollow">
 <style>[data-act="new-pick"], [data-act="new-idea"] { display: none !important; }</style>
@@ -1696,7 +1701,8 @@ function fileDB() {
         "</span>" + (hasProb(x.prob) && Math.abs(Number(x.prob) - c.est) >= 8 ? ' <span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA (' + Math.round(Number(x.prob)) + "%)</span>" : "") +
         (c.hist && c.hist.n ? '<div style="font-size:11.5px;margin-top:3px"><b>Storico di questa giocata:</b> ' + c.hist.w + " su " + c.hist.n + " prese (" + Math.round(100 * c.hist.w / c.hist.n) + "%)" + (hasProb(c.hist.p) ? ", stima media " + c.hist.p + "%" : "") +
           (c.adj ? ' → stima corretta di <b>' + (c.adj > 0 ? "+" : "") + c.adj + "</b> punti" + (c.parts && hasProb(c.parts.raw) ? " (era " + c.parts.raw + "%)" : "") : c.hist.n < 10 ? ' <span class="mut">· nessuna correzione: servono almeno 10 casi</span>' : "") + "</div>" : "") +
-        '<div class="mut" style="font-size:11px;margin-top:2px">Per 1, X, 2 e doppie pesa di più il bookmaker. Per le giocate sui gol pesa di più quante volte la giocata esce in generale, perché le statistiche delle squadre la prevedono poco (prova su 1.430 partite).</div></div>';
+        (P.solo === "book" ? '<div class="mut" style="font-size:11px;margin-top:2px"><b>Squadre senza statistiche:</b> la stima è solo quella del bookmaker (niente medie generali, che qui darebbero numeri finti).</div></div>' :
+        '<div class="mut" style="font-size:11px;margin-top:2px">Per 1, X, 2 e doppie pesa di più il bookmaker. Per le giocate sui gol pesa di più quante volte la giocata esce in generale, perché le statistiche delle squadre la prevedono poco (prova su 1.430 partite).</div></div>');
     }
     if (Number(c.qmin) > 1) {
       const qb = Number(c.qbook) > 1 ? Number(c.qbook) : Number(x.odds) > 1 ? Number(x.odds) : 0, by = Number(c.qbook) > 1 ? c.qby || "bookmaker" : "quota segnata";
@@ -2587,6 +2593,33 @@ function fileDB() {
     return { n: list.length, known: k.length, ok, ko: k.length - ok, wait: list.length - k.length, rate: k.length ? ok / k.length : 0, nProb: wp.length, avgProb: wp.length ? wp.reduce((s, o) => s + Number(o.prob), 0) / wp.length / 100 : 0 };
   }
   const isP = (o) => o.t === "p", isI = (o) => o.t === "i";
+  // SE AVESSI GIOCATO (dal 25/11/2026, chiesto dall'utente): 1 € su ogni pronostico finito, alla quota scritta, se no a quella del bookmaker
+  // salvata dai controlli (chk.qbook), se no a quella stimata (chk.qest). Le quote sotto 1,01 non si possono giocare: escluse.
+  const qOf = (o) => { const c = o.chk || {}, q = Number(o.odds) || Number(c.qbook) || Number(c.qest) || 0; return q >= 1.01 ? q : 0; };
+  const realQ = (o) => !!(Number(o.odds) || Number((o.chk || {}).qbook));
+  function money(list) {
+    const l = list.filter((o) => isP(o) && o.hit !== null && qOf(o)), ok = l.filter((o) => o.hit).length;
+    return { n: l.length, ok, net: l.reduce((s, o) => s + (o.hit ? qOf(o) - 1 : -1), 0), avg: l.length ? l.reduce((s, o) => s + qOf(o), 0) / l.length : 0, real: l.filter(realQ).length };
+  }
+  const eur = (x) => (x > 0.004 ? "+" : x < -0.004 ? "−" : "") + nf.format(Math.abs(x)) + " €";
+  function moneyBox(F) {
+    const done = F.filter((o) => isP(o) && o.hit !== null), m = money(F), out = done.length - m.n;
+    const head = '<div class="panel hmoney"><div class="ph"><span>SE AVESSI GIOCATO</span><span class="r mut">1 € su ogni pronostico finito</span></div>';
+    if (!m.n) return head + '<div class="empty">Nessun pronostico finito con una quota, con questi filtri. Le quote si salvano dal 23/11.</div></div>';
+    const rate = m.ok / m.n, need = 1 / m.avg, sk = (l, v, cls, n) => '<div class="bsk' + (cls ? " " + cls : "") + '"><span class="l">' + l + '</span><span class="v num">' + v + '</span>' + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
+    const cls = m.net > 0.004 ? "up" : m.net < -0.004 ? "down" : "";
+    return head + '<div class="bsum">' +
+      sk("GIOCATI", String(m.n), "", m.real + " con quota vera · " + (m.n - m.real) + " stimata") +
+      sk("PRESI", pct(rate), rate >= need ? "up" : "down", m.ok + " su " + m.n) +
+      sk("QUOTA MEDIA", nf.format(m.avg), "", "") +
+      sk("PER NON PERDERE", pct(need), "", "pronostici da prendere") +
+      sk("PUNTATO", nf.format(m.n) + " €", "", "") +
+      sk("UTILE", eur(m.net), cls, "rendimento " + (m.net >= 0 ? "+" : "−") + pctF.format(Math.abs(m.net / m.n))) + "</div>" +
+      '<div class="bjud"><span>' + (rate >= need ? "Hai preso il <b>" + pct(rate) + "</b>: più del " + pct(need) + " che serve con queste quote. <b>Il metodo sta guadagnando.</b>"
+        : "Hai preso il <b>" + pct(rate) + "</b>, ma con una quota media di " + nf.format(m.avg) + " per non perdere serviva il <b>" + pct(need) + "</b>. <b>Indovinare tanto non basta: le quote sono troppo basse.</b>") + "</span></div>" +
+      '<div class="hint hnote">Quota usata: quella scritta, se no quella del bookmaker, se no quella stimata (~). Contano solo i pronostici, non i marcatori.' +
+      (out ? " Esclusi " + out + (out === 1 ? " pronostico finito" : " pronostici finiti") + " senza quota (di prima del 23/11) o con quota sotto 1,01." : "") + "</div></div>";
+  }
   function matches(F, all) {
     const res = new Map(), m = new Map(), kk = (o) => o.vday + "|" + o.match;
     for (const o of all) { const r = res.get(kk(o)) || {}; if (o.result && !r.result) r.result = String(o.result); if (o.ht && !r.ht) r.ht = String(o.ht); res.set(kk(o), r); }
@@ -2621,7 +2654,7 @@ function fileDB() {
     $("side").innerHTML = all.length ? sideHtml(all) : "";
     if (!(S.ready.picks && S.ready.ideas)) { $("h-body").innerHTML = '<div class="panel"><div class="empty">CARICAMENTO…</div></div>'; return; }
     if (!all.length) { $("h-body").innerHTML = '<div class="panel"><div class="empty">Ancora nessun pronostico nello storico.</div></div>'; return; }
-    $("h-body").innerHTML = summary(F) + table(F, all);
+    $("h-body").innerHTML = moneyBox(F) + summary(F) + table(F, all);
   }
   const seg = (act, cur, opts) => '<div class="seg sseg" role="group" style="grid-template-columns:repeat(' + opts.length + ',auto)">' + opts.map(([v, l]) => '<button type="button" data-act="' + act + '" data-v="' + v + '" aria-pressed="' + (cur === v) + '">' + l + "</button>").join("") + "</div>";
   // colonna dei filtri: periodo, esito, giocata, campionati (con bandiera)
@@ -2646,7 +2679,7 @@ function fileDB() {
   function summary(F) {
     const keyOf = { conf: (o) => o.conf || "", kind: (o) => o.kind, safe: safeOf, comp: (o) => o.comp || "—", day: (o) => o.vday }[S.group];
     const m = new Map(); F.forEach((o) => { const kk = keyOf(o); if (!m.has(kk)) m.set(kk, []); m.get(kk).push(o); });
-    const rows = Array.from(m.entries()).map(([kk, l]) => ({ kk, p: agg(l.filter(isP)), i: agg(l.filter(isI)) }));
+    const rows = Array.from(m.entries()).map(([kk, l]) => ({ kk, p: agg(l.filter(isP)), i: agg(l.filter(isI)), m: money(l) }));
     const tot = (r) => r.p.n + r.i.n;
     if (S.group === "conf") rows.sort((a, b) => (CONF.indexOf(a.kk) + 9) % 9 - (CONF.indexOf(b.kk) + 9) % 9);
     else if (S.group === "day") rows.sort((a, b) => b.kk.localeCompare(a.kk));
@@ -2656,12 +2689,13 @@ function fileDB() {
     const cnt = (x) => (!x.n ? '<td class="mut">—</td>' : '<td class="num"><b>' + x.ok + "</b> su " + x.known + (x.wait ? ' <span class="mut">+' + x.wait + " in attesa</span>" : "") + "</td>");
     const rt = (x, hi, lo) => (!x.known ? '<td class="mut">' + (x.n ? "—" : "") + "</td>" : '<td class="num ' + rateCls(x, hi, lo) + '"><span class="pv">' + pct(x.rate) + '</span><span class="sb"><i style="width:' + (x.rate * 100).toFixed(1) + '%"></i></span></td>');
     const est = (x) => '<td class="num mut">' + (x.nProb ? pct(x.avgProb) : "") + "</td>";
-    const tr = (name, r, cls) => "<tr" + (cls ? ' class="' + cls + '"' : "") + '><td class="l">' + name + "</td>" + cnt(r.p) + rt(r.p, 0.65, 0.5) + est(r.p) + cnt(r.i) + rt(r.i, 0.4, 0.2) + est(r.i) + "</tr>";
-    const all = { p: agg(F.filter(isP)), i: agg(F.filter(isI)) };
+    const mo = (x) => (!x.n ? '<td class="mut">—</td>' : '<td class="num ' + (x.net > 0.004 ? "up" : x.net < -0.004 ? "down" : "") + '" title="1 € su ognuno dei ' + x.n + ' pronostici con quota"><b>' + eur(x.net) + '</b> <span class="mut">su ' + x.n + "</span></td>");
+    const tr = (name, r, cls) => "<tr" + (cls ? ' class="' + cls + '"' : "") + '><td class="l">' + name + "</td>" + cnt(r.p) + rt(r.p, 0.65, 0.5) + est(r.p) + mo(r.m) + cnt(r.i) + rt(r.i, 0.4, 0.2) + est(r.i) + "</tr>";
+    const all = { p: agg(F.filter(isP)), i: agg(F.filter(isI)), m: money(F) };
     return '<div class="panel"><div class="ph hph"><span>RIEPILOGO</span><span class="r">' + seg("hgroup", S.group, GROUPS) + "</span></div>" +
-      '<div class="scroll"><table class="stab hsum"><thead><tr><th class="l"></th><th>PRONOSTICI PRESI</th><th>%</th><th title="probabilità media stimata da Claude">STIMA</th><th>MARCATORI A SEGNO</th><th>%</th><th title="probabilità media stimata da Claude">STIMA</th></tr></thead><tbody>' +
-      (rows.length ? rows.map((r) => tr(label(r.kk), r)).join("") + (rows.length > 1 ? tr("TOTALE", all, "tot") : "") : '<tr><td class="l mut" colspan="7">Nessun dato con questi filtri.</td></tr>') +
-      '</tbody></table></div><div class="hint hnote">STIMA = probabilità media che Claude aveva dato. Se la % reale è più alta, le stime erano prudenti; se è più bassa, erano troppo ottimiste.</div></div>';
+      '<div class="scroll"><table class="stab hsum"><thead><tr><th class="l"></th><th>PRONOSTICI PRESI</th><th>%</th><th title="probabilità media stimata da Claude">STIMA</th><th title="se avessi giocato 1 € su ogni pronostico con quota">UTILE 1 €</th><th>MARCATORI A SEGNO</th><th>%</th><th title="probabilità media stimata da Claude">STIMA</th></tr></thead><tbody>' +
+      (rows.length ? rows.map((r) => tr(label(r.kk), r)).join("") + (rows.length > 1 ? tr("TOTALE", all, "tot") : "") : '<tr><td class="l mut" colspan="8">Nessun dato con questi filtri.</td></tr>') +
+      '</tbody></table></div><div class="hint hnote">STIMA = probabilità media che Claude aveva dato. Se la % reale è più alta, le stime erano prudenti; se è più bassa, erano troppo ottimiste. UTILE 1 € = quanto avresti vinto o perso giocando 1 € su ogni pronostico con quota.</div></div>';
   }
   // TUTTE LE GIOCATE: una riga per giocata, divise per giorno (dal più recente); tocca una riga per il motivo
   const confLow = (c) => (confTxt[c] ? confTxt[c].charAt(0) + confTxt[c].slice(1).toLowerCase() : "—");
@@ -2975,11 +3009,11 @@ function fileDB() {
       row("<b>3 · Quote</b>", "Cosa ne pensa il bookmaker. Per 1, X, 2 e doppie confronta la sua probabilità con la nostra; per le giocate sui gol guarda se si aspetta una partita con tanti o pochi gol (linea Over/Under).") +
       row("<b>4 · Forma</b>", "La giocata provata sulle ultime 5 partite in casa della squadra di casa e sulle ultime 5 fuori dell'ospite. ✓ da 8 su 10.") +
       row("<b>5 · Scontri diretti</b>", "La giocata provata sui precedenti tra le due squadre (servono almeno 3). Per le giocate su primo o secondo tempo non conta: ESPN dà solo il risultato finale.") +
-      row("<b>6 · Assenti e stanchezza</b>", "Giorni di riposo e coppe vicine (possibile turnover). Gli <b>assenti</b> non sono controllati in automatico: guarda le formazioni ufficiali un'ora prima.") +
+      row("<b>6 · Assenti e stanchezza</b>", "Giorni di riposo e coppe vicine (possibile turnover), contando <b>tutte le competizioni</b>: campionato, coppe nazionali e coppe europee. Gli <b>assenti</b> non sono controllati in automatico: guarda le formazioni ufficiali un'ora prima.") +
       row("<b>7 · Motivazioni</b>", "La classifica: la squadra che deve fare risultato ha bisogno di punti? Conta solo per 1, X, 2 e doppie."));
 
     h += sec("est", "STIMA COMBINATA, STORICO E QUOTA MINIMA · in fondo alla lista dei controlli",
-      row("<b>Stima combinata 84%</b>", "Il numero più affidabile: mette insieme bookmaker, calcolo, statistiche e media generale.<br>· Per 1, X, 2 e doppie pesa di più il <b>bookmaker</b> (il più preciso).<br>· Per le giocate sui gol pesa di più <b>quante volte esce in generale</b> quella giocata, perché le statistiche delle squadre la prevedono poco.") +
+      row("<b>Stima combinata 84%</b>", "Il numero più affidabile: mette insieme bookmaker, calcolo, statistiche e media generale.<br>· Per 1, X, 2 e doppie pesa di più il <b>bookmaker</b> (il più preciso).<br>· Per le giocate sui gol pesa di più <b>quante volte esce in generale</b> quella giocata, perché le statistiche delle squadre la prevedono poco.<br>· Se le squadre <b>non sono nelle statistiche</b> (per esempio in Champions contro squadre di campionati non coperti) usa <b>solo il bookmaker</b>: niente pronostici inventati.") +
       row('<span class="tag o">DIVERSA DALLA PROBABILITÀ SCRITTA</span>', "La stima combinata e la probabilità scritta da Claude sono lontane 8 punti o più: fidati di più della stima combinata.") +
       row("<b>Storico di questa giocata</b>", "Quante ne abbiamo prese finora con la stessa giocata. Con <b>almeno 10 casi</b> la stima si corregge da sola (se in passato eravamo troppo ottimisti, scende).") +
       row("<b>Serve quota 1,29</b>", "Sotto questa quota non conviene giocarla, perché si vince troppo poco rispetto al rischio. È 100 diviso la stima (stima 80% → 1,25), più un margine del 3%, e mai meno della tua quota minima.") +
