@@ -1521,7 +1521,7 @@ function fileDB() {
   // quota che serve: 100 diviso la stima + 3% di margine (come per i pronostici)
   const need = (x) => (x && x.chk && Number(x.chk.qmin) > 1 ? Math.round(Number(x.chk.qmin) * 1.03 * 100) / 100 : null);
   const dots = (x) => { const L = items(x); return L.length ? '<span class="ckd" title="lista dei controlli del marcatore">' + L.map((i) => '<i class="' + esc(i.v) + '" title="' + esc((CKN[i.k] || i.k) + ": " + i.t) + '">' + (CKS[i.v] || "–") + "</i>").join("") + "</span>" : ""; };
-  const top = (x) => (x && x.chk && x.chk.top ? ' <span class="tag safe" title="nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 40%">TOP</span>' : "");
+  const top = (x) => (x && x.chk && x.chk.top ? ' <span class="tag safe" title="nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 35%">TOP</span>' : "");
   const blk = (t, body) => '<div class="nwb"><div class="nwh">' + t + "</div>" + body + "</div>";
   const tile = (l, v, n) => '<div class="bsk"><span class="l">' + l + '</span><span class="v num">' + v + "</span>" + (n ? '<span class="n">' + n + "</span>" : "") + "</div>";
   const ST = { T: ["TIT", "titolare", "w"], E: ["ENT", "entrato dalla panchina", "p"], P: ["PAN", "in panchina, non è entrato", "l"], "-": ["—", "non convocato", "l"] };
@@ -1557,7 +1557,7 @@ function fileDB() {
     const L = items(x); if (!L.length) return '<div class="ck"><div class="ckh">LISTA DEI CONTROLLI DEL MARCATORE <span class="mut">· non ancora calcolata: chiedi a Claude di aggiornare i marcatori</span></div></div>';
     const c = x.chk, ok = L.filter((i) => i.v === "ok").length, e = est(x);
     let h = '<div class="ck"><div class="ckh">LISTA DEI CONTROLLI DEL MARCATORE ' + (c.top ? '<span class="tag safe">TOP</span>' : '<span class="tag p">' + ok + " ✓ SU " + L.length + "</span>") +
-      '<span class="mut">· TOP = nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 40% · ✓ a favore · ≈ così così · ✗ contro · – manca il dato' + (c.at ? " · calcolata il " + esc(c.at) : "") + "</span></div>";
+      '<span class="mut">· TOP = nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 35% · ✓ a favore · ≈ così così · ✗ contro · – manca il dato' + (c.at ? " · calcolata il " + esc(c.at) : "") + "</span></div>";
     h += L.map((i) => '<div class="ckr"><span class="cks ' + esc(i.v) + '">' + (CKS[i.v] || "–") + '</span><span class="ckn">' + esc(CKN[i.k] || i.k) + '</span><span class="ckt">' + esc(i.t) + "</span></div>").join("");
     if (e !== null) {
       const k = (c.d && c.d.calc) || {};
@@ -3159,8 +3159,8 @@ function fileDB() {
       row("<b>7 · Stanchezza</b>", "Minuti giocati negli ultimi 8 giorni, giorni di riposo e partita dopo vicina (rischio di cambio o turnover). ✗ da 240 minuti in 8 giorni.") +
       row("<b>8 · Gol attesi della squadra</b>", "Quanti gol dovrebbe fare la sua squadra secondo le quote del bookmaker, e quanti ne ha subiti l'avversaria nelle ultime 5. ✓ da 1,6 gol attesi, ✗ sotto 1,1.") +
       row("<b>9 · Contro questa squadra</b>", "Tutte le partite del giocatore contro l'avversaria di oggi, dal 2018, anche con altre maglie: gol e volte a segno. ✓ a segno in almeno 4 partite su 10, ✗ mai a segno in 3 o più. Non cambia la stima: sono poche partite.") +
-      row('<span class="tag safe">TOP</span>', "Nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 40%.") +
-      row("<b>STIMA 43%</b>", "Probabilità che segni: gol attesi della squadra × la sua parte dei gol della squadra quando è in campo × minuti che dovrebbe giocare, più i rigori se li tira lui. Anche il miglior attaccante segna circa 4-5 volte su 10. <b>Serve</b> = quota sotto la quale non conviene.") +
+      row('<span class="tag safe">TOP</span>', "Nessun ✗, titolare ✓, almeno 5 ✓ e stima almeno 35% (dal 27/11; prima 40%, quando la stima era più alta).") +
+      row("<b>STIMA 43%</b>", "Probabilità che segni: gol attesi della squadra × la sua parte dei gol della squadra quando è in campo × minuti che dovrebbe giocare, più i rigori se li tira lui. Anche il miglior attaccante segna circa 4 volte su 10.<br>· <b>Dal 27/11 la stima è tarata</b> sulla prova con 2.935 casi passati: la formula da sola era troppo ottimista (diceva 25%, segnavano 20 su 100). Prima delle formazioni ufficiali si abbassa di più, con la formazione ufficiale un po' meno.<br>· Claude ricontrolla i marcatori quando escono le <b>formazioni ufficiali</b> (circa un'ora prima) e aggiorna stima e scheda.<br><b>Serve</b> = quota sotto la quale non conviene.") +
       row("<i>tocca la riga</i>", "Si aprono i controlli e i dettagli: stagione, ultime 5 (TIT titolare, ENT entrato, PAN panchina, — non convocato, ⚽ gol), rigori della squadra, cartellini, stanchezza e tutte le partite contro questa squadra."));
 
     h += sec("tabs", "LE ALTRE SCHEDE E LA COLONNA DEI FILTRI",
