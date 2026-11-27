@@ -592,6 +592,7 @@ table.gt tr:last-child td { border-bottom: 0; }
 .res.w { background: #e8f5ec; color: #166534; }
 .res.l { background: #fdeeee; color: #b42318; }
 .res.o { background: #fdf2e1; color: #b45309; }
+.res.r { background: #eef0f3; color: #4b5563; }
 .res.p { color: var(--muted); font-weight: 500; padding: 2px 0; }
 .gxin { display: grid; gap: 8px; padding: 4px 0 2px 36px; max-width: 980px; }
 .gxin .why { font-size: 12px; color: #374151; }
@@ -1329,7 +1330,7 @@ function fileDB() {
   const ME = "live";
   // LIVE (dal 22/11/2026): risultati in tempo reale da ESPN (API pubblica, leggibile dalla pagina) e stato di ogni giocata.
   //  window.APP.live.need(items)  le sezioni dicono quali partite mostrano: [{ date, time, comp, home, away, eid? }]
-  //  window.APP.live.get(item)    → null oppure { state: pre|in|post, h, a, hh, ha, ht: intervallo passato, clock, goals: [{ min, side, name, og }] }
+  //  window.APP.live.get(item)    → null oppure { state: pre|in|post, rinv: partita rinviata/annullata (state "pre"), h, a, hh, ha, ht: intervallo passato, clock, goals: [{ min, side, name, og }] }
   //  window.APP.live.market(testo, L) → "W" presa · "L" persa · "w" per ora sì · "l" per ora no · "n" in corso, non si sa ancora · null non valutabile
   //  window.APP.live.scorer(nome, L, lato?) → "W" ha segnato · "L" non ha segnato · "n" non ancora
   // Ogni 30 secondi rilegge solo i campionati con partite iniziate oggi e non ancora finite. Lo STORICO resta quello salvato da Claude.
@@ -1386,14 +1387,14 @@ function fileDB() {
       const nowS = romeOf(new Date()), stamp = nowS.date + " " + nowS.time;
       const todo = Array.from(S.want.entries()).filter(([bk]) => {
         const b = S.boards.get(bk);
-        return !b || b.ev.some((e) => e.state === "in" || (e.state === "pre" && e.kick <= stamp));
+        return !b || b.ev.some((e) => e.state === "in" || (e.state === "pre" && !e.rinv && e.kick <= stamp));
       });
       await Promise.all(todo.map(([bk, w]) => getBoard(bk, w).catch(() => {})));
       if (todo.length) S.at = new Date();
       const sig = JSON.stringify(Array.from(S.boards.values()).map((b) => b.ev.map((e) => [e.id, e.state, e.h, e.a, e.clock])));
       if (sig !== S.sig) { S.sig = sig; redraw(); }
       // si continua finché c'è una partita da iniziare o in corso (o un campionato non ancora letto)
-      keep = S.want.size > S.boards.size || Array.from(S.boards.values()).some((b) => b.ev.some((e) => e.state !== "post"));
+      keep = S.want.size > S.boards.size || Array.from(S.boards.values()).some((b) => b.ev.some((e) => e.state !== "post" && !e.rinv));
     } finally {
       S.busy = false;
       if (S.again) schedule(50); else if (keep) schedule(POLL);
@@ -1403,12 +1404,15 @@ function fileDB() {
   document.addEventListener("visibilitychange", () => { if (!document.hidden && S.want.size) tick(); });
 
   // ---------- lettura di una partita ESPN ----------
+  const RINV = /POSTPONED|CANCEL|ABANDON|SUSPENDED|FORFEIT/;
   const minOf = (txt) => { const m = /(\d+)'?(?:\s*\+\s*(\d+))?/.exec(String(txt || "")); return m ? { m: Number(m[1]), x: Number(m[2] || 0) } : { m: 0, x: 0 }; };
   function parse(e) {
     const c = (e.competitions || [])[0]; if (!c) return null;
     const side = {}; (c.competitors || []).forEach((x) => { side[x.homeAway] = x; });
     if (!side.home || !side.away) return null;
-    const st = (c.status || {}).type || {}, state = st.state || "pre", name = st.name || "", period = Number((c.status || {}).period) || 0;
+    const st = (c.status || {}).type || {}, name = st.name || "", period = Number((c.status || {}).period) || 0;
+    // RINVIATA (dal 27/11/2026): ESPN mette le partite rinviate, annullate o sospese tra le "finite" (0-0): qui restano "non iniziate", con rinv
+    const rinv = RINV.test(name), state = rinv ? "pre" : st.state || "pre";
     const hid = String((side.home.team || {}).id || ""), goals = [];
     for (const x of c.details || []) {
       if (!x.scoringPlay || x.shootout) continue;
@@ -1418,7 +1422,7 @@ function fileDB() {
     const pt = goals.filter((g) => g.min <= 45);
     const ht = state === "post" || name === "STATUS_HALFTIME" || period >= 2;
     const t = (side) => [side.team.displayName, side.team.shortDisplayName, side.team.name, side.team.abbreviation].filter(Boolean);
-    return { id: String(e.id), kick: romeOf(new Date(e.date)).date + " " + romeOf(new Date(e.date)).time, ktime: romeOf(new Date(e.date)).time, state, name, period, ht,
+    return { rinv, id: String(e.id), kick: romeOf(new Date(e.date)).date + " " + romeOf(new Date(e.date)).time, ktime: romeOf(new Date(e.date)).time, state, name, period, ht,
       clock: name === "STATUS_HALFTIME" ? "INT." : state === "in" ? ((c.status || {}).displayClock || "") : "", h: Number(side.home.score) || 0, a: Number(side.away.score) || 0,
       hh: pt.filter((g) => g.side === "h").length, ha: pt.filter((g) => g.side === "a").length, goals, hn: t(side.home), an: t(side.away) };
   }
@@ -1436,7 +1440,7 @@ function fileDB() {
     if (same.length === 1) return same[0];
     return sc[0] && sc[0].s > 0 && (!sc[1] || sc[1].s < sc[0].s) ? sc[0].e : null;
   }
-  const get = (it) => { const e = find(it); return e && e.state !== "pre" ? e : e ? { state: "pre" } : null; };
+  const get = (it) => { const e = find(it); return e && e.state !== "pre" ? e : e ? { state: "pre", rinv: !!e.rinv } : null; };
 
   // ---------- valutazione di una giocata ----------
   // una giocata è fatta di pezzi uniti da " o " (basta uno) oppure da " + " (servono tutti); ogni pezzo vale per PT, 2T o partita intera
@@ -1648,13 +1652,14 @@ function fileDB() {
     for (const b of S.marca) for (const l of legsOf(b)) if (l.player) { if (!byPlayer.has(l.player)) byPlayer.set(l.player, []); byPlayer.get(l.player).push({ date: b.date, hit: l.hit }); }
     const ideas = S.ideas.map((i) => {
       const lk = (byPlayer.get(i.player) || []).filter((x) => x.date <= i.date && x.date >= addDays(i.date, -1)).sort((a, b) => b.date.localeCompare(a.date))[0];
-      const own = i.hit === true || i.hit === false, hit = own ? i.hit : lk && (lk.hit === true || lk.hit === false) ? lk.hit : null;
+      // RINVIATA (dal 27/11/2026): rinv = partita rinviata o annullata, la giocata non conta (né esito né statistiche)
+      const own = i.rinv !== true && (i.hit === true || i.hit === false), hit = i.rinv === true ? null : own ? i.hit : lk && (lk.hit === true || lk.hit === false) ? lk.hit : null;
       const fx = fxOf(i.date, i.match), time = i.time || (fx && fx.time) || "";
       return Object.assign({}, i, { played: !!lk, hit, auto: !own && hit !== null, fx, time, vday: vdayOf(i.date, time) });
     });
     const picks = S.picks.map((p) => {
       const fx = fxOf(p.date, p.match), time = p.time || (fx && fx.time) || "";
-      return Object.assign({}, p, { hit: p.hit === true || p.hit === false ? p.hit : null, fx, time, vday: vdayOf(p.date, time) });
+      return Object.assign({}, p, { hit: p.rinv !== true && (p.hit === true || p.hit === false) ? p.hit : null, fx, time, vday: vdayOf(p.date, time) });
     });
     const fixtures = S.fixtures.map((f) => Object.assign({}, f, { vday: vdayOf(f.date, f.time || "") }));
     const days = Array.from(new Set([].concat(ideas.map((i) => i.vday), picks.map((p) => p.vday), fixtures.map((f) => f.vday)).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || "")))).sort();
@@ -1706,7 +1711,7 @@ function fileDB() {
     $("tb-right").textContent = D.cards.length + (D.cards.length === 1 ? " partita" : " partite") + " · " + D.picks.length + " pronostici · " + D.ideas.length + " marcatori";
     renderKpis(C, D);
     $("side").innerHTML = sideHtml(C, D, G, day);
-    const wait = C.picks.filter((p) => p.hit === null && p.vday < C.today).length + C.ideas.filter((i) => i.hit === null && i.vday < C.today).length;
+    const wait = C.picks.filter((p) => p.hit === null && !p.rinv && p.vday < C.today).length + C.ideas.filter((i) => i.hit === null && !i.rinv && i.vday < C.today).length;
     const tabs = '<div class="tabrow"><nav class="tabs" role="tablist">' + [["giocate", "GIOCATE", G.all.length], ["marcatori", "MARCATORI", G.sc.length], ["partite", "PARTITE", D.cards.length], ["esiti", "DA VERIFICARE", wait]]
       .map(([t, l, n]) => '<button class="tab" role="tab" type="button" data-act="ptab" data-tab="' + t + '" aria-selected="' + (S.tab === t) + '">' + l + (n ? " · " + n : "") + "</button>").join("") + '</nav><button type="button" class="legbtn" data-act="legend" title="Legenda: come si legge questa pagina" aria-label="Legenda">?</button></div>';
     $("i-body").innerHTML = tabs + (S.tab === "esiti" ? tabResults(C) : S.tab === "partite" ? tabMatches(C, D, G, day) : S.tab === "marcatori" ? tabScorers(C, D, G, day) : tabPlays(C, D, G, day));
@@ -1760,6 +1765,7 @@ function fileDB() {
     const h = o.x.hit;
     if (h === true) return '<span class="res w">✓ ' + (o.t === "i" ? "SEGNATO" : "PRESO") + "</span>";
     if (h === false) return '<span class="res l">✗ ' + (o.t === "i" ? "NO" : "PERSO") + "</span>";
+    if (o.x.rinv === true || (L && L.rinv)) return '<span class="res r" title="Partita rinviata o annullata: la giocata non conta">RINVIATA</span>';
     if (liveOn(L)) return liveRes(o, L);
     return o.x.vday < today ? '<span class="res o">DA VERIFICARE</span>' : '<span class="res p">da giocare</span>';
   }
@@ -1997,7 +2003,7 @@ function fileDB() {
     const b = document.querySelector('[data-act="play-sel"]'); if (b) b.disabled = S.picked.size < 2;
   }
   function tabResults(C) {
-    const today = C.today, toCheck = [].concat(C.picks.filter((p) => p.hit === null && p.vday < today).map((p) => ({ t: "p", x: p })), C.ideas.filter((i) => i.hit === null && i.vday < today).map((i) => ({ t: "i", x: i })))
+    const today = C.today, toCheck = [].concat(C.picks.filter((p) => p.hit === null && !p.rinv && p.vday < today).map((p) => ({ t: "p", x: p })), C.ideas.filter((i) => i.hit === null && !i.rinv && i.vday < today).map((i) => ({ t: "i", x: i })))
       .sort((a, b) => b.x.vday.localeCompare(a.x.vday) || byTimeConf(a.x, b.x));
     const lbl = (o) => (o.t === "p" ? esc(o.x.market) + ' <span class="mut">· pronostico</span>' : esc(o.x.player) + ' <span class="mut">· marcatore</span>');
     const edit = (o) => (o.t === "p" ? "edit-pick" : "edit-idea");
@@ -2693,7 +2699,7 @@ function fileDB() {
     const fx = new Map(S.fixtures.map((f) => [f.date + "|" + norm(f.home) + " - " + norm(f.away), f])), today = todayISO();
     const mk = (t) => (x) => {
       const f = fx.get(x.date + "|" + norm(x.match)), time = x.time || (f && f.time) || "";
-      const o = Object.assign({}, x, { t, time, vday: vdayOf(x.date, time), match: norm(x.match), comp: norm(x.comp || (f && f.comp) || ""), hit: x.hit === true || x.hit === false ? x.hit : null });
+      const o = Object.assign({}, x, { t, time, vday: vdayOf(x.date, time), match: norm(x.match), comp: norm(x.comp || (f && f.comp) || ""), rinv: x.rinv === true, hit: x.rinv !== true && (x.hit === true || x.hit === false) ? x.hit : null });
       o.kind = kindOf(o); return o;
     };
     return [].concat(S.picks.map(mk("p")), S.ideas.map(mk("i"))).filter((o) => o.match && /^\d{4}-\d{2}-\d{2}$/.test(o.vday || "") && o.vday <= today);
@@ -2701,10 +2707,10 @@ function fileDB() {
   const fromOf = () => (S.period === "7" ? addDays(todayISO(), -6) : S.period === "30" ? addDays(todayISO(), -29) : "");
   const inPeriod = (all) => { const from = fromOf(); return from ? all.filter((o) => o.vday >= from) : all; };
   const filtered = (all) => inPeriod(all).filter((o) => (!S.kinds.size || S.kinds.has(o.kind)) && (!S.comps.size || S.comps.has(o.comp)) &&
-    (S.res === "all" || (S.res === "ok" ? o.hit === true : S.res === "ko" ? o.hit === false : o.hit === null)));
+    (S.res === "all" || (S.res === "ok" ? o.hit === true : S.res === "ko" ? o.hit === false : o.hit === null && !o.rinv)));
   function agg(list) {
     const k = list.filter((o) => o.hit !== null), ok = k.filter((o) => o.hit).length, wp = k.filter((o) => hasProb(o.prob));
-    return { n: list.length, known: k.length, ok, ko: k.length - ok, wait: list.length - k.length, rate: k.length ? ok / k.length : 0, nProb: wp.length, avgProb: wp.length ? wp.reduce((s, o) => s + Number(o.prob), 0) / wp.length / 100 : 0 };
+    return { n: list.length, known: k.length, ok, ko: k.length - ok, wait: list.filter((o) => o.hit === null && !o.rinv).length, rate: k.length ? ok / k.length : 0, nProb: wp.length, avgProb: wp.length ? wp.reduce((s, o) => s + Number(o.prob), 0) / wp.length / 100 : 0 };
   }
   const isP = (o) => o.t === "p", isI = (o) => o.t === "i";
   // SE AVESSI GIOCATO (dal 25/11/2026, chiesto dall'utente): 1 € su ogni pronostico finito, alla quota scritta, se no a quella del bookmaker
@@ -2758,7 +2764,7 @@ function fileDB() {
     // la giocata che funziona meglio: almeno 3 esiti
     const byKind = new Map(); F.filter(isP).forEach((o) => { if (!byKind.has(o.kind)) byKind.set(o.kind, []); byKind.get(o.kind).push(o); });
     const best = Array.from(byKind.entries()).map(([kk, l]) => Object.assign({ kk }, agg(l))).filter((x) => x.known >= 3).sort((a, b) => b.rate - a.rate || b.known - a.known)[0];
-    const wait = F.filter((o) => o.hit === null).length;
+    const wait = F.filter((o) => o.hit === null && !o.rinv).length;
     $("kpis").innerHTML = k("PRONOSTICI PRESI", P.known ? pct(P.rate) : "—", rateCls(P, 0.65, 0.5), P.known ? P.ok + " su " + P.known + (P.nProb ? " · stima " + pct(P.avgProb) : "") : "nessuno verificato") +
       k("MARCATORI A SEGNO", I.known ? pct(I.rate) : "—", rateCls(I, 0.4, 0.2), I.known ? I.ok + " su " + I.known + (I.nProb ? " · stima " + pct(I.avgProb) : "") : "nessuno verificato") +
       k("PARTITE", String(M.length), "", new Set(M.map((g) => g.vday)).size + " giorni") +
@@ -2817,6 +2823,7 @@ function fileDB() {
   function resCell(o) {
     if (o.hit === true) return '<span class="res w">✓ ' + (o.t === "i" ? "SEGNATO" : "PRESO") + "</span>";
     if (o.hit === false) return '<span class="res l">✗ ' + (o.t === "i" ? "NO" : "PERSO") + "</span>";
+    if (o.rinv) return '<span class="res r" title="Partita rinviata o annullata: non conta">RINVIATA</span>';
     return '<span class="res o">IN ATTESA</span>';
   }
   function table(F, all) {
@@ -3166,6 +3173,7 @@ function fileDB() {
     h += sec("tabs", "LE ALTRE SCHEDE E LA COLONNA DEI FILTRI",
       row("<b>PARTITE</b>", "Una riga per ogni partita del giorno (anche senza pronostici), con la stima 1-X-2, le giocate e il risultato.") +
       row("<b>DA VERIFICARE</b>", "Pronostici e marcatori dei giorni passati senza esito: chiedi a Claude di aggiornare i risultati.") +
+      row('<span class="res r">RINVIATA</span>', "Partita rinviata, annullata o sospesa (dal 27/11): la giocata non conta, né nelle percentuali né nei soldi, come fanno i bookmaker.") +
       row("<b>Storico</b>", "In <b>Storico → PER BOLLINO</b> i marcatori sono divisi in TOP, NON TOP e senza controlli: così si vede se i semafori funzionano.") +
       row("<b>Filtri</b>", "Giorno (calendario), campionati, tipo di giocata e fiducia. Sul telefono si aprono con il pulsante FILTRI."));
 
@@ -3468,7 +3476,7 @@ function fileDB() {
 
   // piccola etichetta per la tabella GIOCATE
   function tag(x) {
-    if (!x || !x.chk) return "";
+    if (!x || !x.chk || x.rinv) return "";  // rinv = partita rinviata (dal 27/11/2026): niente consiglio
     const o = fromPick(x);
     if (started(o) || x.hit === true || x.hit === false) return "";
     return " " + vtag(verdict(o), true);
@@ -3478,7 +3486,7 @@ function fileDB() {
 
   // riquadro completo (riga aperta di GIOCATE)
   function box(x, fx) {
-    if (!x || !x.chk) return "";
+    if (!x || !x.chk || x.rinv) return "";
     const o = fromPick(x), v = verdict(o), Q = quote(o), q = Q.q, s = stake(o, v), C = cassa(), n = need(o);
     let h = '<div class="cbox"><div class="cbh">IL CONSIGLIO ' + vtag(v) + '<span class="cbw">' + esc(v.why) + "</span></div>";
     if (started(o) || x.hit === true || x.hit === false) h += '<div class="cbl mut">La partita è già iniziata: il consiglio valeva prima del calcio d\'inizio.</div>';
@@ -3534,7 +3542,7 @@ function fileDB() {
   // barra in cima a GIOCATE: cassa, quota minima personale, quanto puntare oggi, multipla del giorno
   function bar(picks, day) {
     const C = cassa(), lim = C * MAX_DAY;
-    const open = (picks || []).filter((x) => x && x.chk && x.hit !== true && x.hit !== false && !started(fromPick(x)));
+    const open = (picks || []).filter((x) => x && x.chk && !x.rinv && x.hit !== true && x.hit !== false && !started(fromPick(x)));
     open.forEach((x) => { delete DAYF[x.date]; });
     let cut = false;
     const mk = () => open.map((x) => { const o = fromPick(x), v = verdict(o); return { x, o, v, s: stake(o, v) }; });
@@ -3838,7 +3846,7 @@ function fileDB() {
     const fx = S.fixtures.filter((f) => vdayOf(f.date, f.time) === day && f.adv && Array.isArray(f.adv.c));
     const per = []; let nBegun = 0;
     for (const f of fx) {
-      if (skip.has(f.id)) continue;
+      if (skip.has(f.id) || f.rinv) continue;  // rinv = partita rinviata (dal 27/11/2026)
       const bg = begun(f);
       if (bg) nBegun++;
       if (S.fresh && bg) continue;
